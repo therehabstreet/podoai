@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package podoai_consumer;
+option go_package = "github.com/therehabstreet/podoai/proto/consumer";
+
+import "common/podoai.proto";
+import "google/protobuf/timestamp.proto";
+
+service ConsumerService {
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string phone = 3;
+  string email = 4;
+  string age = 5;
+  podoai.Gender gender = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  User user = 1;
+}
+
+message UpdateUserResponse {
+  User user = 1;
+}

@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+package podoai;
+option go_package = "github.com/therehabstreet/podoai/proto/common";
+
+import "google/protobuf/timestamp.proto";
+
+service CommonService {
+  // Authentication RPCs
+  rpc RequestOtp(RequestOtpRequest) returns (RequestOtpResponse);
+  rpc VerifyOtp(VerifyOtpRequest) returns (LoginResponse);
+
+  // Scan and related RPCs
+  rpc GetScans (GetScansRequest) returns (GetScansResponse);
+  rpc GetScan (GetScanRequest) returns (GetScanResponse);
+  rpc CreateScan (CreateScanRequest) returns (CreateScanResponse);
+  rpc DeleteScan (DeleteScanRequest) returns (DeleteScanResponse);
+  rpc GetProduct (GetProductRequest) returns (GetProductResponse);
+  rpc GetExercise (GetExerciseRequest) returns (GetExerciseResponse);
+  rpc GetTherapy (GetTherapyRequest) returns (GetTherapyResponse);
+}
+
+message Scan {
+  string id = 1;
+  string user_id = 2;
+  string clinic_id = 3;
+  google.protobuf.Timestamp created_at = 4;
+  repeated Image images = 5;
+  repeated Video videos = 6;
+  ScanAIResult scan_ai_result = 7;
+  string scanned_by_id = 8;
+  string reviewed_by_id = 9;
+  google.protobuf.Timestamp reviewed_at = 10;
+}
+
+message ScanAIResult {
+  string arch_type = 1;
+  string pronation = 2;
+  float balance_score = 3;
+  ScanLLMResult llm_result = 4;
+  ScanRecommendation recommendation = 5;
+}
+
+message ScanLLMResult {
+  string summary = 1;
+}
+
+message ScanRecommendation {
+  repeated Product products = 1;
+  repeated Exercise exercises = 2;
+  repeated Therapy therapies = 3;
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  repeated string media_urls = 4;
+  ProductCategory category = 5;
+  repeated ProductPrice prices = 6;
+}
+
+message ProductCategory {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string image_url = 4;
+}
+
+message ProductPrice {
+  string product_id = 1;
+  float price = 2;
+  string currency = 3;
+}
+
+message Exercise {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string video_url = 4;
+}
+
+message Therapy {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string video_url = 4;
+}
+
+message Image {
+  string type = 1;   // left_foot_top, right_foot_side, etc
+  string url = 3;
+  google.protobuf.Timestamp captured_at = 4;
+}
+
+message Video {
+  string type = 1; // rear_walk, front_walk, side_walk, etc
+  string url = 2;
+  int32 duration = 3;
+  google.protobuf.Timestamp captured_at = 4;
+}
+
+enum Role {
+    ROLE_UNSPECIFIED = 0;
+    SUPERADMIN = 1;
+    ADMIN = 2;
+    CLINIC_CHAIN_ADMIN = 3;
+    CLINIC_ADMIN = 4;
+    CLINIC_STAFF = 5;
+    CONSUMER = 6;
+}
+
+enum Gender {
+  GENDER_UNSPECIFIED = 0;
+  MALE = 1;
+  FEMALE = 2;
+  OTHER = 3;
+}
+
+message Patient {
+  string id = 1;
+  string name = 2;
+  string phone_number = 3;
+  string owner_entity_id = 4;
+  int32 age = 5;
+  Gender gender = 6;
+  int32 foot_size = 7;
+  int32 total_scans = 8;
+  google.protobuf.Timestamp last_scan_date = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+message GetScansRequest {
+    string user_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+    string sort_by = 4;
+    string sort_order = 5; // "asc" or "desc"
+}
+
+message GetScansResponse {
+    repeated Scan scans = 1;
+    int32 total_count = 2;
+}
+
+message GetScanRequest {
+    string scan_id = 1;
+}
+
+message GetScanResponse {
+    Scan scan = 1;
+}
+
+message CreateScanRequest {
+    Scan scan = 1;
+}
+
+message CreateScanResponse {
+    Scan scan = 1;
+}
+
+message DeleteScanRequest {
+    string scan_id = 1;
+}
+
+message DeleteScanResponse {
+    bool success = 1;
+}
+
+message GetProductRequest {
+    string product_id = 1;
+}
+
+message GetProductResponse {
+    Product product = 1;
+}
+
+message GetExerciseRequest {
+    string exercise_id = 1;
+}
+
+message GetExerciseResponse {
+    Exercise exercise = 1;
+}
+
+message GetTherapyRequest {
+    string therapy_id = 1;
+}
+
+message GetTherapyResponse {
+    Therapy therapy = 1;
+}
+
+// ===== Authentication =====
+message RequestOtpRequest {
+  string mobile_number = 1;
+}
+
+message RequestOtpResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message VerifyOtpRequest {
+  string mobile_number = 1;
+  string otp = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+  string refresh_token = 2;
+}
