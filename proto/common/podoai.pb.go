@@ -138,8 +138,8 @@ func (Gender) EnumDescriptor() ([]byte, []int) {
 type Scan struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	ClinicId      string                 `protobuf:"bytes,3,opt,name=clinic_id,json=clinicId,proto3" json:"clinic_id,omitempty"`
+	PatientId     string                 `protobuf:"bytes,2,opt,name=patient_id,json=patientId,proto3" json:"patient_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,3,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	Images        []*Image               `protobuf:"bytes,5,rep,name=images,proto3" json:"images,omitempty"`
 	Videos        []*Video               `protobuf:"bytes,6,rep,name=videos,proto3" json:"videos,omitempty"`
@@ -188,16 +188,16 @@ func (x *Scan) GetId() string {
 	return ""
 }
 
-func (x *Scan) GetUserId() string {
+func (x *Scan) GetPatientId() string {
 	if x != nil {
-		return x.UserId
+		return x.PatientId
 	}
 	return ""
 }
 
-func (x *Scan) GetClinicId() string {
+func (x *Scan) GetOwnerEntityId() string {
 	if x != nil {
-		return x.ClinicId
+		return x.OwnerEntityId
 	}
 	return ""
 }
@@ -1025,11 +1025,12 @@ func (x *Patient) GetCreatedAt() *timestamppb.Timestamp {
 
 type GetScansRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	SortBy        string                 `protobuf:"bytes,4,opt,name=sort_by,json=sortBy,proto3" json:"sort_by,omitempty"`
-	SortOrder     string                 `protobuf:"bytes,5,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"` // "asc" or "desc"
+	PatientId     string                 `protobuf:"bytes,1,opt,name=patient_id,json=patientId,proto3" json:"patient_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	SortBy        string                 `protobuf:"bytes,5,opt,name=sort_by,json=sortBy,proto3" json:"sort_by,omitempty"`
+	SortOrder     string                 `protobuf:"bytes,6,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"` // "asc" or "desc"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1064,9 +1065,16 @@ func (*GetScansRequest) Descriptor() ([]byte, []int) {
 	return file_common_podoai_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *GetScansRequest) GetUserId() string {
+func (x *GetScansRequest) GetPatientId() string {
 	if x != nil {
-		return x.UserId
+		return x.PatientId
+	}
+	return ""
+}
+
+func (x *GetScansRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
 	}
 	return ""
 }
@@ -1154,6 +1162,7 @@ func (x *GetScansResponse) GetTotalCount() int32 {
 type GetScanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ScanId        string                 `protobuf:"bytes,1,opt,name=scan_id,json=scanId,proto3" json:"scan_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1191,6 +1200,13 @@ func (*GetScanRequest) Descriptor() ([]byte, []int) {
 func (x *GetScanRequest) GetScanId() string {
 	if x != nil {
 		return x.ScanId
+	}
+	return ""
+}
+
+func (x *GetScanRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
 	}
 	return ""
 }
@@ -1330,6 +1346,7 @@ func (x *CreateScanResponse) GetScan() *Scan {
 type DeleteScanRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ScanId        string                 `protobuf:"bytes,1,opt,name=scan_id,json=scanId,proto3" json:"scan_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1367,6 +1384,13 @@ func (*DeleteScanRequest) Descriptor() ([]byte, []int) {
 func (x *DeleteScanRequest) GetScanId() string {
 	if x != nil {
 		return x.ScanId
+	}
+	return ""
+}
+
+func (x *DeleteScanRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
 	}
 	return ""
 }
@@ -1682,7 +1706,7 @@ func (x *GetTherapyResponse) GetTherapy() *Therapy {
 // ===== Authentication =====
 type RequestOtpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MobileNumber  string                 `protobuf:"bytes,1,opt,name=mobile_number,json=mobileNumber,proto3" json:"mobile_number,omitempty"`
+	PhoneNumber   string                 `protobuf:"bytes,1,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1717,9 +1741,9 @@ func (*RequestOtpRequest) Descriptor() ([]byte, []int) {
 	return file_common_podoai_proto_rawDescGZIP(), []int{26}
 }
 
-func (x *RequestOtpRequest) GetMobileNumber() string {
+func (x *RequestOtpRequest) GetPhoneNumber() string {
 	if x != nil {
-		return x.MobileNumber
+		return x.PhoneNumber
 	}
 	return ""
 }
@@ -1778,7 +1802,7 @@ func (x *RequestOtpResponse) GetMessage() string {
 
 type VerifyOtpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	MobileNumber  string                 `protobuf:"bytes,1,opt,name=mobile_number,json=mobileNumber,proto3" json:"mobile_number,omitempty"`
+	PhoneNumber   string                 `protobuf:"bytes,1,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	Otp           string                 `protobuf:"bytes,2,opt,name=otp,proto3" json:"otp,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1814,9 +1838,9 @@ func (*VerifyOtpRequest) Descriptor() ([]byte, []int) {
 	return file_common_podoai_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *VerifyOtpRequest) GetMobileNumber() string {
+func (x *VerifyOtpRequest) GetPhoneNumber() string {
 	if x != nil {
-		return x.MobileNumber
+		return x.PhoneNumber
 	}
 	return ""
 }
@@ -1828,70 +1852,19 @@ func (x *VerifyOtpRequest) GetOtp() string {
 	return ""
 }
 
-type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LoginRequest) Reset() {
-	*x = LoginRequest{}
-	mi := &file_common_podoai_proto_msgTypes[29]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoginRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoginRequest) ProtoMessage() {}
-
-func (x *LoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[29]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
-func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{29}
-}
-
-func (x *LoginRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *LoginRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
 type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
 	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
-	ExpiresIn     int64                  `protobuf:"varint,3,opt,name=expires_in,json=expiresIn,proto3" json:"expires_in,omitempty"`
+	Roles         []Role                 `protobuf:"varint,3,rep,packed,name=roles,proto3,enum=podoai.Role" json:"roles,omitempty"`
+	UserId        string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_common_podoai_proto_msgTypes[30]
+	mi := &file_common_podoai_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1903,7 +1876,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[30]
+	mi := &file_common_podoai_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1916,7 +1889,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{30}
+	return file_common_podoai_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *LoginResponse) GetToken() string {
@@ -1933,22 +1906,559 @@ func (x *LoginResponse) GetRefreshToken() string {
 	return ""
 }
 
-func (x *LoginResponse) GetExpiresIn() int64 {
+func (x *LoginResponse) GetRoles() []Role {
 	if x != nil {
-		return x.ExpiresIn
+		return x.Roles
+	}
+	return nil
+}
+
+func (x *LoginResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+// Patient API messages
+type GetPatientsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OwnerEntityId string                 `protobuf:"bytes,1,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	Page          int32                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	SortBy        string                 `protobuf:"bytes,4,opt,name=sort_by,json=sortBy,proto3" json:"sort_by,omitempty"`
+	SortOrder     string                 `protobuf:"bytes,5,opt,name=sort_order,json=sortOrder,proto3" json:"sort_order,omitempty"` // "asc" or "desc"
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPatientsRequest) Reset() {
+	*x = GetPatientsRequest{}
+	mi := &file_common_podoai_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPatientsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPatientsRequest) ProtoMessage() {}
+
+func (x *GetPatientsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPatientsRequest.ProtoReflect.Descriptor instead.
+func (*GetPatientsRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *GetPatientsRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
+	}
+	return ""
+}
+
+func (x *GetPatientsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
 	}
 	return 0
+}
+
+func (x *GetPatientsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *GetPatientsRequest) GetSortBy() string {
+	if x != nil {
+		return x.SortBy
+	}
+	return ""
+}
+
+func (x *GetPatientsRequest) GetSortOrder() string {
+	if x != nil {
+		return x.SortOrder
+	}
+	return ""
+}
+
+type GetPatientsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Patients      []*Patient             `protobuf:"bytes,1,rep,name=patients,proto3" json:"patients,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPatientsResponse) Reset() {
+	*x = GetPatientsResponse{}
+	mi := &file_common_podoai_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPatientsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPatientsResponse) ProtoMessage() {}
+
+func (x *GetPatientsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPatientsResponse.ProtoReflect.Descriptor instead.
+func (*GetPatientsResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *GetPatientsResponse) GetPatients() []*Patient {
+	if x != nil {
+		return x.Patients
+	}
+	return nil
+}
+
+func (x *GetPatientsResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
+type GetPatientRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PatientId     string                 `protobuf:"bytes,1,opt,name=patient_id,json=patientId,proto3" json:"patient_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPatientRequest) Reset() {
+	*x = GetPatientRequest{}
+	mi := &file_common_podoai_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPatientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPatientRequest) ProtoMessage() {}
+
+func (x *GetPatientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPatientRequest.ProtoReflect.Descriptor instead.
+func (*GetPatientRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *GetPatientRequest) GetPatientId() string {
+	if x != nil {
+		return x.PatientId
+	}
+	return ""
+}
+
+func (x *GetPatientRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
+	}
+	return ""
+}
+
+type GetPatientResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Patient       *Patient               `protobuf:"bytes,1,opt,name=patient,proto3" json:"patient,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetPatientResponse) Reset() {
+	*x = GetPatientResponse{}
+	mi := &file_common_podoai_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetPatientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPatientResponse) ProtoMessage() {}
+
+func (x *GetPatientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPatientResponse.ProtoReflect.Descriptor instead.
+func (*GetPatientResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *GetPatientResponse) GetPatient() *Patient {
+	if x != nil {
+		return x.Patient
+	}
+	return nil
+}
+
+type SearchPatientRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SearchTerm    string                 `protobuf:"bytes,1,opt,name=search_term,json=searchTerm,proto3" json:"search_term,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPatientRequest) Reset() {
+	*x = SearchPatientRequest{}
+	mi := &file_common_podoai_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPatientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPatientRequest) ProtoMessage() {}
+
+func (x *SearchPatientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPatientRequest.ProtoReflect.Descriptor instead.
+func (*SearchPatientRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *SearchPatientRequest) GetSearchTerm() string {
+	if x != nil {
+		return x.SearchTerm
+	}
+	return ""
+}
+
+func (x *SearchPatientRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
+	}
+	return ""
+}
+
+func (x *SearchPatientRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *SearchPatientRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type SearchPatientResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Patients      []*Patient             `protobuf:"bytes,1,rep,name=patients,proto3" json:"patients,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,2,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchPatientResponse) Reset() {
+	*x = SearchPatientResponse{}
+	mi := &file_common_podoai_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchPatientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchPatientResponse) ProtoMessage() {}
+
+func (x *SearchPatientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchPatientResponse.ProtoReflect.Descriptor instead.
+func (*SearchPatientResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *SearchPatientResponse) GetPatients() []*Patient {
+	if x != nil {
+		return x.Patients
+	}
+	return nil
+}
+
+func (x *SearchPatientResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
+type CreatePatientRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Patient       *Patient               `protobuf:"bytes,1,opt,name=patient,proto3" json:"patient,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreatePatientRequest) Reset() {
+	*x = CreatePatientRequest{}
+	mi := &file_common_podoai_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreatePatientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePatientRequest) ProtoMessage() {}
+
+func (x *CreatePatientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePatientRequest.ProtoReflect.Descriptor instead.
+func (*CreatePatientRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *CreatePatientRequest) GetPatient() *Patient {
+	if x != nil {
+		return x.Patient
+	}
+	return nil
+}
+
+type CreatePatientResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Patient       *Patient               `protobuf:"bytes,1,opt,name=patient,proto3" json:"patient,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreatePatientResponse) Reset() {
+	*x = CreatePatientResponse{}
+	mi := &file_common_podoai_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreatePatientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreatePatientResponse) ProtoMessage() {}
+
+func (x *CreatePatientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreatePatientResponse.ProtoReflect.Descriptor instead.
+func (*CreatePatientResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *CreatePatientResponse) GetPatient() *Patient {
+	if x != nil {
+		return x.Patient
+	}
+	return nil
+}
+
+type DeletePatientRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PatientId     string                 `protobuf:"bytes,1,opt,name=patient_id,json=patientId,proto3" json:"patient_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeletePatientRequest) Reset() {
+	*x = DeletePatientRequest{}
+	mi := &file_common_podoai_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeletePatientRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeletePatientRequest) ProtoMessage() {}
+
+func (x *DeletePatientRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeletePatientRequest.ProtoReflect.Descriptor instead.
+func (*DeletePatientRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *DeletePatientRequest) GetPatientId() string {
+	if x != nil {
+		return x.PatientId
+	}
+	return ""
+}
+
+func (x *DeletePatientRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
+	}
+	return ""
+}
+
+type DeletePatientResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeletePatientResponse) Reset() {
+	*x = DeletePatientResponse{}
+	mi := &file_common_podoai_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeletePatientResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeletePatientResponse) ProtoMessage() {}
+
+func (x *DeletePatientResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeletePatientResponse.ProtoReflect.Descriptor instead.
+func (*DeletePatientResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *DeletePatientResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
 }
 
 var File_common_podoai_proto protoreflect.FileDescriptor
 
 const file_common_podoai_proto_rawDesc = "" +
 	"\n" +
-	"\x13common/podoai.proto\x12\x06podoai\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x03\n" +
+	"\x13common/podoai.proto\x12\x06podoai\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa9\x03\n" +
 	"\x04Scan\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1b\n" +
-	"\tclinic_id\x18\x03 \x01(\tR\bclinicId\x129\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"\n" +
+	"patient_id\x18\x02 \x01(\tR\tpatientId\x12&\n" +
+	"\x0fowner_entity_id\x18\x03 \x01(\tR\rownerEntityId\x129\n" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12%\n" +
 	"\x06images\x18\x05 \x03(\v2\r.podoai.ImageR\x06images\x12%\n" +
@@ -2024,28 +2534,32 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x0elast_scan_date\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\flastScanDate\x129\n" +
 	"\n" +
 	"created_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x93\x01\n" +
-	"\x0fGetScansRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
-	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x1b\n" +
-	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x17\n" +
-	"\asort_by\x18\x04 \x01(\tR\x06sortBy\x12\x1d\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc1\x01\n" +
+	"\x0fGetScansRequest\x12\x1d\n" +
 	"\n" +
-	"sort_order\x18\x05 \x01(\tR\tsortOrder\"W\n" +
+	"patient_id\x18\x01 \x01(\tR\tpatientId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\x12\x17\n" +
+	"\asort_by\x18\x05 \x01(\tR\x06sortBy\x12\x1d\n" +
+	"\n" +
+	"sort_order\x18\x06 \x01(\tR\tsortOrder\"W\n" +
 	"\x10GetScansResponse\x12\"\n" +
 	"\x05scans\x18\x01 \x03(\v2\f.podoai.ScanR\x05scans\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount\")\n" +
+	"totalCount\"Q\n" +
 	"\x0eGetScanRequest\x12\x17\n" +
-	"\ascan_id\x18\x01 \x01(\tR\x06scanId\"3\n" +
+	"\ascan_id\x18\x01 \x01(\tR\x06scanId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\"3\n" +
 	"\x0fGetScanResponse\x12 \n" +
 	"\x04scan\x18\x01 \x01(\v2\f.podoai.ScanR\x04scan\"5\n" +
 	"\x11CreateScanRequest\x12 \n" +
 	"\x04scan\x18\x01 \x01(\v2\f.podoai.ScanR\x04scan\"6\n" +
 	"\x12CreateScanResponse\x12 \n" +
-	"\x04scan\x18\x01 \x01(\v2\f.podoai.ScanR\x04scan\",\n" +
+	"\x04scan\x18\x01 \x01(\v2\f.podoai.ScanR\x04scan\"T\n" +
 	"\x11DeleteScanRequest\x12\x17\n" +
-	"\ascan_id\x18\x01 \x01(\tR\x06scanId\".\n" +
+	"\ascan_id\x18\x01 \x01(\tR\x06scanId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\".\n" +
 	"\x12DeleteScanResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"2\n" +
 	"\x11GetProductRequest\x12\x1d\n" +
@@ -2062,23 +2576,57 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\n" +
 	"therapy_id\x18\x01 \x01(\tR\ttherapyId\"?\n" +
 	"\x12GetTherapyResponse\x12)\n" +
-	"\atherapy\x18\x01 \x01(\v2\x0f.podoai.TherapyR\atherapy\"8\n" +
-	"\x11RequestOtpRequest\x12#\n" +
-	"\rmobile_number\x18\x01 \x01(\tR\fmobileNumber\"H\n" +
+	"\atherapy\x18\x01 \x01(\v2\x0f.podoai.TherapyR\atherapy\"6\n" +
+	"\x11RequestOtpRequest\x12!\n" +
+	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\"H\n" +
 	"\x12RequestOtpResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"I\n" +
-	"\x10VerifyOtpRequest\x12#\n" +
-	"\rmobile_number\x18\x01 \x01(\tR\fmobileNumber\x12\x10\n" +
-	"\x03otp\x18\x02 \x01(\tR\x03otp\"F\n" +
-	"\fLoginRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"i\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"G\n" +
+	"\x10VerifyOtpRequest\x12!\n" +
+	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x10\n" +
+	"\x03otp\x18\x02 \x01(\tR\x03otp\"\x87\x01\n" +
 	"\rLoginResponse\x12\x14\n" +
 	"\x05token\x18\x01 \x01(\tR\x05token\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x1d\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\"\n" +
+	"\x05roles\x18\x03 \x03(\x0e2\f.podoai.RoleR\x05roles\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\"\xa5\x01\n" +
+	"\x12GetPatientsRequest\x12&\n" +
+	"\x0fowner_entity_id\x18\x01 \x01(\tR\rownerEntityId\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x17\n" +
+	"\asort_by\x18\x04 \x01(\tR\x06sortBy\x12\x1d\n" +
 	"\n" +
-	"expires_in\x18\x03 \x01(\x03R\texpiresIn*\x81\x01\n" +
+	"sort_order\x18\x05 \x01(\tR\tsortOrder\"c\n" +
+	"\x13GetPatientsResponse\x12+\n" +
+	"\bpatients\x18\x01 \x03(\v2\x0f.podoai.PatientR\bpatients\x12\x1f\n" +
+	"\vtotal_count\x18\x02 \x01(\x05R\n" +
+	"totalCount\"Z\n" +
+	"\x11GetPatientRequest\x12\x1d\n" +
+	"\n" +
+	"patient_id\x18\x01 \x01(\tR\tpatientId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\"?\n" +
+	"\x12GetPatientResponse\x12)\n" +
+	"\apatient\x18\x01 \x01(\v2\x0f.podoai.PatientR\apatient\"\x90\x01\n" +
+	"\x14SearchPatientRequest\x12\x1f\n" +
+	"\vsearch_term\x18\x01 \x01(\tR\n" +
+	"searchTerm\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"e\n" +
+	"\x15SearchPatientResponse\x12+\n" +
+	"\bpatients\x18\x01 \x03(\v2\x0f.podoai.PatientR\bpatients\x12\x1f\n" +
+	"\vtotal_count\x18\x02 \x01(\x05R\n" +
+	"totalCount\"A\n" +
+	"\x14CreatePatientRequest\x12)\n" +
+	"\apatient\x18\x01 \x01(\v2\x0f.podoai.PatientR\apatient\"B\n" +
+	"\x15CreatePatientResponse\x12)\n" +
+	"\apatient\x18\x01 \x01(\v2\x0f.podoai.PatientR\apatient\"]\n" +
+	"\x14DeletePatientRequest\x12\x1d\n" +
+	"\n" +
+	"patient_id\x18\x01 \x01(\tR\tpatientId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\"1\n" +
+	"\x15DeletePatientResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess*\x81\x01\n" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -2093,12 +2641,11 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x04MALE\x10\x01\x12\n" +
 	"\n" +
 	"\x06FEMALE\x10\x02\x12\t\n" +
-	"\x05OTHER\x10\x032\x9f\x05\n" +
+	"\x05OTHER\x10\x032\xe0\a\n" +
 	"\rCommonService\x12C\n" +
 	"\n" +
 	"RequestOtp\x12\x19.podoai.RequestOtpRequest\x1a\x1a.podoai.RequestOtpResponse\x12<\n" +
-	"\tVerifyOtp\x12\x18.podoai.VerifyOtpRequest\x1a\x15.podoai.LoginResponse\x124\n" +
-	"\x05Login\x12\x14.podoai.LoginRequest\x1a\x15.podoai.LoginResponse\x12=\n" +
+	"\tVerifyOtp\x12\x18.podoai.VerifyOtpRequest\x1a\x15.podoai.LoginResponse\x12=\n" +
 	"\bGetScans\x12\x17.podoai.GetScansRequest\x1a\x18.podoai.GetScansResponse\x12:\n" +
 	"\aGetScan\x12\x16.podoai.GetScanRequest\x1a\x17.podoai.GetScanResponse\x12C\n" +
 	"\n" +
@@ -2109,7 +2656,13 @@ const file_common_podoai_proto_rawDesc = "" +
 	"GetProduct\x12\x19.podoai.GetProductRequest\x1a\x1a.podoai.GetProductResponse\x12F\n" +
 	"\vGetExercise\x12\x1a.podoai.GetExerciseRequest\x1a\x1b.podoai.GetExerciseResponse\x12C\n" +
 	"\n" +
-	"GetTherapy\x12\x19.podoai.GetTherapyRequest\x1a\x1a.podoai.GetTherapyResponseB/Z-github.com/therehabstreet/podoai/proto/commonb\x06proto3"
+	"GetTherapy\x12\x19.podoai.GetTherapyRequest\x1a\x1a.podoai.GetTherapyResponse\x12F\n" +
+	"\vGetPatients\x12\x1a.podoai.GetPatientsRequest\x1a\x1b.podoai.GetPatientsResponse\x12C\n" +
+	"\n" +
+	"GetPatient\x12\x19.podoai.GetPatientRequest\x1a\x1a.podoai.GetPatientResponse\x12L\n" +
+	"\rSearchPatient\x12\x1c.podoai.SearchPatientRequest\x1a\x1d.podoai.SearchPatientResponse\x12L\n" +
+	"\rCreatePatient\x12\x1c.podoai.CreatePatientRequest\x1a\x1d.podoai.CreatePatientResponse\x12L\n" +
+	"\rDeletePatient\x12\x1c.podoai.DeletePatientRequest\x1a\x1d.podoai.DeletePatientResponseB/Z-github.com/therehabstreet/podoai/proto/commonb\x06proto3"
 
 var (
 	file_common_podoai_proto_rawDescOnce sync.Once
@@ -2124,7 +2677,7 @@ func file_common_podoai_proto_rawDescGZIP() []byte {
 }
 
 var file_common_podoai_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_common_podoai_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_common_podoai_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
 var file_common_podoai_proto_goTypes = []any{
 	(Role)(0),                     // 0: podoai.Role
 	(Gender)(0),                   // 1: podoai.Gender
@@ -2157,16 +2710,25 @@ var file_common_podoai_proto_goTypes = []any{
 	(*RequestOtpRequest)(nil),     // 28: podoai.RequestOtpRequest
 	(*RequestOtpResponse)(nil),    // 29: podoai.RequestOtpResponse
 	(*VerifyOtpRequest)(nil),      // 30: podoai.VerifyOtpRequest
-	(*LoginRequest)(nil),          // 31: podoai.LoginRequest
-	(*LoginResponse)(nil),         // 32: podoai.LoginResponse
-	(*timestamppb.Timestamp)(nil), // 33: google.protobuf.Timestamp
+	(*LoginResponse)(nil),         // 31: podoai.LoginResponse
+	(*GetPatientsRequest)(nil),    // 32: podoai.GetPatientsRequest
+	(*GetPatientsResponse)(nil),   // 33: podoai.GetPatientsResponse
+	(*GetPatientRequest)(nil),     // 34: podoai.GetPatientRequest
+	(*GetPatientResponse)(nil),    // 35: podoai.GetPatientResponse
+	(*SearchPatientRequest)(nil),  // 36: podoai.SearchPatientRequest
+	(*SearchPatientResponse)(nil), // 37: podoai.SearchPatientResponse
+	(*CreatePatientRequest)(nil),  // 38: podoai.CreatePatientRequest
+	(*CreatePatientResponse)(nil), // 39: podoai.CreatePatientResponse
+	(*DeletePatientRequest)(nil),  // 40: podoai.DeletePatientRequest
+	(*DeletePatientResponse)(nil), // 41: podoai.DeletePatientResponse
+	(*timestamppb.Timestamp)(nil), // 42: google.protobuf.Timestamp
 }
 var file_common_podoai_proto_depIdxs = []int32{
-	33, // 0: podoai.Scan.created_at:type_name -> google.protobuf.Timestamp
+	42, // 0: podoai.Scan.created_at:type_name -> google.protobuf.Timestamp
 	11, // 1: podoai.Scan.images:type_name -> podoai.Image
 	12, // 2: podoai.Scan.videos:type_name -> podoai.Video
 	3,  // 3: podoai.Scan.scan_ai_result:type_name -> podoai.ScanAIResult
-	33, // 4: podoai.Scan.reviewed_at:type_name -> google.protobuf.Timestamp
+	42, // 4: podoai.Scan.reviewed_at:type_name -> google.protobuf.Timestamp
 	4,  // 5: podoai.ScanAIResult.llm_result:type_name -> podoai.ScanLLMResult
 	5,  // 6: podoai.ScanAIResult.recommendation:type_name -> podoai.ScanRecommendation
 	6,  // 7: podoai.ScanRecommendation.products:type_name -> podoai.Product
@@ -2174,11 +2736,11 @@ var file_common_podoai_proto_depIdxs = []int32{
 	10, // 9: podoai.ScanRecommendation.therapies:type_name -> podoai.Therapy
 	7,  // 10: podoai.Product.category:type_name -> podoai.ProductCategory
 	8,  // 11: podoai.Product.prices:type_name -> podoai.ProductPrice
-	33, // 12: podoai.Image.captured_at:type_name -> google.protobuf.Timestamp
-	33, // 13: podoai.Video.captured_at:type_name -> google.protobuf.Timestamp
+	42, // 12: podoai.Image.captured_at:type_name -> google.protobuf.Timestamp
+	42, // 13: podoai.Video.captured_at:type_name -> google.protobuf.Timestamp
 	1,  // 14: podoai.Patient.gender:type_name -> podoai.Gender
-	33, // 15: podoai.Patient.last_scan_date:type_name -> google.protobuf.Timestamp
-	33, // 16: podoai.Patient.created_at:type_name -> google.protobuf.Timestamp
+	42, // 15: podoai.Patient.last_scan_date:type_name -> google.protobuf.Timestamp
+	42, // 16: podoai.Patient.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 17: podoai.GetScansResponse.scans:type_name -> podoai.Scan
 	2,  // 18: podoai.GetScanResponse.scan:type_name -> podoai.Scan
 	2,  // 19: podoai.CreateScanRequest.scan:type_name -> podoai.Scan
@@ -2186,31 +2748,45 @@ var file_common_podoai_proto_depIdxs = []int32{
 	6,  // 21: podoai.GetProductResponse.product:type_name -> podoai.Product
 	9,  // 22: podoai.GetExerciseResponse.exercise:type_name -> podoai.Exercise
 	10, // 23: podoai.GetTherapyResponse.therapy:type_name -> podoai.Therapy
-	28, // 24: podoai.CommonService.RequestOtp:input_type -> podoai.RequestOtpRequest
-	30, // 25: podoai.CommonService.VerifyOtp:input_type -> podoai.VerifyOtpRequest
-	31, // 26: podoai.CommonService.Login:input_type -> podoai.LoginRequest
-	14, // 27: podoai.CommonService.GetScans:input_type -> podoai.GetScansRequest
-	16, // 28: podoai.CommonService.GetScan:input_type -> podoai.GetScanRequest
-	18, // 29: podoai.CommonService.CreateScan:input_type -> podoai.CreateScanRequest
-	20, // 30: podoai.CommonService.DeleteScan:input_type -> podoai.DeleteScanRequest
-	22, // 31: podoai.CommonService.GetProduct:input_type -> podoai.GetProductRequest
-	24, // 32: podoai.CommonService.GetExercise:input_type -> podoai.GetExerciseRequest
-	26, // 33: podoai.CommonService.GetTherapy:input_type -> podoai.GetTherapyRequest
-	29, // 34: podoai.CommonService.RequestOtp:output_type -> podoai.RequestOtpResponse
-	32, // 35: podoai.CommonService.VerifyOtp:output_type -> podoai.LoginResponse
-	32, // 36: podoai.CommonService.Login:output_type -> podoai.LoginResponse
-	15, // 37: podoai.CommonService.GetScans:output_type -> podoai.GetScansResponse
-	17, // 38: podoai.CommonService.GetScan:output_type -> podoai.GetScanResponse
-	19, // 39: podoai.CommonService.CreateScan:output_type -> podoai.CreateScanResponse
-	21, // 40: podoai.CommonService.DeleteScan:output_type -> podoai.DeleteScanResponse
-	23, // 41: podoai.CommonService.GetProduct:output_type -> podoai.GetProductResponse
-	25, // 42: podoai.CommonService.GetExercise:output_type -> podoai.GetExerciseResponse
-	27, // 43: podoai.CommonService.GetTherapy:output_type -> podoai.GetTherapyResponse
-	34, // [34:44] is the sub-list for method output_type
-	24, // [24:34] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	0,  // 24: podoai.LoginResponse.roles:type_name -> podoai.Role
+	13, // 25: podoai.GetPatientsResponse.patients:type_name -> podoai.Patient
+	13, // 26: podoai.GetPatientResponse.patient:type_name -> podoai.Patient
+	13, // 27: podoai.SearchPatientResponse.patients:type_name -> podoai.Patient
+	13, // 28: podoai.CreatePatientRequest.patient:type_name -> podoai.Patient
+	13, // 29: podoai.CreatePatientResponse.patient:type_name -> podoai.Patient
+	28, // 30: podoai.CommonService.RequestOtp:input_type -> podoai.RequestOtpRequest
+	30, // 31: podoai.CommonService.VerifyOtp:input_type -> podoai.VerifyOtpRequest
+	14, // 32: podoai.CommonService.GetScans:input_type -> podoai.GetScansRequest
+	16, // 33: podoai.CommonService.GetScan:input_type -> podoai.GetScanRequest
+	18, // 34: podoai.CommonService.CreateScan:input_type -> podoai.CreateScanRequest
+	20, // 35: podoai.CommonService.DeleteScan:input_type -> podoai.DeleteScanRequest
+	22, // 36: podoai.CommonService.GetProduct:input_type -> podoai.GetProductRequest
+	24, // 37: podoai.CommonService.GetExercise:input_type -> podoai.GetExerciseRequest
+	26, // 38: podoai.CommonService.GetTherapy:input_type -> podoai.GetTherapyRequest
+	32, // 39: podoai.CommonService.GetPatients:input_type -> podoai.GetPatientsRequest
+	34, // 40: podoai.CommonService.GetPatient:input_type -> podoai.GetPatientRequest
+	36, // 41: podoai.CommonService.SearchPatient:input_type -> podoai.SearchPatientRequest
+	38, // 42: podoai.CommonService.CreatePatient:input_type -> podoai.CreatePatientRequest
+	40, // 43: podoai.CommonService.DeletePatient:input_type -> podoai.DeletePatientRequest
+	29, // 44: podoai.CommonService.RequestOtp:output_type -> podoai.RequestOtpResponse
+	31, // 45: podoai.CommonService.VerifyOtp:output_type -> podoai.LoginResponse
+	15, // 46: podoai.CommonService.GetScans:output_type -> podoai.GetScansResponse
+	17, // 47: podoai.CommonService.GetScan:output_type -> podoai.GetScanResponse
+	19, // 48: podoai.CommonService.CreateScan:output_type -> podoai.CreateScanResponse
+	21, // 49: podoai.CommonService.DeleteScan:output_type -> podoai.DeleteScanResponse
+	23, // 50: podoai.CommonService.GetProduct:output_type -> podoai.GetProductResponse
+	25, // 51: podoai.CommonService.GetExercise:output_type -> podoai.GetExerciseResponse
+	27, // 52: podoai.CommonService.GetTherapy:output_type -> podoai.GetTherapyResponse
+	33, // 53: podoai.CommonService.GetPatients:output_type -> podoai.GetPatientsResponse
+	35, // 54: podoai.CommonService.GetPatient:output_type -> podoai.GetPatientResponse
+	37, // 55: podoai.CommonService.SearchPatient:output_type -> podoai.SearchPatientResponse
+	39, // 56: podoai.CommonService.CreatePatient:output_type -> podoai.CreatePatientResponse
+	41, // 57: podoai.CommonService.DeletePatient:output_type -> podoai.DeletePatientResponse
+	44, // [44:58] is the sub-list for method output_type
+	30, // [30:44] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_common_podoai_proto_init() }
@@ -2224,7 +2800,7 @@ func file_common_podoai_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_podoai_proto_rawDesc), len(file_common_podoai_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   31,
+			NumMessages:   40,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

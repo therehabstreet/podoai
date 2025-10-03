@@ -19,16 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CommonService_RequestOtp_FullMethodName  = "/podoai.CommonService/RequestOtp"
-	CommonService_VerifyOtp_FullMethodName   = "/podoai.CommonService/VerifyOtp"
-	CommonService_Login_FullMethodName       = "/podoai.CommonService/Login"
-	CommonService_GetScans_FullMethodName    = "/podoai.CommonService/GetScans"
-	CommonService_GetScan_FullMethodName     = "/podoai.CommonService/GetScan"
-	CommonService_CreateScan_FullMethodName  = "/podoai.CommonService/CreateScan"
-	CommonService_DeleteScan_FullMethodName  = "/podoai.CommonService/DeleteScan"
-	CommonService_GetProduct_FullMethodName  = "/podoai.CommonService/GetProduct"
-	CommonService_GetExercise_FullMethodName = "/podoai.CommonService/GetExercise"
-	CommonService_GetTherapy_FullMethodName  = "/podoai.CommonService/GetTherapy"
+	CommonService_RequestOtp_FullMethodName    = "/podoai.CommonService/RequestOtp"
+	CommonService_VerifyOtp_FullMethodName     = "/podoai.CommonService/VerifyOtp"
+	CommonService_GetScans_FullMethodName      = "/podoai.CommonService/GetScans"
+	CommonService_GetScan_FullMethodName       = "/podoai.CommonService/GetScan"
+	CommonService_CreateScan_FullMethodName    = "/podoai.CommonService/CreateScan"
+	CommonService_DeleteScan_FullMethodName    = "/podoai.CommonService/DeleteScan"
+	CommonService_GetProduct_FullMethodName    = "/podoai.CommonService/GetProduct"
+	CommonService_GetExercise_FullMethodName   = "/podoai.CommonService/GetExercise"
+	CommonService_GetTherapy_FullMethodName    = "/podoai.CommonService/GetTherapy"
+	CommonService_GetPatients_FullMethodName   = "/podoai.CommonService/GetPatients"
+	CommonService_GetPatient_FullMethodName    = "/podoai.CommonService/GetPatient"
+	CommonService_SearchPatient_FullMethodName = "/podoai.CommonService/SearchPatient"
+	CommonService_CreatePatient_FullMethodName = "/podoai.CommonService/CreatePatient"
+	CommonService_DeletePatient_FullMethodName = "/podoai.CommonService/DeletePatient"
 )
 
 // CommonServiceClient is the client API for CommonService service.
@@ -38,7 +42,6 @@ type CommonServiceClient interface {
 	// Authentication RPCs
 	RequestOtp(ctx context.Context, in *RequestOtpRequest, opts ...grpc.CallOption) (*RequestOtpResponse, error)
 	VerifyOtp(ctx context.Context, in *VerifyOtpRequest, opts ...grpc.CallOption) (*LoginResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// Scan and related RPCs
 	GetScans(ctx context.Context, in *GetScansRequest, opts ...grpc.CallOption) (*GetScansResponse, error)
 	GetScan(ctx context.Context, in *GetScanRequest, opts ...grpc.CallOption) (*GetScanResponse, error)
@@ -47,6 +50,12 @@ type CommonServiceClient interface {
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
 	GetExercise(ctx context.Context, in *GetExerciseRequest, opts ...grpc.CallOption) (*GetExerciseResponse, error)
 	GetTherapy(ctx context.Context, in *GetTherapyRequest, opts ...grpc.CallOption) (*GetTherapyResponse, error)
+	// Patient RPCs
+	GetPatients(ctx context.Context, in *GetPatientsRequest, opts ...grpc.CallOption) (*GetPatientsResponse, error)
+	GetPatient(ctx context.Context, in *GetPatientRequest, opts ...grpc.CallOption) (*GetPatientResponse, error)
+	SearchPatient(ctx context.Context, in *SearchPatientRequest, opts ...grpc.CallOption) (*SearchPatientResponse, error)
+	CreatePatient(ctx context.Context, in *CreatePatientRequest, opts ...grpc.CallOption) (*CreatePatientResponse, error)
+	DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error)
 }
 
 type commonServiceClient struct {
@@ -71,16 +80,6 @@ func (c *commonServiceClient) VerifyOtp(ctx context.Context, in *VerifyOtpReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, CommonService_VerifyOtp_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *commonServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, CommonService_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -157,6 +156,56 @@ func (c *commonServiceClient) GetTherapy(ctx context.Context, in *GetTherapyRequ
 	return out, nil
 }
 
+func (c *commonServiceClient) GetPatients(ctx context.Context, in *GetPatientsRequest, opts ...grpc.CallOption) (*GetPatientsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPatientsResponse)
+	err := c.cc.Invoke(ctx, CommonService_GetPatients_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) GetPatient(ctx context.Context, in *GetPatientRequest, opts ...grpc.CallOption) (*GetPatientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetPatientResponse)
+	err := c.cc.Invoke(ctx, CommonService_GetPatient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) SearchPatient(ctx context.Context, in *SearchPatientRequest, opts ...grpc.CallOption) (*SearchPatientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchPatientResponse)
+	err := c.cc.Invoke(ctx, CommonService_SearchPatient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) CreatePatient(ctx context.Context, in *CreatePatientRequest, opts ...grpc.CallOption) (*CreatePatientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreatePatientResponse)
+	err := c.cc.Invoke(ctx, CommonService_CreatePatient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeletePatientResponse)
+	err := c.cc.Invoke(ctx, CommonService_DeletePatient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommonServiceServer is the server API for CommonService service.
 // All implementations must embed UnimplementedCommonServiceServer
 // for forward compatibility.
@@ -164,7 +213,6 @@ type CommonServiceServer interface {
 	// Authentication RPCs
 	RequestOtp(context.Context, *RequestOtpRequest) (*RequestOtpResponse, error)
 	VerifyOtp(context.Context, *VerifyOtpRequest) (*LoginResponse, error)
-	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	// Scan and related RPCs
 	GetScans(context.Context, *GetScansRequest) (*GetScansResponse, error)
 	GetScan(context.Context, *GetScanRequest) (*GetScanResponse, error)
@@ -173,6 +221,12 @@ type CommonServiceServer interface {
 	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
 	GetExercise(context.Context, *GetExerciseRequest) (*GetExerciseResponse, error)
 	GetTherapy(context.Context, *GetTherapyRequest) (*GetTherapyResponse, error)
+	// Patient RPCs
+	GetPatients(context.Context, *GetPatientsRequest) (*GetPatientsResponse, error)
+	GetPatient(context.Context, *GetPatientRequest) (*GetPatientResponse, error)
+	SearchPatient(context.Context, *SearchPatientRequest) (*SearchPatientResponse, error)
+	CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error)
+	DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error)
 	mustEmbedUnimplementedCommonServiceServer()
 }
 
@@ -188,9 +242,6 @@ func (UnimplementedCommonServiceServer) RequestOtp(context.Context, *RequestOtpR
 }
 func (UnimplementedCommonServiceServer) VerifyOtp(context.Context, *VerifyOtpRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyOtp not implemented")
-}
-func (UnimplementedCommonServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedCommonServiceServer) GetScans(context.Context, *GetScansRequest) (*GetScansResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScans not implemented")
@@ -212,6 +263,21 @@ func (UnimplementedCommonServiceServer) GetExercise(context.Context, *GetExercis
 }
 func (UnimplementedCommonServiceServer) GetTherapy(context.Context, *GetTherapyRequest) (*GetTherapyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTherapy not implemented")
+}
+func (UnimplementedCommonServiceServer) GetPatients(context.Context, *GetPatientsRequest) (*GetPatientsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
+}
+func (UnimplementedCommonServiceServer) GetPatient(context.Context, *GetPatientRequest) (*GetPatientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPatient not implemented")
+}
+func (UnimplementedCommonServiceServer) SearchPatient(context.Context, *SearchPatientRequest) (*SearchPatientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchPatient not implemented")
+}
+func (UnimplementedCommonServiceServer) CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePatient not implemented")
+}
+func (UnimplementedCommonServiceServer) DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePatient not implemented")
 }
 func (UnimplementedCommonServiceServer) mustEmbedUnimplementedCommonServiceServer() {}
 func (UnimplementedCommonServiceServer) testEmbeddedByValue()                       {}
@@ -266,24 +332,6 @@ func _CommonService_VerifyOtp_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommonServiceServer).VerifyOtp(ctx, req.(*VerifyOtpRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CommonService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CommonServiceServer).Login(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: CommonService_Login_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommonServiceServer).Login(ctx, req.(*LoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -414,6 +462,96 @@ func _CommonService_GetTherapy_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommonService_GetPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPatientsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).GetPatients(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_GetPatients_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).GetPatients(ctx, req.(*GetPatientsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_GetPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).GetPatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_GetPatient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).GetPatient(ctx, req.(*GetPatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_SearchPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchPatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).SearchPatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_SearchPatient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).SearchPatient(ctx, req.(*SearchPatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_CreatePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).CreatePatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_CreatePatient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).CreatePatient(ctx, req.(*CreatePatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_DeletePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).DeletePatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_DeletePatient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).DeletePatient(ctx, req.(*DeletePatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommonService_ServiceDesc is the grpc.ServiceDesc for CommonService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -428,10 +566,6 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyOtp",
 			Handler:    _CommonService_VerifyOtp_Handler,
-		},
-		{
-			MethodName: "Login",
-			Handler:    _CommonService_Login_Handler,
 		},
 		{
 			MethodName: "GetScans",
@@ -460,6 +594,26 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTherapy",
 			Handler:    _CommonService_GetTherapy_Handler,
+		},
+		{
+			MethodName: "GetPatients",
+			Handler:    _CommonService_GetPatients_Handler,
+		},
+		{
+			MethodName: "GetPatient",
+			Handler:    _CommonService_GetPatient_Handler,
+		},
+		{
+			MethodName: "SearchPatient",
+			Handler:    _CommonService_SearchPatient_Handler,
+		},
+		{
+			MethodName: "CreatePatient",
+			Handler:    _CommonService_CreatePatient_Handler,
+		},
+		{
+			MethodName: "DeletePatient",
+			Handler:    _CommonService_DeletePatient_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

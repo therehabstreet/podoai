@@ -5,22 +5,43 @@ import (
 	"crypto/rand"
 	"fmt"
 	"math/big"
+	"time"
 
+	clinicalModels "github.com/therehabstreet/podoai/internal/clinical/models"
 	"github.com/therehabstreet/podoai/internal/common/helpers"
 	"github.com/therehabstreet/podoai/internal/common/models"
 	pb "github.com/therehabstreet/podoai/proto/common"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// RequestOtp handles OTP request
+// RequestOtp handles OTP request with different flows for clinical and consumer
 func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpRequest) (*pb.RequestOtpResponse, error) {
-	mobileNumber := req.GetMobileNumber()
+	phoneNumber := req.GetPhoneNumber()
 
-	// Validate mobile number
-	if mobileNumber == "" {
+	// Validate phone number
+	if phoneNumber == "" {
 		return &pb.RequestOtpResponse{
 			Success: false,
-			Message: "Mobile number is required",
+			Message: "Phone number is required",
 		}, nil
+	}
+
+	// Check if this is a clinical app and validate user existence
+	// For consumer apps, we allow any phone number and create user if needed
+	if helpers.IsClinicalApp(ctx) {
+		exists, err := cs.DBClient.ClinicalUserExists(ctx, phoneNumber)
+		if err != nil {
+			return &pb.RequestOtpResponse{
+				Success: false,
+				Message: "Failed to validate user",
+			}, nil
+		}
+		if !exists {
+			return &pb.RequestOtpResponse{
+				Success: false,
+				Message: "User not found. Please contact your admin.",
+			}, nil
+		}
 	}
 
 	// Generate OTP
@@ -33,7 +54,7 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 	}
 
 	// Store OTP in database with expiration
-	otpModel := models.NewOTP(mobileNumber, otp, 5) // 5 minutes expiry
+	otpModel := models.NewOTP(phoneNumber, otp, 5) // 5 minutes expiry
 	err = cs.DBClient.StoreOTP(ctx, otpModel)
 	if err != nil {
 		return &pb.RequestOtpResponse{
@@ -42,18 +63,12 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 		}, nil
 	}
 
-	// Send OTP via configured sender (WhatsApp, SMS, etc.)
-	if cs.OTPSender != nil {
-		err = cs.OTPSender.SendOTP(ctx, mobileNumber, otp)
-		if err != nil {
-			return &pb.RequestOtpResponse{
-				Success: false,
-				Message: fmt.Sprintf("Failed to send OTP via %s", cs.OTPSender.GetProviderName()),
-			}, nil
-		}
-	} else {
-		// Fallback: log the OTP if no sender is configured
-		fmt.Printf("OTP for %s: %s (no sender configured)\n", mobileNumber, otp)
+	err = cs.MessagingClient.SendOTP(ctx, phoneNumber, otp)
+	if err != nil {
+		return &pb.RequestOtpResponse{
+			Success: false,
+			Message: fmt.Sprintf("Failed to send OTP via %s", cs.MessagingClient.GetProviderName()),
+		}, nil
 	}
 
 	return &pb.RequestOtpResponse{
@@ -64,16 +79,16 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 
 // VerifyOtp handles OTP verification
 func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest) (*pb.LoginResponse, error) {
-	mobileNumber := req.GetMobileNumber()
+	phoneNumber := req.GetPhoneNumber()
 	otp := req.GetOtp()
 
 	// Validate inputs
-	if mobileNumber == "" || otp == "" {
-		return nil, fmt.Errorf("mobile number and OTP are required")
+	if phoneNumber == "" || otp == "" {
+		return nil, fmt.Errorf("phone number and OTP are required")
 	}
 
 	// Get OTP from database
-	storedOTP, err := cs.DBClient.GetOTPByMobileNumber(ctx, mobileNumber)
+	storedOTP, err := cs.DBClient.GetOTPByPhoneNumber(ctx, phoneNumber)
 	if err != nil {
 		return nil, fmt.Errorf("invalid or expired OTP")
 	}
@@ -102,16 +117,56 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 		fmt.Printf("Failed to mark OTP as used: %v\n", err)
 	}
 
-	// TODO: Get or create user based on mobile number
-	userID := mobileNumber // For now, use mobile number as user ID
+	// Get or create user based on app type
+	var userID string
+	var roles []string
 
-	// Generate JWT token
-	token, err := helpers.GenerateAccessToken(userID, mobileNumber)
+	if helpers.IsClinicalApp(ctx) {
+		// For clinical apps, user must exist
+		user, err := cs.DBClient.GetUserByPhoneNumber(ctx, phoneNumber)
+		if err != nil {
+			return nil, fmt.Errorf("clinical user not found")
+		}
+		clinicalUser := user.(clinicalModels.ClinicUser)
+		userID = clinicalUser.ID
+		roles = clinicalUser.Roles
+		if len(roles) == 0 {
+			roles = clinicalModels.DefaultClinicUserRoles()
+		}
+	} else {
+		// For consumer apps, get or create user
+		user, err := cs.DBClient.GetUserByPhoneNumber(ctx, phoneNumber)
+		if err == nil {
+			// User exists
+			consumerUser := user.(models.User)
+			userID = consumerUser.ID.Hex()
+			roles = consumerUser.Roles
+			if len(roles) == 0 {
+				roles = models.DefaultConsumerRoles()
+			}
+		} else {
+			// Create new consumer user
+			newUser := models.User{
+				ID:          primitive.NewObjectID(),
+				PhoneNumber: phoneNumber,
+				Roles:       models.DefaultConsumerRoles(),
+				CreatedAt:   time.Now(),
+				UpdatedAt:   time.Now(),
+			}
+			userID, err = cs.DBClient.CreateUser(ctx, newUser)
+			if err != nil {
+				return nil, fmt.Errorf("failed to create user: %v", err)
+			}
+			roles = newUser.Roles
+		}
+	}
+
+	token, err := helpers.GenerateAccessToken(cs.Config, userID, roles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %v", err)
 	}
 
-	refreshToken, err := helpers.GenerateRefreshToken(userID, mobileNumber)
+	refreshToken, err := helpers.GenerateRefreshToken(cs.Config, userID, roles)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate refresh token: %v", err)
 	}
@@ -119,6 +174,8 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 	return &pb.LoginResponse{
 		Token:        token,
 		RefreshToken: refreshToken,
+		Roles:        helpers.StringsToRoles(roles),
+		UserId:       userID,
 	}, nil
 }
 

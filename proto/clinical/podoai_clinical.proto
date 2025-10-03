@@ -8,12 +8,6 @@ import "google/protobuf/timestamp.proto";
 
 // Clinical service definitions go here
 service ClinicalService {
-    rpc GetPatients (GetPatientsRequest) returns (GetPatientsResponse);
-    rpc GetPatient (GetPatientRequest) returns (GetPatientResponse);
-    rpc SearchPatient (SearchPatientRequest) returns (SearchPatientResponse);
-    rpc CreatePatient (CreatePatientRequest) returns (CreatePatientResponse);
-    rpc DeletePatient (DeletePatientRequest) returns (DeletePatientResponse);
-
     // Clinic APIs
     rpc GetClinic (GetClinicRequest) returns (GetClinicResponse);
 
@@ -38,53 +32,6 @@ message ClinicUser {
     string clinic_id = 4;
     google.protobuf.Timestamp created_at = 5;
     google.protobuf.Timestamp updated_at = 6;
-}
-
-message GetPatientsRequest {
-    int32 page = 1;
-    int32 page_size = 2;
-    string sort_by = 3;
-    string sort_order = 4; // "asc" or "desc"
-}
-
-message GetPatientsResponse {
-    repeated podoai.Patient patients = 1;
-    int32 total_count = 2;
-}
-
-message GetPatientRequest {
-    string patient_id = 1;
-}
-
-message GetPatientResponse {
-    podoai.Patient patient = 1;
-}
-
-message SearchPatientRequest {
-    string search_term = 1;
-    int32 page = 2;
-    int32 page_size = 3;
-}
-
-message SearchPatientResponse {
-    repeated podoai.Patient patients = 1;
-    int32 total_count = 2;
-}
-
-message CreatePatientRequest {
-    podoai.Patient patient = 1;
-}
-
-message CreatePatientResponse {
-    podoai.Patient patient = 1;
-}
-
-message DeletePatientRequest {
-    string patient_id = 1;
-}
-
-message DeletePatientResponse {
-    bool success = 1;
 }
 
 // Clinic API messages

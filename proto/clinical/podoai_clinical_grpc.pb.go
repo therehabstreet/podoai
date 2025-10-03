@@ -19,11 +19,6 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ClinicalService_GetPatients_FullMethodName      = "/podoai_clinical.ClinicalService/GetPatients"
-	ClinicalService_GetPatient_FullMethodName       = "/podoai_clinical.ClinicalService/GetPatient"
-	ClinicalService_SearchPatient_FullMethodName    = "/podoai_clinical.ClinicalService/SearchPatient"
-	ClinicalService_CreatePatient_FullMethodName    = "/podoai_clinical.ClinicalService/CreatePatient"
-	ClinicalService_DeletePatient_FullMethodName    = "/podoai_clinical.ClinicalService/DeletePatient"
 	ClinicalService_GetClinic_FullMethodName        = "/podoai_clinical.ClinicalService/GetClinic"
 	ClinicalService_CreateClinicUser_FullMethodName = "/podoai_clinical.ClinicalService/CreateClinicUser"
 	ClinicalService_GetClinicUser_FullMethodName    = "/podoai_clinical.ClinicalService/GetClinicUser"
@@ -38,11 +33,6 @@ const (
 //
 // Clinical service definitions go here
 type ClinicalServiceClient interface {
-	GetPatients(ctx context.Context, in *GetPatientsRequest, opts ...grpc.CallOption) (*GetPatientsResponse, error)
-	GetPatient(ctx context.Context, in *GetPatientRequest, opts ...grpc.CallOption) (*GetPatientResponse, error)
-	SearchPatient(ctx context.Context, in *SearchPatientRequest, opts ...grpc.CallOption) (*SearchPatientResponse, error)
-	CreatePatient(ctx context.Context, in *CreatePatientRequest, opts ...grpc.CallOption) (*CreatePatientResponse, error)
-	DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error)
 	// Clinic APIs
 	GetClinic(ctx context.Context, in *GetClinicRequest, opts ...grpc.CallOption) (*GetClinicResponse, error)
 	// ClinicUser CRUDL APIs
@@ -59,56 +49,6 @@ type clinicalServiceClient struct {
 
 func NewClinicalServiceClient(cc grpc.ClientConnInterface) ClinicalServiceClient {
 	return &clinicalServiceClient{cc}
-}
-
-func (c *clinicalServiceClient) GetPatients(ctx context.Context, in *GetPatientsRequest, opts ...grpc.CallOption) (*GetPatientsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetPatientsResponse)
-	err := c.cc.Invoke(ctx, ClinicalService_GetPatients_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *clinicalServiceClient) GetPatient(ctx context.Context, in *GetPatientRequest, opts ...grpc.CallOption) (*GetPatientResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetPatientResponse)
-	err := c.cc.Invoke(ctx, ClinicalService_GetPatient_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *clinicalServiceClient) SearchPatient(ctx context.Context, in *SearchPatientRequest, opts ...grpc.CallOption) (*SearchPatientResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SearchPatientResponse)
-	err := c.cc.Invoke(ctx, ClinicalService_SearchPatient_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *clinicalServiceClient) CreatePatient(ctx context.Context, in *CreatePatientRequest, opts ...grpc.CallOption) (*CreatePatientResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CreatePatientResponse)
-	err := c.cc.Invoke(ctx, ClinicalService_CreatePatient_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *clinicalServiceClient) DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeletePatientResponse)
-	err := c.cc.Invoke(ctx, ClinicalService_DeletePatient_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *clinicalServiceClient) GetClinic(ctx context.Context, in *GetClinicRequest, opts ...grpc.CallOption) (*GetClinicResponse, error) {
@@ -177,11 +117,6 @@ func (c *clinicalServiceClient) ListClinicUsers(ctx context.Context, in *ListCli
 //
 // Clinical service definitions go here
 type ClinicalServiceServer interface {
-	GetPatients(context.Context, *GetPatientsRequest) (*GetPatientsResponse, error)
-	GetPatient(context.Context, *GetPatientRequest) (*GetPatientResponse, error)
-	SearchPatient(context.Context, *SearchPatientRequest) (*SearchPatientResponse, error)
-	CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error)
-	DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error)
 	// Clinic APIs
 	GetClinic(context.Context, *GetClinicRequest) (*GetClinicResponse, error)
 	// ClinicUser CRUDL APIs
@@ -200,21 +135,6 @@ type ClinicalServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedClinicalServiceServer struct{}
 
-func (UnimplementedClinicalServiceServer) GetPatients(context.Context, *GetPatientsRequest) (*GetPatientsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPatients not implemented")
-}
-func (UnimplementedClinicalServiceServer) GetPatient(context.Context, *GetPatientRequest) (*GetPatientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPatient not implemented")
-}
-func (UnimplementedClinicalServiceServer) SearchPatient(context.Context, *SearchPatientRequest) (*SearchPatientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchPatient not implemented")
-}
-func (UnimplementedClinicalServiceServer) CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreatePatient not implemented")
-}
-func (UnimplementedClinicalServiceServer) DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePatient not implemented")
-}
 func (UnimplementedClinicalServiceServer) GetClinic(context.Context, *GetClinicRequest) (*GetClinicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClinic not implemented")
 }
@@ -252,96 +172,6 @@ func RegisterClinicalServiceServer(s grpc.ServiceRegistrar, srv ClinicalServiceS
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&ClinicalService_ServiceDesc, srv)
-}
-
-func _ClinicalService_GetPatients_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPatientsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClinicalServiceServer).GetPatients(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ClinicalService_GetPatients_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClinicalServiceServer).GetPatients(ctx, req.(*GetPatientsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ClinicalService_GetPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPatientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClinicalServiceServer).GetPatient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ClinicalService_GetPatient_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClinicalServiceServer).GetPatient(ctx, req.(*GetPatientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ClinicalService_SearchPatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchPatientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClinicalServiceServer).SearchPatient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ClinicalService_SearchPatient_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClinicalServiceServer).SearchPatient(ctx, req.(*SearchPatientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ClinicalService_CreatePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreatePatientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClinicalServiceServer).CreatePatient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ClinicalService_CreatePatient_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClinicalServiceServer).CreatePatient(ctx, req.(*CreatePatientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ClinicalService_DeletePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeletePatientRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClinicalServiceServer).DeletePatient(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ClinicalService_DeletePatient_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClinicalServiceServer).DeletePatient(ctx, req.(*DeletePatientRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _ClinicalService_GetClinic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -459,26 +289,6 @@ var ClinicalService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "podoai_clinical.ClinicalService",
 	HandlerType: (*ClinicalServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetPatients",
-			Handler:    _ClinicalService_GetPatients_Handler,
-		},
-		{
-			MethodName: "GetPatient",
-			Handler:    _ClinicalService_GetPatient_Handler,
-		},
-		{
-			MethodName: "SearchPatient",
-			Handler:    _ClinicalService_SearchPatient_Handler,
-		},
-		{
-			MethodName: "CreatePatient",
-			Handler:    _ClinicalService_CreatePatient_Handler,
-		},
-		{
-			MethodName: "DeletePatient",
-			Handler:    _ClinicalService_DeletePatient_Handler,
-		},
 		{
 			MethodName: "GetClinic",
 			Handler:    _ClinicalService_GetClinic_Handler,

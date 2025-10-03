@@ -4,16 +4,16 @@ import "time"
 
 // Scan model for common service - matches proto definition
 type Scan struct {
-	ID           string        `bson:"_id"`
-	UserID       string        `bson:"user_id"`
-	ClinicID     string        `bson:"clinic_id"`
-	CreatedAt    time.Time     `bson:"created_at"`
-	Images       []Image       `bson:"images"`
-	Videos       []Video       `bson:"videos"`
-	ScanAIResult *ScanAIResult `bson:"scan_ai_result,omitempty"`
-	ScannedByID  string        `bson:"scanned_by_id"`
-	ReviewedByID string        `bson:"reviewed_by_id"`
-	ReviewedAt   *time.Time    `bson:"reviewed_at,omitempty"`
+	ID            string        `bson:"_id"`
+	PatientID     string        `bson:"patient_id"`
+	OwnerEntityID string        `bson:"owner_entity_id"`
+	CreatedAt     time.Time     `bson:"created_at"`
+	Images        []Image       `bson:"images"`
+	Videos        []Video       `bson:"videos"`
+	ScanAIResult  *ScanAIResult `bson:"scan_ai_result,omitempty"`
+	ScannedByID   string        `bson:"scanned_by_id"`
+	ReviewedByID  string        `bson:"reviewed_by_id"`
+	ReviewedAt    *time.Time    `bson:"reviewed_at,omitempty"`
 }
 
 type ScanAIResult struct {

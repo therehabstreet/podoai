@@ -3,6 +3,8 @@ package clients
 import (
 	"context"
 	"fmt"
+
+	"github.com/therehabstreet/podoai/internal/common/config"
 )
 
 // MessagingClient interface for sending OTP via different channels
@@ -19,11 +21,11 @@ type WhatsAppClient struct {
 }
 
 // NewWhatsAppClient creates a new WhatsApp OTP sender
-func NewWhatsAppClient(apiKey, apiURL, fromPhone string) *WhatsAppClient {
+func NewWhatsAppClient(config *config.Config) *WhatsAppClient {
 	return &WhatsAppClient{
-		apiKey:    apiKey,
-		apiURL:    apiURL,
-		fromPhone: fromPhone,
+		apiKey:    config.WhatsApp.APIKey,
+		apiURL:    config.WhatsApp.APIURL,
+		fromPhone: config.WhatsApp.FromPhone,
 	}
 }
 

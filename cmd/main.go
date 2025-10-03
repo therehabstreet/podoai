@@ -11,6 +11,7 @@ import (
 	commonClients "github.com/therehabstreet/podoai/internal/common/clients"
 	"github.com/therehabstreet/podoai/internal/common/config"
 	commonHandlers "github.com/therehabstreet/podoai/internal/common/handlers"
+	"github.com/therehabstreet/podoai/internal/common/middleware"
 	consumerClients "github.com/therehabstreet/podoai/internal/consumer/clients"
 	consumerHandlers "github.com/therehabstreet/podoai/internal/consumer/handlers"
 
@@ -30,6 +31,12 @@ func main() {
 		log.Fatalf("failed to connect to common MongoDB: %v", err)
 	}
 
+	consumerMongoClient := &consumerClients.MongoDBClient{
+		Client: clinicalMongoClient.Client, // Reuse the same connection
+	}
+
+	whatsappClient := commonClients.NewWhatsAppClient(config)
+
 	// Start periodic cleanup of expired OTPs
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour) // Cleanup every hour
@@ -43,29 +50,24 @@ func main() {
 		}
 	}()
 
-	consumerMongoClient := &consumerClients.MongoDBClient{
-		Client: clinicalMongoClient.Client, // Reuse the same connection
-	}
-
-	whatsappClient := commonClients.NewWhatsAppClient(
-		config.WhatsApp.APIKey,
-		config.WhatsApp.APIURL,
-		config.WhatsApp.FromPhone,
-	)
-
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	// Create gRPC server with auth middleware
+	authMiddleware := middleware.NewAuthMiddleware(config)
+
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authMiddleware.UnaryInterceptor()),
+	)
 
 	// Register clinical server
 	clinicalServer := clinicalHandlers.NewClinicalServer(clinicalMongoClient)
 	clinicalHandlers.RegisterClinicalServer(grpcServer, clinicalServer)
 
 	// Register common server
-	commonServer := commonHandlers.NewCommonServer(commonMongoClient, whatsappClient)
+	commonServer := commonHandlers.NewCommonServer(config, commonMongoClient, whatsappClient)
 	commonHandlers.RegisterCommonServer(grpcServer, commonServer)
 
 	// Register consumer server

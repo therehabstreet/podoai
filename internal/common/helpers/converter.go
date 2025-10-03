@@ -1,10 +1,12 @@
 package helpers
 
 import (
+	"strings"
 	"time"
 
 	"github.com/therehabstreet/podoai/internal/common/models"
 	"github.com/therehabstreet/podoai/proto/common"
+	pb "github.com/therehabstreet/podoai/proto/common"
 	podoai "github.com/therehabstreet/podoai/proto/common"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -13,12 +15,12 @@ import (
 // Scan Proto <-> Model conversion
 func ScanProtoToModel(proto *common.Scan) models.Scan {
 	scan := models.Scan{
-		ID:           proto.GetId(),
-		UserID:       proto.GetUserId(),
-		ClinicID:     proto.GetClinicId(),
-		CreatedAt:    timestampPBToTime(proto.GetCreatedAt()),
-		ScannedByID:  proto.GetScannedById(),
-		ReviewedByID: proto.GetReviewedById(),
+		ID:            proto.GetId(),
+		PatientID:     proto.GetPatientId(),
+		OwnerEntityID: proto.GetOwnerEntityId(),
+		CreatedAt:     timestampPBToTime(proto.GetCreatedAt()),
+		ScannedByID:   proto.GetScannedById(),
+		ReviewedByID:  proto.GetReviewedById(),
 	}
 
 	// Convert images
@@ -47,12 +49,12 @@ func ScanProtoToModel(proto *common.Scan) models.Scan {
 
 func ScanModelToProto(model models.Scan) *common.Scan {
 	scan := &common.Scan{
-		Id:           model.ID,
-		UserId:       model.UserID,
-		ClinicId:     model.ClinicID,
-		CreatedAt:    timestamppb.New(model.CreatedAt),
-		ScannedById:  model.ScannedByID,
-		ReviewedById: model.ReviewedByID,
+		Id:            model.ID,
+		PatientId:     model.PatientID,
+		OwnerEntityId: model.OwnerEntityID,
+		CreatedAt:     timestamppb.New(model.CreatedAt),
+		ScannedById:   model.ScannedByID,
+		ReviewedById:  model.ReviewedByID,
 	}
 
 	// Convert images
@@ -350,6 +352,36 @@ func GenderProtoToString(gender podoai.Gender) string {
 	default:
 		return "GENDER_UNSPECIFIED"
 	}
+}
+
+// RolesToStrings converts proto Roles to string slice using proto's built-in String() method
+func RolesToStrings(roles []pb.Role) []string {
+	var roleStrs []string
+	for _, role := range roles {
+		if role != pb.Role_ROLE_UNSPECIFIED {
+			// Use proto's built-in String() method and convert to lowercase
+			roleStrs = append(roleStrs, strings.ToLower(role.String()))
+		}
+	}
+	return roleStrs
+}
+
+// StringsToRoles converts string slice to proto Roles using proto's built-in parsing
+func StringsToRoles(roleStrs []string) []pb.Role {
+	var roles []pb.Role
+	for _, roleStr := range roleStrs {
+		// Convert to uppercase since proto enum values are uppercase
+		upperRoleStr := strings.ToUpper(roleStr)
+
+		// Use proto's built-in parsing with Role_value map
+		if roleValue, exists := pb.Role_value[upperRoleStr]; exists {
+			role := pb.Role(roleValue)
+			if role != pb.Role_ROLE_UNSPECIFIED {
+				roles = append(roles, role)
+			}
+		}
+	}
+	return roles
 }
 
 // Helper for timestamp conversion

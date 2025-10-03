@@ -21,6 +21,7 @@ type DBClient interface {
 	// ClinicUser methods
 	CreateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error)
 	FetchClinicUserByID(ctx context.Context, id string) (models.ClinicUser, error)
+	FetchClinicUserByPhoneNumber(ctx context.Context, phoneNumber string) (models.ClinicUser, error)
 	UpdateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error)
 	DeleteClinicUserByID(ctx context.Context, id string) error
 	ListClinicUsers(ctx context.Context, clinicID string, page, pageSize int32) ([]models.ClinicUser, int64, error)
@@ -64,10 +65,14 @@ func InitClinicalMongoClient(uri string) (*MongoDBClient, error) {
 				Options: options.Index().SetName("idx_clinic_id"),
 			},
 		},
-		"clinic_users": {
+		"clinical_users": {
 			mongo.IndexModel{
-				Keys:    bson.D{{Key: "id", Value: 1}},
+				Keys:    bson.D{{Key: "_id", Value: 1}},
 				Options: options.Index().SetName("idx_user_id"),
+			},
+			mongo.IndexModel{
+				Keys:    bson.D{{Key: "phone_number", Value: 1}},
+				Options: options.Index().SetName("idx_phone_number"),
 			},
 		},
 	}
@@ -165,20 +170,27 @@ func (m *MongoDBClient) FetchClinicByID(ctx context.Context, id string) (models.
 
 // ClinicUser methods
 func (m *MongoDBClient) CreateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error) {
-	coll := m.Client.Database("podoai").Collection("clinic_users")
+	coll := m.Client.Database("podoai").Collection("clinical_users")
 	_, err := coll.InsertOne(ctx, user)
 	return user, err
 }
 
 func (m *MongoDBClient) FetchClinicUserByID(ctx context.Context, id string) (models.ClinicUser, error) {
-	coll := m.Client.Database("podoai").Collection("clinic_users")
+	coll := m.Client.Database("podoai").Collection("clinical_users")
 	var user models.ClinicUser
 	err := coll.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 	return user, err
 }
 
+func (m *MongoDBClient) FetchClinicUserByPhoneNumber(ctx context.Context, phoneNumber string) (models.ClinicUser, error) {
+	coll := m.Client.Database("podoai").Collection("clinical_users")
+	var user models.ClinicUser
+	err := coll.FindOne(ctx, bson.M{"phone_number": phoneNumber}).Decode(&user)
+	return user, err
+}
+
 func (m *MongoDBClient) UpdateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error) {
-	coll := m.Client.Database("podoai").Collection("clinic_users")
+	coll := m.Client.Database("podoai").Collection("clinical_users")
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$set": user}
 	_, err := coll.UpdateOne(ctx, filter, update)
@@ -186,13 +198,13 @@ func (m *MongoDBClient) UpdateClinicUser(ctx context.Context, user models.Clinic
 }
 
 func (m *MongoDBClient) DeleteClinicUserByID(ctx context.Context, id string) error {
-	coll := m.Client.Database("podoai").Collection("clinic_users")
+	coll := m.Client.Database("podoai").Collection("clinical_users")
 	_, err := coll.DeleteOne(ctx, bson.M{"_id": id})
 	return err
 }
 
 func (m *MongoDBClient) ListClinicUsers(ctx context.Context, clinicID string, page, pageSize int32) ([]models.ClinicUser, int64, error) {
-	coll := m.Client.Database("podoai").Collection("clinic_users")
+	coll := m.Client.Database("podoai").Collection("clinical_users")
 	filter := bson.M{"clinic_id": clinicID}
 	skip := int64((page - 1) * pageSize)
 	limit := int64(pageSize)

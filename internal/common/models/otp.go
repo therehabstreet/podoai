@@ -10,14 +10,14 @@ import (
 
 // OTP model for storing OTP verification codes
 type OTP struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	MobileNumber string             `bson:"mobile_number"`
-	Code         string             `bson:"code"`
-	CreatedAt    time.Time          `bson:"created_at"`
-	ExpiresAt    time.Time          `bson:"expires_at"`
-	IsUsed       bool               `bson:"is_used"`
-	Attempts     int                `bson:"attempts"`
-	MaxAttempts  int                `bson:"max_attempts"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	PhoneNumber string             `bson:"phone_number"`
+	Code        string             `bson:"code"`
+	CreatedAt   time.Time          `bson:"created_at"`
+	ExpiresAt   time.Time          `bson:"expires_at"`
+	IsUsed      bool               `bson:"is_used"`
+	Attempts    int                `bson:"attempts"`
+	MaxAttempts int                `bson:"max_attempts"`
 }
 
 // IsExpired checks if the OTP has expired
@@ -31,19 +31,19 @@ func (o *OTP) IsValid() bool {
 }
 
 // NewOTP creates a new OTP instance
-func NewOTP(mobileNumber, code string, expiryMinutes int) *OTP {
+func NewOTP(phoneNumber, code string, expiryMinutes int) *OTP {
 	now := time.Now()
 	maxAttempts := getOTPMaxAttempts()
 
 	return &OTP{
-		ID:           primitive.NewObjectID(),
-		MobileNumber: mobileNumber,
-		Code:         code,
-		CreatedAt:    now,
-		ExpiresAt:    now.Add(time.Duration(expiryMinutes) * time.Minute),
-		IsUsed:       false,
-		Attempts:     0,
-		MaxAttempts:  maxAttempts,
+		ID:          primitive.NewObjectID(),
+		PhoneNumber: phoneNumber,
+		Code:        code,
+		CreatedAt:   now,
+		ExpiresAt:   now.Add(time.Duration(expiryMinutes) * time.Minute),
+		IsUsed:      false,
+		Attempts:    0,
+		MaxAttempts: maxAttempts,
 	}
 }
 

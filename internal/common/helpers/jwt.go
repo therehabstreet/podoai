@@ -6,23 +6,25 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/therehabstreet/podoai/internal/common/config"
+	pb "github.com/therehabstreet/podoai/proto/common"
 )
 
 // JWTClaims represents the claims structure for our JWT tokens
 type JWTClaims struct {
-	UserID       string `json:"user_id"`
-	MobileNumber string `json:"mobile_number"`
-	TokenType    string `json:"token_type"` // "access" or "refresh"
-	ExpiresAt    int64  `json:"exp"`
-	IssuedAt     int64  `json:"iat"`
-	NotBefore    int64  `json:"nbf"`
-	Issuer       string `json:"iss"`
-	Subject      string `json:"sub"`
-	ID           string `json:"jti"`
+	UserID        string   `json:"user_id"`
+	Roles         []string `json:"roles"`
+	TokenType     string   `json:"token_type"` // "access" or "refresh"
+	OwnerEntityID string   `json:"owner_entity_id"`
+	ExpiresAt     int64    `json:"exp"`
+	IssuedAt      int64    `json:"iat"`
+	NotBefore     int64    `json:"nbf"`
+	Issuer        string   `json:"iss"`
+	Subject       string   `json:"sub"`
+	ID            string   `json:"jti"`
 }
 
 // JWTHeader represents the JWT header
@@ -31,81 +33,48 @@ type JWTHeader struct {
 	Type      string `json:"typ"`
 }
 
-// JWTConfig holds JWT configuration
-type JWTConfig struct {
-	Secret           string
-	AccessExpiryMin  int
-	RefreshExpiryMin int
-}
-
-// LoadJWTConfig loads JWT configuration from environment variables
-func LoadJWTConfig() JWTConfig {
-	accessExpiryMin := 60 * 24       // 24 hours default
-	refreshExpiryMin := 60 * 24 * 30 // 30 days default
-
-	if envValue := os.Getenv("JWT_ACCESS_EXPIRY_MINUTES"); envValue != "" {
-		if val, err := strconv.Atoi(envValue); err == nil {
-			accessExpiryMin = val
-		}
-	}
-
-	if envValue := os.Getenv("JWT_REFRESH_EXPIRY_MINUTES"); envValue != "" {
-		if val, err := strconv.Atoi(envValue); err == nil {
-			refreshExpiryMin = val
-		}
-	}
-
-	return JWTConfig{
-		Secret:           getEnvWithDefault("JWT_SECRET", "your-secret-key-change-in-production"),
-		AccessExpiryMin:  accessExpiryMin,
-		RefreshExpiryMin: refreshExpiryMin,
-	}
-}
-
 // GenerateAccessToken generates a JWT access token
-func GenerateAccessToken(userID, mobileNumber string) (string, error) {
-	config := LoadJWTConfig()
+// Accepts string roles directly to avoid conversion overhead
+func GenerateAccessToken(cfg *config.Config, userID string, roles []string) (string, error) {
 	now := time.Now()
 
 	claims := JWTClaims{
-		UserID:       userID,
-		MobileNumber: mobileNumber,
-		TokenType:    "access",
-		ExpiresAt:    now.Add(time.Duration(config.AccessExpiryMin) * time.Minute).Unix(),
-		IssuedAt:     now.Unix(),
-		NotBefore:    now.Unix(),
-		Issuer:       "podoai",
-		Subject:      userID,
-		ID:           generateTokenID(),
+		UserID:    userID,
+		Roles:     roles,
+		TokenType: "access",
+		ExpiresAt: now.Add(time.Duration(cfg.JWT.AccessExpiryMin) * time.Minute).Unix(),
+		IssuedAt:  now.Unix(),
+		NotBefore: now.Unix(),
+		Issuer:    "podoai",
+		Subject:   userID,
+		ID:        generateTokenID(),
 	}
 
-	return generateJWT(claims, config.Secret)
+	return generateJWT(claims, cfg.JWT.Secret)
 }
 
 // GenerateRefreshToken generates a JWT refresh token
-func GenerateRefreshToken(userID, mobileNumber string) (string, error) {
-	config := LoadJWTConfig()
+// Accepts string roles directly to avoid conversion overhead
+func GenerateRefreshToken(cfg *config.Config, userID string, roles []string) (string, error) {
 	now := time.Now()
 
 	claims := JWTClaims{
-		UserID:       userID,
-		MobileNumber: mobileNumber,
-		TokenType:    "refresh",
-		ExpiresAt:    now.Add(time.Duration(config.RefreshExpiryMin) * time.Minute).Unix(),
-		IssuedAt:     now.Unix(),
-		NotBefore:    now.Unix(),
-		Issuer:       "podoai",
-		Subject:      userID,
-		ID:           generateTokenID(),
+		UserID:    userID,
+		Roles:     roles,
+		TokenType: "refresh",
+		ExpiresAt: now.Add(time.Duration(cfg.JWT.RefreshExpiryMin) * time.Minute).Unix(),
+		IssuedAt:  now.Unix(),
+		NotBefore: now.Unix(),
+		Issuer:    "podoai",
+		Subject:   userID,
+		ID:        generateTokenID(),
 	}
 
-	return generateJWT(claims, config.Secret)
+	return generateJWT(claims, cfg.JWT.Secret)
 }
 
 // ValidateToken validates a JWT token and returns the claims
-func ValidateToken(tokenString string) (*JWTClaims, error) {
-	config := LoadJWTConfig()
-
+func ValidateToken(cfg *config.Config, tokenString string) (*JWTClaims, error) {
 	parts := strings.Split(tokenString, ".")
 	if len(parts) != 3 {
 		return nil, fmt.Errorf("invalid token format")
@@ -138,7 +107,7 @@ func ValidateToken(tokenString string) (*JWTClaims, error) {
 	}
 
 	// Verify signature
-	expectedSignature := generateSignature(parts[0]+"."+parts[1], config.Secret)
+	expectedSignature := generateSignature(parts[0]+"."+parts[1], cfg.JWT.Secret)
 	if parts[2] != expectedSignature {
 		return nil, fmt.Errorf("invalid signature")
 	}
@@ -152,8 +121,8 @@ func ValidateToken(tokenString string) (*JWTClaims, error) {
 }
 
 // IsTokenExpired checks if a token is expired
-func IsTokenExpired(tokenString string) bool {
-	claims, err := ValidateToken(tokenString)
+func IsTokenExpired(cfg *config.Config, tokenString string) bool {
+	claims, err := ValidateToken(cfg, tokenString)
 	if err != nil {
 		return true
 	}
@@ -162,8 +131,8 @@ func IsTokenExpired(tokenString string) bool {
 }
 
 // RefreshAccessToken generates a new access token from a valid refresh token
-func RefreshAccessToken(refreshTokenString string) (string, error) {
-	claims, err := ValidateToken(refreshTokenString)
+func RefreshAccessToken(cfg *config.Config, refreshTokenString string) (string, error) {
+	claims, err := ValidateToken(cfg, refreshTokenString)
 	if err != nil {
 		return "", fmt.Errorf("invalid refresh token: %v", err)
 	}
@@ -176,7 +145,107 @@ func RefreshAccessToken(refreshTokenString string) (string, error) {
 		return "", fmt.Errorf("refresh token is expired")
 	}
 
-	return GenerateAccessToken(claims.UserID, claims.MobileNumber)
+	// Generate new access token with string roles directly
+	return GenerateAccessToken(cfg, claims.UserID, claims.Roles)
+}
+
+func GetRolesFromToken(cfg *config.Config, tokenString string) ([]string, error) {
+	parts := strings.Split(tokenString, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid token format")
+	}
+
+	// Validate the token first
+	claims, err := ValidateToken(cfg, tokenString)
+	if err != nil {
+		return nil, err
+	}
+
+	return claims.Roles, nil
+}
+
+// GetProtoRolesFromToken extracts roles from a JWT token as proto roles
+// Use this when you need proto roles for API responses
+func GetProtoRolesFromToken(cfg *config.Config, tokenString string) ([]pb.Role, error) {
+	roleStrs, err := GetRolesFromToken(cfg, tokenString)
+	if err != nil {
+		return nil, err
+	}
+	return StringsToRoles(roleStrs), nil
+}
+
+// HasRole checks if the token contains a specific role
+// Accepts proto role for API convenience but works with strings internally
+func HasRole(cfg *config.Config, tokenString string, role pb.Role) bool {
+	roles, err := GetRolesFromToken(cfg, tokenString)
+	if err != nil {
+		return false
+	}
+
+	// Convert proto role to string for comparison
+	roleStr := strings.ToLower(role.String())
+
+	for _, r := range roles {
+		if r == roleStr {
+			return true
+		}
+	}
+	return false
+}
+
+// HasRoleString checks if the token contains a specific role by string
+// Use this when working with string roles directly
+func HasRoleString(cfg *config.Config, tokenString string, role string) bool {
+	roles, err := GetRolesFromToken(cfg, tokenString)
+	if err != nil {
+		return false
+	}
+
+	for _, r := range roles {
+		if r == role {
+			return true
+		}
+	}
+	return false
+}
+
+// HasAnyRole checks if the token contains any of the specified roles
+// Accepts proto roles for API convenience but works with strings internally
+func HasAnyRole(cfg *config.Config, tokenString string, requiredRoles []pb.Role) bool {
+	userRoles, err := GetRolesFromToken(cfg, tokenString)
+	if err != nil {
+		return false
+	}
+
+	// Convert proto roles to strings for comparison
+	requiredRoleStrs := RolesToStrings(requiredRoles)
+
+	for _, userRole := range userRoles {
+		for _, requiredRole := range requiredRoleStrs {
+			if userRole == requiredRole {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// HasAnyRoleString checks if the token contains any of the specified roles by strings
+// Use this when working with string roles directly
+func HasAnyRoleString(cfg *config.Config, tokenString string, requiredRoles []string) bool {
+	userRoles, err := GetRolesFromToken(cfg, tokenString)
+	if err != nil {
+		return false
+	}
+
+	for _, userRole := range userRoles {
+		for _, requiredRole := range requiredRoles {
+			if userRole == requiredRole {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // generateJWT creates a JWT token with the given claims and secret
@@ -215,12 +284,4 @@ func generateSignature(payload, secret string) string {
 // generateTokenID generates a unique token ID
 func generateTokenID() string {
 	return fmt.Sprintf("%d", time.Now().UnixNano())
-}
-
-// getEnvWithDefault gets environment variable with a default value
-func getEnvWithDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
 }

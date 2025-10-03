@@ -18,12 +18,19 @@ service CommonService {
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc GetExercise (GetExerciseRequest) returns (GetExerciseResponse);
   rpc GetTherapy (GetTherapyRequest) returns (GetTherapyResponse);
+
+  // Patient RPCs
+  rpc GetPatients (GetPatientsRequest) returns (GetPatientsResponse);
+  rpc GetPatient (GetPatientRequest) returns (GetPatientResponse);
+  rpc SearchPatient (SearchPatientRequest) returns (SearchPatientResponse);
+  rpc CreatePatient (CreatePatientRequest) returns (CreatePatientResponse);
+  rpc DeletePatient (DeletePatientRequest) returns (DeletePatientResponse);
 }
 
 message Scan {
   string id = 1;
-  string user_id = 2;
-  string clinic_id = 3;
+  string patient_id = 2;
+  string owner_entity_id = 3;
   google.protobuf.Timestamp created_at = 4;
   repeated Image images = 5;
   repeated Video videos = 6;
@@ -131,11 +138,12 @@ message Patient {
 }
 
 message GetScansRequest {
-    string user_id = 1;
-    int32 page = 2;
-    int32 page_size = 3;
-    string sort_by = 4;
-    string sort_order = 5; // "asc" or "desc"
+    string patient_id = 1;
+    string owner_entity_id = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+    string sort_by = 5;
+    string sort_order = 6; // "asc" or "desc"
 }
 
 message GetScansResponse {
@@ -145,6 +153,7 @@ message GetScansResponse {
 
 message GetScanRequest {
     string scan_id = 1;
+    string owner_entity_id = 2;
 }
 
 message GetScanResponse {
@@ -161,6 +170,7 @@ message CreateScanResponse {
 
 message DeleteScanRequest {
     string scan_id = 1;
+    string owner_entity_id = 2;
 }
 
 message DeleteScanResponse {
@@ -193,7 +203,7 @@ message GetTherapyResponse {
 
 // ===== Authentication =====
 message RequestOtpRequest {
-  string mobile_number = 1;
+  string phone_number = 1;
 }
 
 message RequestOtpResponse {
@@ -202,11 +212,65 @@ message RequestOtpResponse {
 }
 
 message VerifyOtpRequest {
-  string mobile_number = 1;
+  string phone_number = 1;
   string otp = 2;
 }
 
 message LoginResponse {
   string token = 1;
   string refresh_token = 2;
+  repeated Role roles = 3;
+  string user_id = 4;
+}
+
+// Patient API messages
+message GetPatientsRequest {
+    string owner_entity_id = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+    string sort_by = 4;
+    string sort_order = 5; // "asc" or "desc"
+}
+
+message GetPatientsResponse {
+    repeated Patient patients = 1;
+    int32 total_count = 2;
+}
+
+message GetPatientRequest {
+    string patient_id = 1;
+    string owner_entity_id = 2;
+}
+
+message GetPatientResponse {
+    Patient patient = 1;
+}
+
+message SearchPatientRequest {
+    string search_term = 1;
+    string owner_entity_id = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+message SearchPatientResponse {
+    repeated Patient patients = 1;
+    int32 total_count = 2;
+}
+
+message CreatePatientRequest {
+    Patient patient = 1;
+}
+
+message CreatePatientResponse {
+    Patient patient = 1;
+}
+
+message DeletePatientRequest {
+    string patient_id = 1;
+    string owner_entity_id = 2;
+}
+
+message DeletePatientResponse {
+    bool success = 1;
 }

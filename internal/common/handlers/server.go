@@ -2,20 +2,23 @@ package handlers
 
 import (
 	"github.com/therehabstreet/podoai/internal/common/clients"
+	"github.com/therehabstreet/podoai/internal/common/config"
 	pb "github.com/therehabstreet/podoai/proto/common"
 	"google.golang.org/grpc"
 )
 
 type CommonServer struct {
 	pb.UnimplementedCommonServiceServer
-	DBClient  clients.DBClient
-	OTPSender clients.MessagingClient
+	Config          *config.Config
+	DBClient        clients.DBClient
+	MessagingClient clients.MessagingClient
 }
 
-func NewCommonServer(dbClient clients.DBClient, otpSender clients.MessagingClient) *CommonServer {
+func NewCommonServer(cfg *config.Config, dbClient clients.DBClient, messagingClient clients.MessagingClient) *CommonServer {
 	return &CommonServer{
-		DBClient:  dbClient,
-		OTPSender: otpSender,
+		Config:          cfg,
+		DBClient:        dbClient,
+		MessagingClient: messagingClient,
 	}
 }
 
