@@ -8,12 +8,14 @@ import (
 
 	"github.com/therehabstreet/podoai/internal/clinical/clients"
 	clinicalHandlers "github.com/therehabstreet/podoai/internal/clinical/handlers"
+	clinicalMiddleware "github.com/therehabstreet/podoai/internal/clinical/middleware"
 	commonClients "github.com/therehabstreet/podoai/internal/common/clients"
 	"github.com/therehabstreet/podoai/internal/common/config"
 	commonHandlers "github.com/therehabstreet/podoai/internal/common/handlers"
-	"github.com/therehabstreet/podoai/internal/common/middleware"
+	commonMiddleware "github.com/therehabstreet/podoai/internal/common/middleware"
 	consumerClients "github.com/therehabstreet/podoai/internal/consumer/clients"
 	consumerHandlers "github.com/therehabstreet/podoai/internal/consumer/handlers"
+	consumerMiddleware "github.com/therehabstreet/podoai/internal/consumer/middleware"
 
 	"google.golang.org/grpc"
 )
@@ -55,11 +57,19 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	// Create gRPC server with auth middleware
-	authMiddleware := middleware.NewAuthMiddleware(config)
+	// Create gRPC server with AuthN + AuthZ middleware
+	authN := commonMiddleware.NewAuthNMiddleware(config)
+	commonAuthZ := commonMiddleware.NewAuthZMiddleware()
+	clinicalAuthZ := clinicalMiddleware.NewAuthZMiddleware()
+	consumerAuthZ := consumerMiddleware.NewAuthZMiddleware()
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(authMiddleware.UnaryInterceptor()),
+		grpc.ChainUnaryInterceptor(
+			authN.UnaryInterceptor(),         // First: Authentication
+			commonAuthZ.UnaryInterceptor(),   // Second: Common service authorization
+			clinicalAuthZ.UnaryInterceptor(), // Third: Clinical service authorization
+			consumerAuthZ.UnaryInterceptor(), // Fourth: Consumer service authorization
+		),
 	)
 
 	// Register clinical server
