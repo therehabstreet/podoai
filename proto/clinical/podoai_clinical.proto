@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 service ClinicalService {
     // Clinic APIs
     rpc GetClinic (GetClinicRequest) returns (GetClinicResponse);
+    rpc UpdateClinic (UpdateClinicRequest) returns (UpdateClinicResponse);
 
     // ClinicUser CRUDL APIs
     rpc CreateClinicUser (CreateClinicUserRequest) returns (CreateClinicUserResponse);
@@ -23,6 +24,8 @@ message Clinic {
     string id = 1;
     string name = 2;
     string address = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
 }
 
 message ClinicUser {
@@ -43,6 +46,14 @@ message GetClinicResponse {
     Clinic clinic = 1;
 }
 
+message UpdateClinicRequest {
+    Clinic clinic = 1;
+}
+
+message UpdateClinicResponse {
+    Clinic clinic = 1;
+}
+
 // ClinicUser CRUDL messages
 message CreateClinicUserRequest {
     ClinicUser user = 1;
@@ -54,6 +65,7 @@ message CreateClinicUserResponse {
 
 message GetClinicUserRequest {
     string user_id = 1;
+    string clinic_id = 2;
 }
 
 message GetClinicUserResponse {
@@ -70,6 +82,7 @@ message UpdateClinicUserResponse {
 
 message DeleteClinicUserRequest {
     string user_id = 1;
+    string clinic_id = 2;
 }
 
 message DeleteClinicUserResponse {

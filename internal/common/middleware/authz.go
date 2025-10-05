@@ -78,80 +78,79 @@ func (am *AuthZMiddleware) authorize(ctx context.Context, method string, req any
 	// Scan operations
 	case "/podoai.CommonService/CreateScan":
 		if r, ok := req.(*pb.CreateScanRequest); ok {
-			if r.GetScan() != nil && r.GetScan().GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to create scans for different owner entity")
+			if r.GetScan() != nil && r.GetScan().GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to create scans for different owner entity")
 
 	case "/podoai.CommonService/GetScan":
 		if r, ok := req.(*pb.GetScanRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to access scans for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access scans for different owner entity")
 
 	case "/podoai.CommonService/GetScans":
 		if r, ok := req.(*pb.GetScansRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to access scans for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access scans for different owner entity")
 
 	case "/podoai.CommonService/DeleteScan":
 		// Only clinic admins can delete scans from their clinic
 		if am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
 			if r, ok := req.(*pb.DeleteScanRequest); ok {
-				if r.GetOwnerEntityId() != ownerEntityID {
-					return status.Errorf(codes.PermissionDenied, "unauthorized to delete scans for different owner entity")
+				if r.GetOwnerEntityId() == ownerEntityID {
+					return nil
 				}
 			}
-			return nil
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can delete scans")
 
 	// Patient operations
 	case "/podoai.CommonService/GetPatients":
 		if r, ok := req.(*pb.GetPatientsRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to access patients for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access patients for different owner entity")
 
 	case "/podoai.CommonService/GetPatient":
 		if r, ok := req.(*pb.GetPatientRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to access patient for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access patient for different owner entity")
 
 	case "/podoai.CommonService/SearchPatient":
 		if r, ok := req.(*pb.SearchPatientRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to search patients for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to search patients for different owner entity")
 
 	case "/podoai.CommonService/CreatePatient":
 		if r, ok := req.(*pb.CreatePatientRequest); ok {
-			if r.GetPatient() != nil && r.GetPatient().GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to create patient for different owner entity")
+			if r.GetPatient() != nil && r.GetPatient().GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to create patient for different owner entity")
 
 	case "/podoai.CommonService/DeletePatient":
 		if r, ok := req.(*pb.DeletePatientRequest); ok {
-			if r.GetOwnerEntityId() != ownerEntityID {
-				return status.Errorf(codes.PermissionDenied, "unauthorized to delete patient for different owner entity")
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
 			}
 		}
-		return nil
+		return status.Errorf(codes.PermissionDenied, "unauthorized to delete patient for different owner entity")
 
 	default:
 		// For any unknown CommonService methods, deny access by default

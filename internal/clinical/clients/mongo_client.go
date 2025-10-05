@@ -2,6 +2,7 @@ package clients
 
 import (
 	"context"
+	"time"
 
 	"github.com/therehabstreet/podoai/internal/clinical/models"
 	commonModels "github.com/therehabstreet/podoai/internal/common/models"
@@ -18,12 +19,14 @@ type DBClient interface {
 	DeletePatientByID(ctx context.Context, id primitive.ObjectID) error
 	// Clinic methods
 	FetchClinicByID(ctx context.Context, id string) (models.Clinic, error)
+	CreateClinic(ctx context.Context, clinic models.Clinic) (models.Clinic, error)
+	UpdateClinic(ctx context.Context, clinic models.Clinic) (models.Clinic, error)
 	// ClinicUser methods
 	CreateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error)
-	FetchClinicUserByID(ctx context.Context, id string) (models.ClinicUser, error)
+	FetchClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) (models.ClinicUser, error)
 	FetchClinicUserByPhoneNumber(ctx context.Context, phoneNumber string) (models.ClinicUser, error)
 	UpdateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error)
-	DeleteClinicUserByID(ctx context.Context, id string) error
+	DeleteClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) error
 	ListClinicUsers(ctx context.Context, clinicID string, page, pageSize int32) ([]models.ClinicUser, int64, error)
 }
 
@@ -168,6 +171,42 @@ func (m *MongoDBClient) FetchClinicByID(ctx context.Context, id string) (models.
 	return clinic, err
 }
 
+func (m *MongoDBClient) CreateClinic(ctx context.Context, clinic models.Clinic) (models.Clinic, error) {
+	coll := m.Client.Database("podoai").Collection("clinics")
+	now := time.Now()
+
+	// Set created_at if not already set
+	if clinic.CreatedAt.IsZero() {
+		clinic.CreatedAt = now
+	}
+	// Set updated_at if not already set
+	if clinic.UpdatedAt.IsZero() {
+		clinic.UpdatedAt = now
+	}
+	_, err := coll.InsertOne(ctx, clinic)
+	return clinic, err
+}
+
+func (m *MongoDBClient) UpdateClinic(ctx context.Context, clinic models.Clinic) (models.Clinic, error) {
+	coll := m.Client.Database("podoai").Collection("clinics")
+	filter := bson.M{"_id": clinic.ID}
+	update := bson.M{"$set": bson.M{
+		"name":    clinic.Name,
+		"address": clinic.Address,
+	}}
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return clinic, err
+	}
+	// Fetch the updated clinic to get the actual field values
+	var updatedClinic models.Clinic
+	err = coll.FindOne(ctx, filter).Decode(&updatedClinic)
+	if err != nil {
+		return clinic, err
+	}
+	return updatedClinic, nil
+}
+
 // ClinicUser methods
 func (m *MongoDBClient) CreateClinicUser(ctx context.Context, user models.ClinicUser) (models.ClinicUser, error) {
 	coll := m.Client.Database("podoai").Collection("clinical_users")
@@ -175,10 +214,11 @@ func (m *MongoDBClient) CreateClinicUser(ctx context.Context, user models.Clinic
 	return user, err
 }
 
-func (m *MongoDBClient) FetchClinicUserByID(ctx context.Context, id string) (models.ClinicUser, error) {
+func (m *MongoDBClient) FetchClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) (models.ClinicUser, error) {
 	coll := m.Client.Database("podoai").Collection("clinical_users")
 	var user models.ClinicUser
-	err := coll.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
+	filter := bson.M{"_id": userID, "clinic_id": clinicID}
+	err := coll.FindOne(ctx, filter).Decode(&user)
 	return user, err
 }
 
@@ -197,9 +237,10 @@ func (m *MongoDBClient) UpdateClinicUser(ctx context.Context, user models.Clinic
 	return user, err
 }
 
-func (m *MongoDBClient) DeleteClinicUserByID(ctx context.Context, id string) error {
+func (m *MongoDBClient) DeleteClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) error {
 	coll := m.Client.Database("podoai").Collection("clinical_users")
-	_, err := coll.DeleteOne(ctx, bson.M{"_id": id})
+	filter := bson.M{"_id": userID, "clinic_id": clinicID}
+	_, err := coll.DeleteOne(ctx, filter)
 	return err
 }
 

@@ -5,7 +5,8 @@ import (
 	"strings"
 
 	commonMiddleware "github.com/therehabstreet/podoai/internal/common/middleware"
-	pb "github.com/therehabstreet/podoai/proto/common"
+	pbClinical "github.com/therehabstreet/podoai/proto/clinical"
+	pbCommon "github.com/therehabstreet/podoai/proto/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -53,65 +54,78 @@ func (am *AuthZMiddleware) authorize(ctx context.Context, method string, req any
 	// Clinic operations
 	case "/podoai_clinical.ClinicalService/GetClinic":
 		// Clinic staff and admins can view clinic info
-		if am.hasRole(userRoles, pb.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic-specific validation once proto messages are confirmed
-			// Should validate that the requested clinic_id matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.GetClinicRequest); ok {
+				if r.GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
-		return status.Errorf(codes.PermissionDenied, "insufficient permissions to access clinic data")
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access clinic")
 
 	case "/podoai_clinical.ClinicalService/UpdateClinic":
-		// Only clinic admins can update clinic info
-		if am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.UpdateClinicRequest); ok {
+				if r.GetClinic() != nil && r.GetClinic().GetId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can update clinic information")
 
 	// Clinic User management (CRUDL)
 	case "/podoai_clinical.ClinicalService/CreateClinicUser":
 		// Only clinic admins can manage clinic users (for their own clinic)
-		if am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic user-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.CreateClinicUserRequest); ok {
+				if r.GetUser() != nil && r.GetUser().GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can create clinic users")
 
 	case "/podoai_clinical.ClinicalService/GetClinicUser":
 		// Clinic staff can view clinic users, but only within their clinic
-		if am.hasRole(userRoles, pb.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic user-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.GetClinicUserRequest); ok {
+				if r.GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "insufficient permissions to view clinic users")
 
 	case "/podoai_clinical.ClinicalService/UpdateClinicUser":
 		// Only clinic admins can update clinic users (for their own clinic)
-		if am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic user-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.UpdateClinicUserRequest); ok {
+				if r.GetUser() != nil && r.GetUser().GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can update clinic users")
 
 	case "/podoai_clinical.ClinicalService/DeleteClinicUser":
 		// Only clinic admins can delete clinic users (for their own clinic)
-		if am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic user-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.DeleteClinicUserRequest); ok {
+				if r.GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can delete clinic users")
 
 	case "/podoai_clinical.ClinicalService/ListClinicUsers":
 		// Clinic staff can list clinic users, but only within their clinic
-		if am.hasRole(userRoles, pb.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pb.Role_CLINIC_ADMIN.String()) {
-			// TODO: Add clinic user-specific validation once proto messages are confirmed
-			// Should validate that the clinic_id in request matches the user's clinic
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CLINIC_STAFF.String()) || am.hasRole(userRoles, pbCommon.Role_CLINIC_ADMIN.String()) {
+			if r, ok := req.(*pbClinical.ListClinicUsersRequest); ok {
+				if r.GetClinicId() == ownerEntityID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "insufficient permissions to list clinic users")
 

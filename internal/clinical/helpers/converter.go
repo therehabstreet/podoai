@@ -24,18 +24,30 @@ func PatientProtoToModel(p *podoai.Patient) commonModels.Patient {
 // Mongo Clinic -> Proto Clinic
 func ClinicModelToProto(m models.Clinic) *pb.Clinic {
 	return &pb.Clinic{
-		Id:      m.ID,
-		Name:    m.Name,
-		Address: m.Address,
+		Id:        m.ID,
+		Name:      m.Name,
+		Address:   m.Address,
+		CreatedAt: timestamppb.New(m.CreatedAt),
+		UpdatedAt: timestamppb.New(m.UpdatedAt),
 	}
 }
 
 // Proto Clinic -> Mongo Clinic
 func ClinicProtoToModel(p *pb.Clinic) models.Clinic {
+	createdAt := time.Now()
+	if p.CreatedAt != nil {
+		createdAt = p.CreatedAt.AsTime()
+	}
+	updatedAt := time.Now()
+	if p.UpdatedAt != nil {
+		updatedAt = p.UpdatedAt.AsTime()
+	}
 	return models.Clinic{
-		ID:      p.Id,
-		Name:    p.Name,
-		Address: p.Address,
+		ID:        p.Id,
+		Name:      p.Name,
+		Address:   p.Address,
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
 	}
 }
 

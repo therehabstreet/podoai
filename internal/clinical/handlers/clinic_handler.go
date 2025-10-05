@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"time"
 
 	"github.com/therehabstreet/podoai/internal/clinical/helpers"
 	pb "github.com/therehabstreet/podoai/proto/clinical"
@@ -16,6 +17,17 @@ func (cs *ClinicalServer) GetClinic(ctx context.Context, req *pb.GetClinicReques
 	return &pb.GetClinicResponse{Clinic: helpers.ClinicModelToProto(clinic)}, nil
 }
 
+// UpdateClinic handler
+func (cs *ClinicalServer) UpdateClinic(ctx context.Context, req *pb.UpdateClinicRequest) (*pb.UpdateClinicResponse, error) {
+	clinicModel := helpers.ClinicProtoToModel(req.GetClinic())
+	clinicModel.UpdatedAt = time.Now()
+	updatedClinic, err := cs.DBClient.UpdateClinic(ctx, clinicModel)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UpdateClinicResponse{Clinic: helpers.ClinicModelToProto(updatedClinic)}, nil
+}
+
 // ClinicUser CRUDL handlers
 func (cs *ClinicalServer) CreateClinicUser(ctx context.Context, req *pb.CreateClinicUserRequest) (*pb.CreateClinicUserResponse, error) {
 	userModel := helpers.ClinicUserProtoToModel(req.GetUser())
@@ -27,7 +39,7 @@ func (cs *ClinicalServer) CreateClinicUser(ctx context.Context, req *pb.CreateCl
 }
 
 func (cs *ClinicalServer) GetClinicUser(ctx context.Context, req *pb.GetClinicUserRequest) (*pb.GetClinicUserResponse, error) {
-	user, err := cs.DBClient.FetchClinicUserByID(ctx, req.GetUserId())
+	user, err := cs.DBClient.FetchClinicUserByIDAndClinic(ctx, req.GetUserId(), req.GetClinicId())
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +56,7 @@ func (cs *ClinicalServer) UpdateClinicUser(ctx context.Context, req *pb.UpdateCl
 }
 
 func (cs *ClinicalServer) DeleteClinicUser(ctx context.Context, req *pb.DeleteClinicUserRequest) (*pb.DeleteClinicUserResponse, error) {
-	err := cs.DBClient.DeleteClinicUserByID(ctx, req.GetUserId())
+	err := cs.DBClient.DeleteClinicUserByIDAndClinic(ctx, req.GetUserId(), req.GetClinicId())
 	if err != nil {
 		return nil, err
 	}

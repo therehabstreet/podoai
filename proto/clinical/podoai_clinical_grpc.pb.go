@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ClinicalService_GetClinic_FullMethodName        = "/podoai_clinical.ClinicalService/GetClinic"
+	ClinicalService_UpdateClinic_FullMethodName     = "/podoai_clinical.ClinicalService/UpdateClinic"
 	ClinicalService_CreateClinicUser_FullMethodName = "/podoai_clinical.ClinicalService/CreateClinicUser"
 	ClinicalService_GetClinicUser_FullMethodName    = "/podoai_clinical.ClinicalService/GetClinicUser"
 	ClinicalService_UpdateClinicUser_FullMethodName = "/podoai_clinical.ClinicalService/UpdateClinicUser"
@@ -35,6 +36,7 @@ const (
 type ClinicalServiceClient interface {
 	// Clinic APIs
 	GetClinic(ctx context.Context, in *GetClinicRequest, opts ...grpc.CallOption) (*GetClinicResponse, error)
+	UpdateClinic(ctx context.Context, in *UpdateClinicRequest, opts ...grpc.CallOption) (*UpdateClinicResponse, error)
 	// ClinicUser CRUDL APIs
 	CreateClinicUser(ctx context.Context, in *CreateClinicUserRequest, opts ...grpc.CallOption) (*CreateClinicUserResponse, error)
 	GetClinicUser(ctx context.Context, in *GetClinicUserRequest, opts ...grpc.CallOption) (*GetClinicUserResponse, error)
@@ -55,6 +57,16 @@ func (c *clinicalServiceClient) GetClinic(ctx context.Context, in *GetClinicRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetClinicResponse)
 	err := c.cc.Invoke(ctx, ClinicalService_GetClinic_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *clinicalServiceClient) UpdateClinic(ctx context.Context, in *UpdateClinicRequest, opts ...grpc.CallOption) (*UpdateClinicResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateClinicResponse)
+	err := c.cc.Invoke(ctx, ClinicalService_UpdateClinic_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +131,7 @@ func (c *clinicalServiceClient) ListClinicUsers(ctx context.Context, in *ListCli
 type ClinicalServiceServer interface {
 	// Clinic APIs
 	GetClinic(context.Context, *GetClinicRequest) (*GetClinicResponse, error)
+	UpdateClinic(context.Context, *UpdateClinicRequest) (*UpdateClinicResponse, error)
 	// ClinicUser CRUDL APIs
 	CreateClinicUser(context.Context, *CreateClinicUserRequest) (*CreateClinicUserResponse, error)
 	GetClinicUser(context.Context, *GetClinicUserRequest) (*GetClinicUserResponse, error)
@@ -137,6 +150,9 @@ type UnimplementedClinicalServiceServer struct{}
 
 func (UnimplementedClinicalServiceServer) GetClinic(context.Context, *GetClinicRequest) (*GetClinicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetClinic not implemented")
+}
+func (UnimplementedClinicalServiceServer) UpdateClinic(context.Context, *UpdateClinicRequest) (*UpdateClinicResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateClinic not implemented")
 }
 func (UnimplementedClinicalServiceServer) CreateClinicUser(context.Context, *CreateClinicUserRequest) (*CreateClinicUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClinicUser not implemented")
@@ -188,6 +204,24 @@ func _ClinicalService_GetClinic_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ClinicalServiceServer).GetClinic(ctx, req.(*GetClinicRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ClinicalService_UpdateClinic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateClinicRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ClinicalServiceServer).UpdateClinic(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ClinicalService_UpdateClinic_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ClinicalServiceServer).UpdateClinic(ctx, req.(*UpdateClinicRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -292,6 +326,10 @@ var ClinicalService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetClinic",
 			Handler:    _ClinicalService_GetClinic_Handler,
+		},
+		{
+			MethodName: "UpdateClinic",
+			Handler:    _ClinicalService_UpdateClinic_Handler,
 		},
 		{
 			MethodName: "CreateClinicUser",

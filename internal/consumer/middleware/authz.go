@@ -5,6 +5,9 @@ import (
 	"strings"
 
 	commonMiddleware "github.com/therehabstreet/podoai/internal/common/middleware"
+	pbCommon "github.com/therehabstreet/podoai/proto/common"
+	pb "github.com/therehabstreet/podoai/proto/consumer"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -52,47 +55,31 @@ func (am *AuthZMiddleware) authorize(ctx context.Context, method string, req any
 	// User operations
 	case "/podoai_consumer.ConsumerService/GetUser":
 		// Consumers can only access their own data
-		if am.hasRole(userRoles, "consumer") {
-			// TODO: Validate that the requested user_id matches the token's user_id once proto messages are confirmed
-			// This will be something like:
-			// if r, ok := req.(*pb.GetUserRequest); ok {
-			//     if r.GetUserId() != userID {
-			//         return status.Errorf(codes.PermissionDenied, "unauthorized to access other user's data")
-			//     }
-			// }
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CONSUMER.String()) {
+			if r, ok := req.(*pb.GetUserRequest); ok {
+				if r.GetUserId() == userID {
+					return nil
+				}
+			}
 		}
 		return status.Errorf(codes.PermissionDenied, "only consumers can access user data")
 
 	case "/podoai_consumer.ConsumerService/UpdateUser":
 		// Consumers can only update their own data
-		if am.hasRole(userRoles, "consumer") {
-			// TODO: Validate that the user_id in request matches the token's user_id once proto messages are confirmed
-			// This will be something like:
-			// if r, ok := req.(*pb.UpdateUserRequest); ok {
-			//     if r.GetUser().GetUserId() != userID {
-			//         return status.Errorf(codes.PermissionDenied, "unauthorized to update other user's data")
-			//     }
-			// }
-			return nil
+		if am.hasRole(userRoles, pbCommon.Role_CONSUMER.String()) {
+			if r, ok := req.(*pb.UpdateUserRequest); ok {
+				if r.GetUser() != nil && r.GetUser().GetId() == userID {
+					return nil
+				}
+			}
 		}
-		return status.Errorf(codes.PermissionDenied, "only consumers can update user data")
+		return status.Errorf(codes.PermissionDenied, "only consumers can update their own data")
 
 	case "/podoai_consumer.ConsumerService/CreateUser":
-		// Typically this would be during registration, might need special handling
-		// For now, allow if user has consumer role
-		if am.hasRole(userRoles, "consumer") {
-			return nil
-		}
 		return status.Errorf(codes.PermissionDenied, "unauthorized to create user")
 
 	case "/podoai_consumer.ConsumerService/DeleteUser":
-		// Consumers can only delete their own account
-		if am.hasRole(userRoles, "consumer") {
-			// TODO: Validate that the user_id in request matches the token's user_id once proto messages are confirmed
-			return nil
-		}
-		return status.Errorf(codes.PermissionDenied, "only consumers can delete their own account")
+		return status.Errorf(codes.PermissionDenied, "consumers can not delete their account")
 
 	default:
 		// For any unknown ConsumerService methods, deny access by default

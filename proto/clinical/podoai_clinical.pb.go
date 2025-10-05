@@ -28,6 +28,8 @@ type Clinic struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Address       string                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -81,6 +83,20 @@ func (x *Clinic) GetAddress() string {
 		return x.Address
 	}
 	return ""
+}
+
+func (x *Clinic) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Clinic) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
 }
 
 type ClinicUser struct {
@@ -256,6 +272,94 @@ func (x *GetClinicResponse) GetClinic() *Clinic {
 	return nil
 }
 
+type UpdateClinicRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Clinic        *Clinic                `protobuf:"bytes,1,opt,name=clinic,proto3" json:"clinic,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateClinicRequest) Reset() {
+	*x = UpdateClinicRequest{}
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateClinicRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateClinicRequest) ProtoMessage() {}
+
+func (x *UpdateClinicRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateClinicRequest.ProtoReflect.Descriptor instead.
+func (*UpdateClinicRequest) Descriptor() ([]byte, []int) {
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateClinicRequest) GetClinic() *Clinic {
+	if x != nil {
+		return x.Clinic
+	}
+	return nil
+}
+
+type UpdateClinicResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Clinic        *Clinic                `protobuf:"bytes,1,opt,name=clinic,proto3" json:"clinic,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateClinicResponse) Reset() {
+	*x = UpdateClinicResponse{}
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateClinicResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateClinicResponse) ProtoMessage() {}
+
+func (x *UpdateClinicResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateClinicResponse.ProtoReflect.Descriptor instead.
+func (*UpdateClinicResponse) Descriptor() ([]byte, []int) {
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateClinicResponse) GetClinic() *Clinic {
+	if x != nil {
+		return x.Clinic
+	}
+	return nil
+}
+
 // ClinicUser CRUDL messages
 type CreateClinicUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -266,7 +370,7 @@ type CreateClinicUserRequest struct {
 
 func (x *CreateClinicUserRequest) Reset() {
 	*x = CreateClinicUserRequest{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[4]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -278,7 +382,7 @@ func (x *CreateClinicUserRequest) String() string {
 func (*CreateClinicUserRequest) ProtoMessage() {}
 
 func (x *CreateClinicUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[4]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -291,7 +395,7 @@ func (x *CreateClinicUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClinicUserRequest.ProtoReflect.Descriptor instead.
 func (*CreateClinicUserRequest) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{4}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateClinicUserRequest) GetUser() *ClinicUser {
@@ -310,7 +414,7 @@ type CreateClinicUserResponse struct {
 
 func (x *CreateClinicUserResponse) Reset() {
 	*x = CreateClinicUserResponse{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[5]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -322,7 +426,7 @@ func (x *CreateClinicUserResponse) String() string {
 func (*CreateClinicUserResponse) ProtoMessage() {}
 
 func (x *CreateClinicUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[5]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -335,7 +439,7 @@ func (x *CreateClinicUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateClinicUserResponse.ProtoReflect.Descriptor instead.
 func (*CreateClinicUserResponse) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{5}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateClinicUserResponse) GetUser() *ClinicUser {
@@ -348,13 +452,14 @@ func (x *CreateClinicUserResponse) GetUser() *ClinicUser {
 type GetClinicUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClinicId      string                 `protobuf:"bytes,2,opt,name=clinic_id,json=clinicId,proto3" json:"clinic_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetClinicUserRequest) Reset() {
 	*x = GetClinicUserRequest{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[6]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -366,7 +471,7 @@ func (x *GetClinicUserRequest) String() string {
 func (*GetClinicUserRequest) ProtoMessage() {}
 
 func (x *GetClinicUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[6]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -379,12 +484,19 @@ func (x *GetClinicUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClinicUserRequest.ProtoReflect.Descriptor instead.
 func (*GetClinicUserRequest) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{6}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetClinicUserRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetClinicUserRequest) GetClinicId() string {
+	if x != nil {
+		return x.ClinicId
 	}
 	return ""
 }
@@ -398,7 +510,7 @@ type GetClinicUserResponse struct {
 
 func (x *GetClinicUserResponse) Reset() {
 	*x = GetClinicUserResponse{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[7]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +522,7 @@ func (x *GetClinicUserResponse) String() string {
 func (*GetClinicUserResponse) ProtoMessage() {}
 
 func (x *GetClinicUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[7]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +535,7 @@ func (x *GetClinicUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetClinicUserResponse.ProtoReflect.Descriptor instead.
 func (*GetClinicUserResponse) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{7}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetClinicUserResponse) GetUser() *ClinicUser {
@@ -442,7 +554,7 @@ type UpdateClinicUserRequest struct {
 
 func (x *UpdateClinicUserRequest) Reset() {
 	*x = UpdateClinicUserRequest{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[8]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -454,7 +566,7 @@ func (x *UpdateClinicUserRequest) String() string {
 func (*UpdateClinicUserRequest) ProtoMessage() {}
 
 func (x *UpdateClinicUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[8]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -467,7 +579,7 @@ func (x *UpdateClinicUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClinicUserRequest.ProtoReflect.Descriptor instead.
 func (*UpdateClinicUserRequest) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{8}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateClinicUserRequest) GetUser() *ClinicUser {
@@ -486,7 +598,7 @@ type UpdateClinicUserResponse struct {
 
 func (x *UpdateClinicUserResponse) Reset() {
 	*x = UpdateClinicUserResponse{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[9]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -498,7 +610,7 @@ func (x *UpdateClinicUserResponse) String() string {
 func (*UpdateClinicUserResponse) ProtoMessage() {}
 
 func (x *UpdateClinicUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[9]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +623,7 @@ func (x *UpdateClinicUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateClinicUserResponse.ProtoReflect.Descriptor instead.
 func (*UpdateClinicUserResponse) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{9}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateClinicUserResponse) GetUser() *ClinicUser {
@@ -524,13 +636,14 @@ func (x *UpdateClinicUserResponse) GetUser() *ClinicUser {
 type DeleteClinicUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClinicId      string                 `protobuf:"bytes,2,opt,name=clinic_id,json=clinicId,proto3" json:"clinic_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteClinicUserRequest) Reset() {
 	*x = DeleteClinicUserRequest{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[10]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -542,7 +655,7 @@ func (x *DeleteClinicUserRequest) String() string {
 func (*DeleteClinicUserRequest) ProtoMessage() {}
 
 func (x *DeleteClinicUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[10]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -555,12 +668,19 @@ func (x *DeleteClinicUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClinicUserRequest.ProtoReflect.Descriptor instead.
 func (*DeleteClinicUserRequest) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{10}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteClinicUserRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
+	}
+	return ""
+}
+
+func (x *DeleteClinicUserRequest) GetClinicId() string {
+	if x != nil {
+		return x.ClinicId
 	}
 	return ""
 }
@@ -574,7 +694,7 @@ type DeleteClinicUserResponse struct {
 
 func (x *DeleteClinicUserResponse) Reset() {
 	*x = DeleteClinicUserResponse{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[11]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -586,7 +706,7 @@ func (x *DeleteClinicUserResponse) String() string {
 func (*DeleteClinicUserResponse) ProtoMessage() {}
 
 func (x *DeleteClinicUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[11]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -599,7 +719,7 @@ func (x *DeleteClinicUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteClinicUserResponse.ProtoReflect.Descriptor instead.
 func (*DeleteClinicUserResponse) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{11}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteClinicUserResponse) GetSuccess() bool {
@@ -620,7 +740,7 @@ type ListClinicUsersRequest struct {
 
 func (x *ListClinicUsersRequest) Reset() {
 	*x = ListClinicUsersRequest{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[12]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -632,7 +752,7 @@ func (x *ListClinicUsersRequest) String() string {
 func (*ListClinicUsersRequest) ProtoMessage() {}
 
 func (x *ListClinicUsersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[12]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -645,7 +765,7 @@ func (x *ListClinicUsersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClinicUsersRequest.ProtoReflect.Descriptor instead.
 func (*ListClinicUsersRequest) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{12}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListClinicUsersRequest) GetClinicId() string {
@@ -679,7 +799,7 @@ type ListClinicUsersResponse struct {
 
 func (x *ListClinicUsersResponse) Reset() {
 	*x = ListClinicUsersResponse{}
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[13]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -691,7 +811,7 @@ func (x *ListClinicUsersResponse) String() string {
 func (*ListClinicUsersResponse) ProtoMessage() {}
 
 func (x *ListClinicUsersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_clinical_podoai_clinical_proto_msgTypes[13]
+	mi := &file_clinical_podoai_clinical_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -704,7 +824,7 @@ func (x *ListClinicUsersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListClinicUsersResponse.ProtoReflect.Descriptor instead.
 func (*ListClinicUsersResponse) Descriptor() ([]byte, []int) {
-	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{13}
+	return file_clinical_podoai_clinical_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListClinicUsersResponse) GetUsers() []*ClinicUser {
@@ -725,11 +845,15 @@ var File_clinical_podoai_clinical_proto protoreflect.FileDescriptor
 
 const file_clinical_podoai_clinical_proto_rawDesc = "" +
 	"\n" +
-	"\x1eclinical/podoai_clinical.proto\x12\x0fpodoai_clinical\x1a\x13common/podoai.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"F\n" +
+	"\x1eclinical/podoai_clinical.proto\x12\x0fpodoai_clinical\x1a\x13common/podoai.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xbc\x01\n" +
 	"\x06Clinic\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
-	"\aaddress\x18\x03 \x01(\tR\aaddress\"\xe7\x01\n" +
+	"\aaddress\x18\x03 \x01(\tR\aaddress\x129\n" +
+	"\n" +
+	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xe7\x01\n" +
 	"\n" +
 	"ClinicUser\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
@@ -743,21 +867,27 @@ const file_clinical_podoai_clinical_proto_rawDesc = "" +
 	"\x10GetClinicRequest\x12\x1b\n" +
 	"\tclinic_id\x18\x01 \x01(\tR\bclinicId\"D\n" +
 	"\x11GetClinicResponse\x12/\n" +
+	"\x06clinic\x18\x01 \x01(\v2\x17.podoai_clinical.ClinicR\x06clinic\"F\n" +
+	"\x13UpdateClinicRequest\x12/\n" +
+	"\x06clinic\x18\x01 \x01(\v2\x17.podoai_clinical.ClinicR\x06clinic\"G\n" +
+	"\x14UpdateClinicResponse\x12/\n" +
 	"\x06clinic\x18\x01 \x01(\v2\x17.podoai_clinical.ClinicR\x06clinic\"J\n" +
 	"\x17CreateClinicUserRequest\x12/\n" +
 	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"K\n" +
 	"\x18CreateClinicUserResponse\x12/\n" +
-	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"/\n" +
+	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"L\n" +
 	"\x14GetClinicUserRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"H\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\tclinic_id\x18\x02 \x01(\tR\bclinicId\"H\n" +
 	"\x15GetClinicUserResponse\x12/\n" +
 	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"J\n" +
 	"\x17UpdateClinicUserRequest\x12/\n" +
 	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"K\n" +
 	"\x18UpdateClinicUserResponse\x12/\n" +
-	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"2\n" +
+	"\x04user\x18\x01 \x01(\v2\x1b.podoai_clinical.ClinicUserR\x04user\"O\n" +
 	"\x17DeleteClinicUserRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"4\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
+	"\tclinic_id\x18\x02 \x01(\tR\bclinicId\"4\n" +
 	"\x18DeleteClinicUserResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"f\n" +
 	"\x16ListClinicUsersRequest\x12\x1b\n" +
@@ -767,9 +897,10 @@ const file_clinical_podoai_clinical_proto_rawDesc = "" +
 	"\x17ListClinicUsersResponse\x121\n" +
 	"\x05users\x18\x01 \x03(\v2\x1b.podoai_clinical.ClinicUserR\x05users\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount2\xe6\x04\n" +
+	"totalCount2\xc3\x05\n" +
 	"\x0fClinicalService\x12R\n" +
-	"\tGetClinic\x12!.podoai_clinical.GetClinicRequest\x1a\".podoai_clinical.GetClinicResponse\x12g\n" +
+	"\tGetClinic\x12!.podoai_clinical.GetClinicRequest\x1a\".podoai_clinical.GetClinicResponse\x12[\n" +
+	"\fUpdateClinic\x12$.podoai_clinical.UpdateClinicRequest\x1a%.podoai_clinical.UpdateClinicResponse\x12g\n" +
 	"\x10CreateClinicUser\x12(.podoai_clinical.CreateClinicUserRequest\x1a).podoai_clinical.CreateClinicUserResponse\x12^\n" +
 	"\rGetClinicUser\x12%.podoai_clinical.GetClinicUserRequest\x1a&.podoai_clinical.GetClinicUserResponse\x12g\n" +
 	"\x10UpdateClinicUser\x12(.podoai_clinical.UpdateClinicUserRequest\x1a).podoai_clinical.UpdateClinicUserResponse\x12g\n" +
@@ -788,53 +919,61 @@ func file_clinical_podoai_clinical_proto_rawDescGZIP() []byte {
 	return file_clinical_podoai_clinical_proto_rawDescData
 }
 
-var file_clinical_podoai_clinical_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_clinical_podoai_clinical_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_clinical_podoai_clinical_proto_goTypes = []any{
 	(*Clinic)(nil),                   // 0: podoai_clinical.Clinic
 	(*ClinicUser)(nil),               // 1: podoai_clinical.ClinicUser
 	(*GetClinicRequest)(nil),         // 2: podoai_clinical.GetClinicRequest
 	(*GetClinicResponse)(nil),        // 3: podoai_clinical.GetClinicResponse
-	(*CreateClinicUserRequest)(nil),  // 4: podoai_clinical.CreateClinicUserRequest
-	(*CreateClinicUserResponse)(nil), // 5: podoai_clinical.CreateClinicUserResponse
-	(*GetClinicUserRequest)(nil),     // 6: podoai_clinical.GetClinicUserRequest
-	(*GetClinicUserResponse)(nil),    // 7: podoai_clinical.GetClinicUserResponse
-	(*UpdateClinicUserRequest)(nil),  // 8: podoai_clinical.UpdateClinicUserRequest
-	(*UpdateClinicUserResponse)(nil), // 9: podoai_clinical.UpdateClinicUserResponse
-	(*DeleteClinicUserRequest)(nil),  // 10: podoai_clinical.DeleteClinicUserRequest
-	(*DeleteClinicUserResponse)(nil), // 11: podoai_clinical.DeleteClinicUserResponse
-	(*ListClinicUsersRequest)(nil),   // 12: podoai_clinical.ListClinicUsersRequest
-	(*ListClinicUsersResponse)(nil),  // 13: podoai_clinical.ListClinicUsersResponse
-	(common.Role)(0),                 // 14: podoai.Role
-	(*timestamppb.Timestamp)(nil),    // 15: google.protobuf.Timestamp
+	(*UpdateClinicRequest)(nil),      // 4: podoai_clinical.UpdateClinicRequest
+	(*UpdateClinicResponse)(nil),     // 5: podoai_clinical.UpdateClinicResponse
+	(*CreateClinicUserRequest)(nil),  // 6: podoai_clinical.CreateClinicUserRequest
+	(*CreateClinicUserResponse)(nil), // 7: podoai_clinical.CreateClinicUserResponse
+	(*GetClinicUserRequest)(nil),     // 8: podoai_clinical.GetClinicUserRequest
+	(*GetClinicUserResponse)(nil),    // 9: podoai_clinical.GetClinicUserResponse
+	(*UpdateClinicUserRequest)(nil),  // 10: podoai_clinical.UpdateClinicUserRequest
+	(*UpdateClinicUserResponse)(nil), // 11: podoai_clinical.UpdateClinicUserResponse
+	(*DeleteClinicUserRequest)(nil),  // 12: podoai_clinical.DeleteClinicUserRequest
+	(*DeleteClinicUserResponse)(nil), // 13: podoai_clinical.DeleteClinicUserResponse
+	(*ListClinicUsersRequest)(nil),   // 14: podoai_clinical.ListClinicUsersRequest
+	(*ListClinicUsersResponse)(nil),  // 15: podoai_clinical.ListClinicUsersResponse
+	(*timestamppb.Timestamp)(nil),    // 16: google.protobuf.Timestamp
+	(common.Role)(0),                 // 17: podoai.Role
 }
 var file_clinical_podoai_clinical_proto_depIdxs = []int32{
-	14, // 0: podoai_clinical.ClinicUser.roles:type_name -> podoai.Role
-	15, // 1: podoai_clinical.ClinicUser.created_at:type_name -> google.protobuf.Timestamp
-	15, // 2: podoai_clinical.ClinicUser.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: podoai_clinical.GetClinicResponse.clinic:type_name -> podoai_clinical.Clinic
-	1,  // 4: podoai_clinical.CreateClinicUserRequest.user:type_name -> podoai_clinical.ClinicUser
-	1,  // 5: podoai_clinical.CreateClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
-	1,  // 6: podoai_clinical.GetClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
-	1,  // 7: podoai_clinical.UpdateClinicUserRequest.user:type_name -> podoai_clinical.ClinicUser
-	1,  // 8: podoai_clinical.UpdateClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
-	1,  // 9: podoai_clinical.ListClinicUsersResponse.users:type_name -> podoai_clinical.ClinicUser
-	2,  // 10: podoai_clinical.ClinicalService.GetClinic:input_type -> podoai_clinical.GetClinicRequest
-	4,  // 11: podoai_clinical.ClinicalService.CreateClinicUser:input_type -> podoai_clinical.CreateClinicUserRequest
-	6,  // 12: podoai_clinical.ClinicalService.GetClinicUser:input_type -> podoai_clinical.GetClinicUserRequest
-	8,  // 13: podoai_clinical.ClinicalService.UpdateClinicUser:input_type -> podoai_clinical.UpdateClinicUserRequest
-	10, // 14: podoai_clinical.ClinicalService.DeleteClinicUser:input_type -> podoai_clinical.DeleteClinicUserRequest
-	12, // 15: podoai_clinical.ClinicalService.ListClinicUsers:input_type -> podoai_clinical.ListClinicUsersRequest
-	3,  // 16: podoai_clinical.ClinicalService.GetClinic:output_type -> podoai_clinical.GetClinicResponse
-	5,  // 17: podoai_clinical.ClinicalService.CreateClinicUser:output_type -> podoai_clinical.CreateClinicUserResponse
-	7,  // 18: podoai_clinical.ClinicalService.GetClinicUser:output_type -> podoai_clinical.GetClinicUserResponse
-	9,  // 19: podoai_clinical.ClinicalService.UpdateClinicUser:output_type -> podoai_clinical.UpdateClinicUserResponse
-	11, // 20: podoai_clinical.ClinicalService.DeleteClinicUser:output_type -> podoai_clinical.DeleteClinicUserResponse
-	13, // 21: podoai_clinical.ClinicalService.ListClinicUsers:output_type -> podoai_clinical.ListClinicUsersResponse
-	16, // [16:22] is the sub-list for method output_type
-	10, // [10:16] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	16, // 0: podoai_clinical.Clinic.created_at:type_name -> google.protobuf.Timestamp
+	16, // 1: podoai_clinical.Clinic.updated_at:type_name -> google.protobuf.Timestamp
+	17, // 2: podoai_clinical.ClinicUser.roles:type_name -> podoai.Role
+	16, // 3: podoai_clinical.ClinicUser.created_at:type_name -> google.protobuf.Timestamp
+	16, // 4: podoai_clinical.ClinicUser.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 5: podoai_clinical.GetClinicResponse.clinic:type_name -> podoai_clinical.Clinic
+	0,  // 6: podoai_clinical.UpdateClinicRequest.clinic:type_name -> podoai_clinical.Clinic
+	0,  // 7: podoai_clinical.UpdateClinicResponse.clinic:type_name -> podoai_clinical.Clinic
+	1,  // 8: podoai_clinical.CreateClinicUserRequest.user:type_name -> podoai_clinical.ClinicUser
+	1,  // 9: podoai_clinical.CreateClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
+	1,  // 10: podoai_clinical.GetClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
+	1,  // 11: podoai_clinical.UpdateClinicUserRequest.user:type_name -> podoai_clinical.ClinicUser
+	1,  // 12: podoai_clinical.UpdateClinicUserResponse.user:type_name -> podoai_clinical.ClinicUser
+	1,  // 13: podoai_clinical.ListClinicUsersResponse.users:type_name -> podoai_clinical.ClinicUser
+	2,  // 14: podoai_clinical.ClinicalService.GetClinic:input_type -> podoai_clinical.GetClinicRequest
+	4,  // 15: podoai_clinical.ClinicalService.UpdateClinic:input_type -> podoai_clinical.UpdateClinicRequest
+	6,  // 16: podoai_clinical.ClinicalService.CreateClinicUser:input_type -> podoai_clinical.CreateClinicUserRequest
+	8,  // 17: podoai_clinical.ClinicalService.GetClinicUser:input_type -> podoai_clinical.GetClinicUserRequest
+	10, // 18: podoai_clinical.ClinicalService.UpdateClinicUser:input_type -> podoai_clinical.UpdateClinicUserRequest
+	12, // 19: podoai_clinical.ClinicalService.DeleteClinicUser:input_type -> podoai_clinical.DeleteClinicUserRequest
+	14, // 20: podoai_clinical.ClinicalService.ListClinicUsers:input_type -> podoai_clinical.ListClinicUsersRequest
+	3,  // 21: podoai_clinical.ClinicalService.GetClinic:output_type -> podoai_clinical.GetClinicResponse
+	5,  // 22: podoai_clinical.ClinicalService.UpdateClinic:output_type -> podoai_clinical.UpdateClinicResponse
+	7,  // 23: podoai_clinical.ClinicalService.CreateClinicUser:output_type -> podoai_clinical.CreateClinicUserResponse
+	9,  // 24: podoai_clinical.ClinicalService.GetClinicUser:output_type -> podoai_clinical.GetClinicUserResponse
+	11, // 25: podoai_clinical.ClinicalService.UpdateClinicUser:output_type -> podoai_clinical.UpdateClinicUserResponse
+	13, // 26: podoai_clinical.ClinicalService.DeleteClinicUser:output_type -> podoai_clinical.DeleteClinicUserResponse
+	15, // 27: podoai_clinical.ClinicalService.ListClinicUsers:output_type -> podoai_clinical.ListClinicUsersResponse
+	21, // [21:28] is the sub-list for method output_type
+	14, // [14:21] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_clinical_podoai_clinical_proto_init() }
@@ -848,7 +987,7 @@ func file_clinical_podoai_clinical_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_clinical_podoai_clinical_proto_rawDesc), len(file_clinical_podoai_clinical_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

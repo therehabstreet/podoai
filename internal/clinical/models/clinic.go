@@ -7,9 +7,11 @@ import (
 )
 
 type Clinic struct {
-	ID      string `bson:"_id"`
-	Name    string `bson:"name"`
-	Address string `bson:"address"`
+	ID        string    `bson:"_id"`
+	Name      string    `bson:"name"`
+	Address   string    `bson:"address"`
+	CreatedAt time.Time `bson:"created_at"`
+	UpdatedAt time.Time `bson:"updated_at"`
 }
 
 type ClinicUser struct {
