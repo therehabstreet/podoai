@@ -30,10 +30,16 @@ func (am *AuthNMiddleware) UnaryInterceptor() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		// Skip auth for certain methods
 		if am.shouldSkipAuth(info.FullMethod) {
+			// For unauthenticated APIs, extract app type from metadata
+			var err error
+			ctx, err = am.addAppTypeToContext(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid app type: %v", err)
+			}
 			return handler(ctx, req)
 		}
 
-		// Extract token from metadata
+		// For authenticated APIs, extract token first
 		token, err := am.extractTokenFromContext(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, "missing or invalid token: %v", err)
@@ -45,7 +51,12 @@ func (am *AuthNMiddleware) UnaryInterceptor() grpc.UnaryServerInterceptor {
 			return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
 		}
 
-		// Add claims to context
+		// Validate app type in JWT claims
+		if claims.AppType != helpers.AppTypeClinical && claims.AppType != helpers.AppTypeConsumer {
+			return nil, status.Errorf(codes.Unauthenticated, "invalid app type in token: %s", claims.AppType)
+		}
+
+		// Add claims to context (this will include app type from JWT)
 		ctx = am.addClaimsToContext(ctx, claims)
 
 		// Continue to next handler (authorization will be handled by service-specific interceptors)
@@ -95,5 +106,27 @@ func (am *AuthNMiddleware) addClaimsToContext(ctx context.Context, claims *helpe
 	ctx = context.WithValue(ctx, RolesKey, claims.Roles)
 	ctx = context.WithValue(ctx, TokenTypeKey, claims.TokenType)
 	ctx = context.WithValue(ctx, OwnerEntityIDKey, claims.OwnerEntityID)
+	ctx = context.WithValue(ctx, helpers.AppTypeKey, claims.AppType)
 	return ctx
+}
+
+// addAppTypeToContext extracts app type from gRPC metadata and adds it to context
+func (am *AuthNMiddleware) addAppTypeToContext(ctx context.Context) (context.Context, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, fmt.Errorf("missing metadata")
+	}
+
+	appTypeHeader := md.Get("x-app-type")
+	if len(appTypeHeader) == 0 {
+		return nil, fmt.Errorf("missing x-app-type header")
+	}
+
+	appType := appTypeHeader[0]
+	// Validate app type
+	if appType == helpers.AppTypeClinical || appType == helpers.AppTypeConsumer {
+		return context.WithValue(ctx, helpers.AppTypeKey, appType), nil
+	}
+
+	return nil, fmt.Errorf("invalid app type '%s'", appType)
 }

@@ -18,6 +18,7 @@ type JWTClaims struct {
 	UserID        string   `json:"user_id"`
 	Roles         []string `json:"roles"`
 	TokenType     string   `json:"token_type"` // "access" or "refresh"
+	AppType       string   `json:"app_type"`   // "clinical" or "consumer"
 	OwnerEntityID string   `json:"owner_entity_id"`
 	ExpiresAt     int64    `json:"exp"`
 	IssuedAt      int64    `json:"iat"`
@@ -35,13 +36,14 @@ type JWTHeader struct {
 
 // GenerateAccessToken generates a JWT access token
 // Accepts string roles directly to avoid conversion overhead
-func GenerateAccessToken(cfg *config.Config, userID string, roles []string) (string, error) {
+func GenerateAccessToken(cfg *config.Config, userID string, roles []string, appType string) (string, error) {
 	now := time.Now()
 
 	claims := JWTClaims{
 		UserID:    userID,
 		Roles:     roles,
 		TokenType: "access",
+		AppType:   appType,
 		ExpiresAt: now.Add(time.Duration(cfg.JWT.AccessExpiryMin) * time.Minute).Unix(),
 		IssuedAt:  now.Unix(),
 		NotBefore: now.Unix(),
@@ -55,13 +57,14 @@ func GenerateAccessToken(cfg *config.Config, userID string, roles []string) (str
 
 // GenerateRefreshToken generates a JWT refresh token
 // Accepts string roles directly to avoid conversion overhead
-func GenerateRefreshToken(cfg *config.Config, userID string, roles []string) (string, error) {
+func GenerateRefreshToken(cfg *config.Config, userID string, roles []string, appType string) (string, error) {
 	now := time.Now()
 
 	claims := JWTClaims{
 		UserID:    userID,
 		Roles:     roles,
 		TokenType: "refresh",
+		AppType:   appType,
 		ExpiresAt: now.Add(time.Duration(cfg.JWT.RefreshExpiryMin) * time.Minute).Unix(),
 		IssuedAt:  now.Unix(),
 		NotBefore: now.Unix(),
@@ -146,7 +149,7 @@ func RefreshAccessToken(cfg *config.Config, refreshTokenString string) (string, 
 	}
 
 	// Generate new access token with string roles directly
-	return GenerateAccessToken(cfg, claims.UserID, claims.Roles)
+	return GenerateAccessToken(cfg, claims.UserID, claims.Roles, claims.AppType)
 }
 
 func GetRolesFromToken(cfg *config.Config, tokenString string) ([]string, error) {

@@ -161,12 +161,15 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 		}
 	}
 
-	token, err := helpers.GenerateAccessToken(cs.Config, userID, roles)
+	// Get app type from context
+	appType := helpers.GetAppTypeFromContext(ctx)
+
+	token, err := helpers.GenerateAccessToken(cs.Config, userID, roles, appType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %v", err)
 	}
 
-	refreshToken, err := helpers.GenerateRefreshToken(cs.Config, userID, roles)
+	refreshToken, err := helpers.GenerateRefreshToken(cs.Config, userID, roles, appType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate refresh token: %v", err)
 	}

@@ -2,11 +2,13 @@ package helpers
 
 import "context"
 
+type contextKey string
+
 // App type constants for context values and collection naming
 const (
-	AppTypeClinical = "clinical"
-	AppTypeConsumer = "consumer"
-	AppTypeKey      = "appType"
+	AppTypeClinical            = "clinical"
+	AppTypeConsumer            = "consumer"
+	AppTypeKey      contextKey = "app_type"
 )
 
 // GetAppTypeFromContext extracts the app type from context
