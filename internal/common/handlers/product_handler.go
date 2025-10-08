@@ -17,7 +17,7 @@ func (cs *CommonServer) GetProduct(ctx context.Context, req *pb.GetProductReques
 	}
 
 	return &pb.GetProductResponse{
-		Product: helpers.ProductModelToProto(product),
+		Product: helpers.ProductModelToProto(*product),
 	}, nil
 }
 
@@ -31,7 +31,7 @@ func (cs *CommonServer) GetExercise(ctx context.Context, req *pb.GetExerciseRequ
 	}
 
 	return &pb.GetExerciseResponse{
-		Exercise: helpers.ExerciseModelToProto(exercise),
+		Exercise: helpers.ExerciseModelToProto(*exercise),
 	}, nil
 }
 
@@ -45,6 +45,6 @@ func (cs *CommonServer) GetTherapy(ctx context.Context, req *pb.GetTherapyReques
 	}
 
 	return &pb.GetTherapyResponse{
-		Therapy: helpers.TherapyModelToProto(therapy),
+		Therapy: helpers.TherapyModelToProto(*therapy),
 	}, nil
 }

@@ -22,7 +22,7 @@ func (cs *CommonServer) GetPatients(ctx context.Context, req *pb.GetPatientsRequ
 
 	var patients []*pb.Patient
 	for _, patient := range mongoPatients {
-		patients = append(patients, helpers.PatientModelToProto(patient))
+		patients = append(patients, helpers.PatientModelToProto(*patient))
 	}
 
 	return &pb.GetPatientsResponse{
@@ -42,7 +42,7 @@ func (cs *CommonServer) GetPatient(ctx context.Context, req *pb.GetPatientReques
 	}
 
 	return &pb.GetPatientResponse{
-		Patient: helpers.PatientModelToProto(patient),
+		Patient: helpers.PatientModelToProto(*patient),
 	}, nil
 }
 
@@ -69,7 +69,7 @@ func (cs *CommonServer) SearchPatient(ctx context.Context, req *pb.SearchPatient
 
 	var patients []*pb.Patient
 	for _, patient := range mongoPatients {
-		patients = append(patients, helpers.PatientModelToProto(patient))
+		patients = append(patients, helpers.PatientModelToProto(*patient))
 	}
 
 	return &pb.SearchPatientResponse{
@@ -86,7 +86,7 @@ func (cs *CommonServer) CreatePatient(ctx context.Context, req *pb.CreatePatient
 		return nil, err
 	}
 	return &pb.CreatePatientResponse{
-		Patient: helpers.PatientModelToProto(createdPatient),
+		Patient: helpers.PatientModelToProto(*createdPatient),
 	}, nil
 }
 

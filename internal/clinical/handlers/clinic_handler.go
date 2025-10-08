@@ -14,7 +14,7 @@ func (cs *ClinicalServer) GetClinic(ctx context.Context, req *pb.GetClinicReques
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetClinicResponse{Clinic: helpers.ClinicModelToProto(clinic)}, nil
+	return &pb.GetClinicResponse{Clinic: helpers.ClinicModelToProto(*clinic)}, nil
 }
 
 // UpdateClinic handler
@@ -25,7 +25,7 @@ func (cs *ClinicalServer) UpdateClinic(ctx context.Context, req *pb.UpdateClinic
 	if err != nil {
 		return nil, err
 	}
-	return &pb.UpdateClinicResponse{Clinic: helpers.ClinicModelToProto(updatedClinic)}, nil
+	return &pb.UpdateClinicResponse{Clinic: helpers.ClinicModelToProto(*updatedClinic)}, nil
 }
 
 // ClinicUser CRUDL handlers
@@ -35,7 +35,7 @@ func (cs *ClinicalServer) CreateClinicUser(ctx context.Context, req *pb.CreateCl
 	if err != nil {
 		return nil, err
 	}
-	return &pb.CreateClinicUserResponse{User: helpers.ClinicUserModelToProto(createdUser)}, nil
+	return &pb.CreateClinicUserResponse{User: helpers.ClinicUserModelToProto(*createdUser)}, nil
 }
 
 func (cs *ClinicalServer) GetClinicUser(ctx context.Context, req *pb.GetClinicUserRequest) (*pb.GetClinicUserResponse, error) {
@@ -43,7 +43,7 @@ func (cs *ClinicalServer) GetClinicUser(ctx context.Context, req *pb.GetClinicUs
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetClinicUserResponse{User: helpers.ClinicUserModelToProto(user)}, nil
+	return &pb.GetClinicUserResponse{User: helpers.ClinicUserModelToProto(*user)}, nil
 }
 
 func (cs *ClinicalServer) UpdateClinicUser(ctx context.Context, req *pb.UpdateClinicUserRequest) (*pb.UpdateClinicUserResponse, error) {
@@ -52,7 +52,7 @@ func (cs *ClinicalServer) UpdateClinicUser(ctx context.Context, req *pb.UpdateCl
 	if err != nil {
 		return nil, err
 	}
-	return &pb.UpdateClinicUserResponse{User: helpers.ClinicUserModelToProto(updatedUser)}, nil
+	return &pb.UpdateClinicUserResponse{User: helpers.ClinicUserModelToProto(*updatedUser)}, nil
 }
 
 func (cs *ClinicalServer) DeleteClinicUser(ctx context.Context, req *pb.DeleteClinicUserRequest) (*pb.DeleteClinicUserResponse, error) {
@@ -70,7 +70,7 @@ func (cs *ClinicalServer) ListClinicUsers(ctx context.Context, req *pb.ListClini
 	}
 	var protoUsers []*pb.ClinicUser
 	for _, user := range users {
-		protoUsers = append(protoUsers, helpers.ClinicUserModelToProto(user))
+		protoUsers = append(protoUsers, helpers.ClinicUserModelToProto(*user))
 	}
 	return &pb.ListClinicUsersResponse{Users: protoUsers, TotalCount: int32(total)}, nil
 }

@@ -24,7 +24,7 @@ func (cs *CommonServer) GetScans(ctx context.Context, req *pb.GetScansRequest) (
 
 	var protoScans []*pb.Scan
 	for _, scan := range scans {
-		protoScans = append(protoScans, helpers.ScanModelToProto(scan))
+		protoScans = append(protoScans, helpers.ScanModelToProto(*scan))
 	}
 
 	return &pb.GetScansResponse{
@@ -44,7 +44,7 @@ func (cs *CommonServer) GetScan(ctx context.Context, req *pb.GetScanRequest) (*p
 	}
 
 	return &pb.GetScanResponse{
-		Scan: helpers.ScanModelToProto(scan),
+		Scan: helpers.ScanModelToProto(*scan),
 	}, nil
 }
 
@@ -67,7 +67,7 @@ func (cs *CommonServer) CreateScan(ctx context.Context, req *pb.CreateScanReques
 	}
 
 	return &pb.CreateScanResponse{
-		Scan: helpers.ScanModelToProto(createdScan),
+		Scan: helpers.ScanModelToProto(*createdScan),
 	}, nil
 }
 

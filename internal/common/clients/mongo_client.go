@@ -16,16 +16,16 @@ import (
 )
 
 type DBClient interface {
-	FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]models.Scan, int64, error)
-	FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (models.Scan, error)
-	CreateScan(ctx context.Context, scan models.Scan) (models.Scan, error)
+	FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Scan, int64, error)
+	FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (*models.Scan, error)
+	CreateScan(ctx context.Context, scan models.Scan) (*models.Scan, error)
 	DeleteScanByID(ctx context.Context, scanID string, ownerEntityID string) error
 	// Product methods
-	FetchProductByID(ctx context.Context, productID string) (models.Product, error)
-	// Exercise methods
-	FetchExerciseByID(ctx context.Context, exerciseID string) (models.Exercise, error)
-	// Therapy methods
-	FetchTherapyByID(ctx context.Context, therapyID string) (models.Therapy, error)
+	FetchProductByID(ctx context.Context, productID string) (*models.Product, error)
+	// Exercise-related methods
+	FetchExerciseByID(ctx context.Context, exerciseID string) (*models.Exercise, error)
+	// Therapy-related methods
+	FetchTherapyByID(ctx context.Context, therapyID string) (*models.Therapy, error)
 	// OTP methods
 	StoreOTP(ctx context.Context, otp *models.OTP) error
 	GetOTPByPhoneNumber(ctx context.Context, phoneNumber string) (*models.OTP, error)
@@ -38,10 +38,10 @@ type DBClient interface {
 	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (interface{}, error)
 	CreateUser(ctx context.Context, user interface{}) (string, error)
 	// Patient methods
-	FetchPatientByID(ctx context.Context, patientID string, ownerEntityID string) (models.Patient, error)
-	FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]models.Patient, int64, error)
-	SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]models.Patient, int64, error)
-	CreatePatient(ctx context.Context, patient models.Patient) (models.Patient, error)
+	FetchPatientByID(ctx context.Context, patientID string, ownerEntityID string) (*models.Patient, error)
+	FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Patient, int64, error)
+	SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]*models.Patient, int64, error)
+	CreatePatient(ctx context.Context, patient models.Patient) (*models.Patient, error)
 	DeletePatientByID(ctx context.Context, patientID string, ownerEntityID string) error
 }
 
@@ -152,7 +152,7 @@ func InitCommonMongoClient(uri string) (*MongoDBClient, error) {
 	return mongoClient, nil
 }
 
-func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]models.Scan, int64, error) {
+func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Scan, int64, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 
 	filter := bson.M{"owner_entity_id": ownerEntityID}
@@ -180,13 +180,13 @@ func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerE
 		return nil, 0, err
 	}
 	defer cursor.Close(ctx)
-	var scans []models.Scan
+	var scans []*models.Scan
 	for cursor.Next(ctx) {
 		var scan models.Scan
 		if err := cursor.Decode(&scan); err != nil {
 			continue
 		}
-		scans = append(scans, scan)
+		scans = append(scans, &scan)
 	}
 	total, err := coll.CountDocuments(ctx, filter)
 	if err != nil {
@@ -195,18 +195,18 @@ func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerE
 	return scans, total, nil
 }
 
-func (m *MongoDBClient) FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (models.Scan, error) {
+func (m *MongoDBClient) FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (*models.Scan, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 	filter := bson.M{"_id": scanID, "owner_entity_id": ownerEntityID}
 	var scan models.Scan
 	err := coll.FindOne(ctx, filter).Decode(&scan)
-	return scan, err
+	return &scan, err
 }
 
-func (m *MongoDBClient) CreateScan(ctx context.Context, scan models.Scan) (models.Scan, error) {
+func (m *MongoDBClient) CreateScan(ctx context.Context, scan models.Scan) (*models.Scan, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 	_, err := coll.InsertOne(ctx, scan)
-	return scan, err
+	return &scan, err
 }
 
 func (m *MongoDBClient) DeleteScanByID(ctx context.Context, scanID string, ownerEntityID string) error {
@@ -217,27 +217,27 @@ func (m *MongoDBClient) DeleteScanByID(ctx context.Context, scanID string, owner
 }
 
 // Product methods
-func (m *MongoDBClient) FetchProductByID(ctx context.Context, productID string) (models.Product, error) {
+func (m *MongoDBClient) FetchProductByID(ctx context.Context, productID string) (*models.Product, error) {
 	coll := m.Client.Database(DatabaseName).Collection("products")
 	var product models.Product
 	err := coll.FindOne(ctx, bson.M{"_id": productID}).Decode(&product)
-	return product, err
+	return &product, err
 }
 
 // Exercise methods
-func (m *MongoDBClient) FetchExerciseByID(ctx context.Context, exerciseID string) (models.Exercise, error) {
+func (m *MongoDBClient) FetchExerciseByID(ctx context.Context, exerciseID string) (*models.Exercise, error) {
 	coll := m.Client.Database(DatabaseName).Collection("exercises")
 	var exercise models.Exercise
 	err := coll.FindOne(ctx, bson.M{"_id": exerciseID}).Decode(&exercise)
-	return exercise, err
+	return &exercise, err
 }
 
 // Therapy methods
-func (m *MongoDBClient) FetchTherapyByID(ctx context.Context, therapyID string) (models.Therapy, error) {
+func (m *MongoDBClient) FetchTherapyByID(ctx context.Context, therapyID string) (*models.Therapy, error) {
 	coll := m.Client.Database(DatabaseName).Collection("therapies")
 	var therapy models.Therapy
 	err := coll.FindOne(ctx, bson.M{"_id": therapyID}).Decode(&therapy)
-	return therapy, err
+	return &therapy, err
 }
 
 // OTP methods implementation
@@ -363,18 +363,12 @@ func (m *MongoDBClient) CreateUser(ctx context.Context, user interface{}) (strin
 }
 
 // FetchPatientByID retrieves a patient by ID with owner entity validation
-func (m *MongoDBClient) FetchPatientByID(ctx context.Context, patientID string, ownerEntityID string) (models.Patient, error) {
+func (m *MongoDBClient) FetchPatientByID(ctx context.Context, patientID string, ownerEntityID string) (*models.Patient, error) {
 	var patient models.Patient
-
-	// Convert patientID to ObjectID
-	objectID, err := primitive.ObjectIDFromHex(patientID)
-	if err != nil {
-		return patient, fmt.Errorf("invalid patient_id format: %v", err)
-	}
 
 	// Build filter with both patient ID and owner entity ID for security
 	filter := bson.M{
-		"_id":             objectID,
+		"_id":             patientID,
 		"owner_entity_id": ownerEntityID,
 	}
 
@@ -383,20 +377,20 @@ func (m *MongoDBClient) FetchPatientByID(ctx context.Context, patientID string, 
 	coll := m.Client.Database(DatabaseName).Collection(collectionName)
 
 	// Find the patient
-	err = coll.FindOne(ctx, filter).Decode(&patient)
+	err := coll.FindOne(ctx, filter).Decode(&patient)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return patient, fmt.Errorf("patient not found")
+			return nil, fmt.Errorf("patient not found")
 		}
-		return patient, fmt.Errorf("error fetching patient")
+		return nil, fmt.Errorf("error fetching patient")
 	}
 
-	return patient, nil
+	return &patient, nil
 }
 
 // FetchPatients retrieves patients with pagination and filtering
-func (m *MongoDBClient) FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]models.Patient, int64, error) {
-	var patients []models.Patient
+func (m *MongoDBClient) FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Patient, int64, error) {
+	var patients []*models.Patient
 
 	// Get collection name with context-based prefix
 	collectionName := getCollectionNameWithPrefix(ctx, "patients")
@@ -434,16 +428,20 @@ func (m *MongoDBClient) FetchPatients(ctx context.Context, ownerEntityID string,
 	defer cursor.Close(ctx)
 
 	// Decode results
-	if err = cursor.All(ctx, &patients); err != nil {
-		return patients, 0, fmt.Errorf("error decoding patients")
+	for cursor.Next(ctx) {
+		var patient models.Patient
+		if err := cursor.Decode(&patient); err != nil {
+			continue
+		}
+		patients = append(patients, &patient)
 	}
 
 	return patients, totalCount, nil
 }
 
 // SearchPatients searches patients by name or phone number
-func (m *MongoDBClient) SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]models.Patient, int64, error) {
-	var patients []models.Patient
+func (m *MongoDBClient) SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]*models.Patient, int64, error) {
+	var patients []*models.Patient
 	if searchTerm == "" || len(strings.TrimSpace(searchTerm)) == 0 {
 		return patients, 0, fmt.Errorf("search term cannot be empty")
 	}
@@ -481,26 +479,25 @@ func (m *MongoDBClient) SearchPatients(ctx context.Context, searchTerm, ownerEnt
 	defer cursor.Close(ctx)
 
 	// Decode results
-	if err = cursor.All(ctx, &patients); err != nil {
-		return patients, 0, fmt.Errorf("error decoding search results")
+	for cursor.Next(ctx) {
+		var patient models.Patient
+		if err := cursor.Decode(&patient); err != nil {
+			continue
+		}
+		patients = append(patients, &patient)
 	}
 
 	return patients, totalCount, nil
 }
 
 // CreatePatient creates a new patient
-func (m *MongoDBClient) CreatePatient(ctx context.Context, patient models.Patient) (models.Patient, error) {
+func (m *MongoDBClient) CreatePatient(ctx context.Context, patient models.Patient) (*models.Patient, error) {
 	if patient.Name == "" || len(strings.TrimSpace(patient.Name)) == 0 {
-		return patient, fmt.Errorf("patient name cannot be empty")
+		return nil, fmt.Errorf("patient name cannot be empty")
 	}
 
 	// Set created time
 	patient.CreatedAt = time.Now()
-
-	// Generate new ObjectID if not set
-	if patient.ID.IsZero() {
-		patient.ID = primitive.NewObjectID()
-	}
 
 	// Get collection name with context-based prefix
 	collectionName := getCollectionNameWithPrefix(ctx, "patients")
@@ -509,22 +506,16 @@ func (m *MongoDBClient) CreatePatient(ctx context.Context, patient models.Patien
 	// Insert patient
 	_, err := coll.InsertOne(ctx, patient)
 	if err != nil {
-		return patient, fmt.Errorf("error creating patient")
+		return nil, fmt.Errorf("error creating patient")
 	}
 
-	return patient, nil
+	return &patient, nil
 }
 
 // DeletePatientByID deletes a patient by ID with owner entity validation
 func (m *MongoDBClient) DeletePatientByID(ctx context.Context, patientID string, ownerEntityID string) error {
-	// Convert patientID to ObjectID
-	objectID, err := primitive.ObjectIDFromHex(patientID)
-	if err != nil {
-		return fmt.Errorf("invalid patient_id format: %v", err)
-	}
-
 	filter := bson.M{
-		"_id":             objectID,
+		"_id":             patientID,
 		"owner_entity_id": ownerEntityID,
 	}
 
