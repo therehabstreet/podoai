@@ -18,7 +18,6 @@ type ClinicUser struct {
 	ID          string    `bson:"_id"`
 	Name        string    `bson:"name"`
 	PhoneNumber string    `bson:"phone_number"`
-	Email       string    `bson:"email,omitempty"`
 	Roles       []string  `bson:"roles"`
 	ClinicID    string    `bson:"clinic_id"`
 	CreatedAt   time.Time `bson:"created_at"`

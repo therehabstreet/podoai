@@ -31,10 +31,11 @@ message Clinic {
 message ClinicUser {
     string id = 1;
     string name = 2;
-    repeated podoai.Role roles = 3;
-    string clinic_id = 4;
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp updated_at = 6;
+    string phone_number = 3;
+    repeated podoai.Role roles = 4;
+    string clinic_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
 }
 
 // Clinic API messages

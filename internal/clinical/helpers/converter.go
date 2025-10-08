@@ -58,12 +58,13 @@ func ClinicUserModelToProto(m models.ClinicUser) *pb.ClinicUser {
 		protoRoles = append(protoRoles, podoai.Role(podoai.Role_value[r]))
 	}
 	return &pb.ClinicUser{
-		Id:        m.ID,
-		Name:      m.Name,
-		Roles:     protoRoles,
-		ClinicId:  m.ClinicID,
-		CreatedAt: timestamppb.New(m.CreatedAt),
-		UpdatedAt: timestamppb.New(m.UpdatedAt),
+		Id:          m.ID,
+		Name:        m.Name,
+		PhoneNumber: m.PhoneNumber,
+		Roles:       protoRoles,
+		ClinicId:    m.ClinicID,
+		CreatedAt:   timestamppb.New(m.CreatedAt),
+		UpdatedAt:   timestamppb.New(m.UpdatedAt),
 	}
 }
 
@@ -82,11 +83,12 @@ func ClinicUserProtoToModel(p *pb.ClinicUser) models.ClinicUser {
 		updatedAt = p.UpdatedAt.AsTime()
 	}
 	return models.ClinicUser{
-		ID:        p.Id,
-		Name:      p.Name,
-		Roles:     modelRoles,
-		ClinicID:  p.ClinicId,
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
+		ID:          p.Id,
+		Name:        p.Name,
+		PhoneNumber: p.PhoneNumber,
+		Roles:       modelRoles,
+		ClinicID:    p.ClinicId,
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
 	}
 }

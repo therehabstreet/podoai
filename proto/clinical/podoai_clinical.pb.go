@@ -103,10 +103,11 @@ type ClinicUser struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Roles         []common.Role          `protobuf:"varint,3,rep,packed,name=roles,proto3,enum=podoai.Role" json:"roles,omitempty"`
-	ClinicId      string                 `protobuf:"bytes,4,opt,name=clinic_id,json=clinicId,proto3" json:"clinic_id,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	PhoneNumber   string                 `protobuf:"bytes,3,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	Roles         []common.Role          `protobuf:"varint,4,rep,packed,name=roles,proto3,enum=podoai.Role" json:"roles,omitempty"`
+	ClinicId      string                 `protobuf:"bytes,5,opt,name=clinic_id,json=clinicId,proto3" json:"clinic_id,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -151,6 +152,13 @@ func (x *ClinicUser) GetId() string {
 func (x *ClinicUser) GetName() string {
 	if x != nil {
 		return x.Name
+	}
+	return ""
+}
+
+func (x *ClinicUser) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
 	}
 	return ""
 }
@@ -853,17 +861,18 @@ const file_clinical_podoai_clinical_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xe7\x01\n" +
+	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8a\x02\n" +
 	"\n" +
 	"ClinicUser\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\"\n" +
-	"\x05roles\x18\x03 \x03(\x0e2\f.podoai.RoleR\x05roles\x12\x1b\n" +
-	"\tclinic_id\x18\x04 \x01(\tR\bclinicId\x129\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12!\n" +
+	"\fphone_number\x18\x03 \x01(\tR\vphoneNumber\x12\"\n" +
+	"\x05roles\x18\x04 \x03(\x0e2\f.podoai.RoleR\x05roles\x12\x1b\n" +
+	"\tclinic_id\x18\x05 \x01(\tR\bclinicId\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"/\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"/\n" +
 	"\x10GetClinicRequest\x12\x1b\n" +
 	"\tclinic_id\x18\x01 \x01(\tR\bclinicId\"D\n" +
 	"\x11GetClinicResponse\x12/\n" +

@@ -13,13 +13,12 @@ import (
 type DBClient interface {
 	// Clinic methods
 	FetchClinicByID(ctx context.Context, id string) (*models.Clinic, error)
-	CreateClinic(ctx context.Context, clinic models.Clinic) (*models.Clinic, error)
-	UpdateClinic(ctx context.Context, clinic models.Clinic) (*models.Clinic, error)
+	CreateClinic(ctx context.Context, clinic *models.Clinic) (*models.Clinic, error)
+	UpdateClinic(ctx context.Context, clinic *models.Clinic) (*models.Clinic, error)
 	// ClinicUser methods
-	CreateClinicUser(ctx context.Context, user models.ClinicUser) (*models.ClinicUser, error)
+	CreateClinicUser(ctx context.Context, user *models.ClinicUser) (*models.ClinicUser, error)
 	FetchClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) (*models.ClinicUser, error)
-	FetchClinicUserByPhoneNumber(ctx context.Context, phoneNumber string) (*models.ClinicUser, error)
-	UpdateClinicUser(ctx context.Context, user models.ClinicUser) (*models.ClinicUser, error)
+	UpdateClinicUser(ctx context.Context, user *models.ClinicUser) (*models.ClinicUser, error)
 	DeleteClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) error
 	ListClinicUsers(ctx context.Context, clinicID string, page, pageSize int32) ([]*models.ClinicUser, int64, error)
 }
@@ -93,7 +92,7 @@ func (m *MongoDBClient) FetchClinicByID(ctx context.Context, id string) (*models
 	return &clinic, err
 }
 
-func (m *MongoDBClient) CreateClinic(ctx context.Context, clinic models.Clinic) (*models.Clinic, error) {
+func (m *MongoDBClient) CreateClinic(ctx context.Context, clinic *models.Clinic) (*models.Clinic, error) {
 	coll := m.Client.Database("podoai").Collection("clinics")
 	now := time.Now()
 
@@ -106,15 +105,16 @@ func (m *MongoDBClient) CreateClinic(ctx context.Context, clinic models.Clinic) 
 		clinic.UpdatedAt = now
 	}
 	_, err := coll.InsertOne(ctx, clinic)
-	return &clinic, err
+	return clinic, err
 }
 
-func (m *MongoDBClient) UpdateClinic(ctx context.Context, clinic models.Clinic) (*models.Clinic, error) {
+func (m *MongoDBClient) UpdateClinic(ctx context.Context, clinic *models.Clinic) (*models.Clinic, error) {
 	coll := m.Client.Database("podoai").Collection("clinics")
 	filter := bson.M{"_id": clinic.ID}
 	update := bson.M{"$set": bson.M{
-		"name":    clinic.Name,
-		"address": clinic.Address,
+		"name":       clinic.Name,
+		"address":    clinic.Address,
+		"updated_at": time.Now(),
 	}}
 	_, err := coll.UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -130,10 +130,20 @@ func (m *MongoDBClient) UpdateClinic(ctx context.Context, clinic models.Clinic) 
 }
 
 // ClinicUser methods
-func (m *MongoDBClient) CreateClinicUser(ctx context.Context, user models.ClinicUser) (*models.ClinicUser, error) {
+func (m *MongoDBClient) CreateClinicUser(ctx context.Context, user *models.ClinicUser) (*models.ClinicUser, error) {
 	coll := m.Client.Database("podoai").Collection("clinical_users")
+	now := time.Now()
+
+	// Set created_at if not already set
+	if user.CreatedAt.IsZero() {
+		user.CreatedAt = now
+	}
+	// Set updated_at if not already set
+	if user.UpdatedAt.IsZero() {
+		user.UpdatedAt = now
+	}
 	_, err := coll.InsertOne(ctx, user)
-	return &user, err
+	return user, err
 }
 
 func (m *MongoDBClient) FetchClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) (*models.ClinicUser, error) {
@@ -144,19 +154,26 @@ func (m *MongoDBClient) FetchClinicUserByIDAndClinic(ctx context.Context, userID
 	return &user, err
 }
 
-func (m *MongoDBClient) FetchClinicUserByPhoneNumber(ctx context.Context, phoneNumber string) (*models.ClinicUser, error) {
-	coll := m.Client.Database("podoai").Collection("clinical_users")
-	var user models.ClinicUser
-	err := coll.FindOne(ctx, bson.M{"phone_number": phoneNumber}).Decode(&user)
-	return &user, err
-}
-
-func (m *MongoDBClient) UpdateClinicUser(ctx context.Context, user models.ClinicUser) (*models.ClinicUser, error) {
+func (m *MongoDBClient) UpdateClinicUser(ctx context.Context, user *models.ClinicUser) (*models.ClinicUser, error) {
 	coll := m.Client.Database("podoai").Collection("clinical_users")
 	filter := bson.M{"_id": user.ID}
+
+	// Update the updated_at field
+	user.UpdatedAt = time.Now()
+
 	update := bson.M{"$set": user}
 	_, err := coll.UpdateOne(ctx, filter, update)
-	return &user, err
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch the updated user to get the actual field values
+	var updatedUser models.ClinicUser
+	err = coll.FindOne(ctx, filter).Decode(&updatedUser)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedUser, nil
 }
 
 func (m *MongoDBClient) DeleteClinicUserByIDAndClinic(ctx context.Context, userID, clinicID string) error {

@@ -21,7 +21,7 @@ func (cs *ClinicalServer) GetClinic(ctx context.Context, req *pb.GetClinicReques
 func (cs *ClinicalServer) UpdateClinic(ctx context.Context, req *pb.UpdateClinicRequest) (*pb.UpdateClinicResponse, error) {
 	clinicModel := helpers.ClinicProtoToModel(req.GetClinic())
 	clinicModel.UpdatedAt = time.Now()
-	updatedClinic, err := cs.DBClient.UpdateClinic(ctx, clinicModel)
+	updatedClinic, err := cs.DBClient.UpdateClinic(ctx, &clinicModel)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func (cs *ClinicalServer) UpdateClinic(ctx context.Context, req *pb.UpdateClinic
 // ClinicUser CRUDL handlers
 func (cs *ClinicalServer) CreateClinicUser(ctx context.Context, req *pb.CreateClinicUserRequest) (*pb.CreateClinicUserResponse, error) {
 	userModel := helpers.ClinicUserProtoToModel(req.GetUser())
-	createdUser, err := cs.DBClient.CreateClinicUser(ctx, userModel)
+	createdUser, err := cs.DBClient.CreateClinicUser(ctx, &userModel)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (cs *ClinicalServer) GetClinicUser(ctx context.Context, req *pb.GetClinicUs
 
 func (cs *ClinicalServer) UpdateClinicUser(ctx context.Context, req *pb.UpdateClinicUserRequest) (*pb.UpdateClinicUserResponse, error) {
 	userModel := helpers.ClinicUserProtoToModel(req.GetUser())
-	updatedUser, err := cs.DBClient.UpdateClinicUser(ctx, userModel)
+	updatedUser, err := cs.DBClient.UpdateClinicUser(ctx, &userModel)
 	if err != nil {
 		return nil, err
 	}
