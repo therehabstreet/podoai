@@ -12,13 +12,15 @@ type CommonServer struct {
 	Config          *config.Config
 	DBClient        clients.DBClient
 	MessagingClient clients.MessagingClient
+	StorageClient   clients.StorageClient
 }
 
-func NewCommonServer(cfg *config.Config, dbClient clients.DBClient, messagingClient clients.MessagingClient) *CommonServer {
+func NewCommonServer(cfg *config.Config, dbClient clients.DBClient, messagingClient clients.MessagingClient, storageClient clients.StorageClient) *CommonServer {
 	return &CommonServer{
 		Config:          cfg,
 		DBClient:        dbClient,
 		MessagingClient: messagingClient,
+		StorageClient:   storageClient,
 	}
 }
 

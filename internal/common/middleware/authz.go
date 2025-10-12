@@ -111,6 +111,14 @@ func (am *AuthZMiddleware) authorize(ctx context.Context, method string, req any
 		}
 		return status.Errorf(codes.PermissionDenied, "only clinic admins can delete scans")
 
+	case "/podoai.CommonService/GenerateMediaSignedUrls":
+		if r, ok := req.(*pb.GenerateMediaSignedUrlsRequest); ok {
+			if r.GetOwnerEntityId() == ownerEntityID {
+				return nil
+			}
+		}
+		return status.Errorf(codes.PermissionDenied, "unauthorized to access media for different owner entity")
+
 	// Patient operations
 	case "/podoai.CommonService/GetPatients":
 		if r, ok := req.(*pb.GetPatientsRequest); ok {

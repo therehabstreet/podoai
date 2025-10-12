@@ -39,6 +39,11 @@ func main() {
 
 	whatsappClient := commonClients.NewWhatsAppClient(config)
 
+	storageClient, err := commonClients.NewGCSClient(config.GCS)
+	if err != nil {
+		log.Fatalf("Warning: failed to create GCS client: %v", err)
+	}
+
 	// Start periodic cleanup of expired OTPs
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour) // Cleanup every hour
@@ -77,7 +82,7 @@ func main() {
 	clinicalHandlers.RegisterClinicalServer(grpcServer, clinicalServer)
 
 	// Register common server
-	commonServer := commonHandlers.NewCommonServer(config, commonMongoClient, whatsappClient)
+	commonServer := commonHandlers.NewCommonServer(config, commonMongoClient, whatsappClient, storageClient)
 	commonHandlers.RegisterCommonServer(grpcServer, commonServer)
 
 	// Register consumer server

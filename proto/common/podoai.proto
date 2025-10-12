@@ -102,7 +102,7 @@ message Image {
   string url = 3;
   google.protobuf.Timestamp captured_at = 4;
   string signed_url = 5;        // Signed URL for secure access
-  string thumbnail_url = 6;     // Thumbnail signed URL
+  string thumbnail_signed_url = 6;     // Thumbnail signed URL
   string gcs_path = 7;          // GCS path
   string thumbnail_path = 8;    // Thumbnail GCS path
   google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
@@ -114,7 +114,7 @@ message Video {
   int32 duration = 3;
   google.protobuf.Timestamp captured_at = 4;
   string signed_url = 5;        // Signed URL for secure access
-  string thumbnail_url = 6;     // Video thumbnail signed URL (always .jpg)
+  string thumbnail_signed_url = 6;     // Video thumbnail signed URL (always .jpg)
   string gcs_path = 7;          // GCS path
   string thumbnail_path = 8;    // Thumbnail GCS path
   google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
@@ -167,6 +167,12 @@ enum Gender {
   MALE = 1;
   FEMALE = 2;
   OTHER = 3;
+}
+
+enum SignedUrlAction {
+  SIGNED_URL_ACTION_UNSPECIFIED = 0;
+  READ = 1;
+  WRITE = 2;
 }
 
 message Patient {
@@ -233,6 +239,7 @@ message DeleteScanResponse {
 message GenerateMediaSignedUrlsRequest {
     string scan_id = 1;
     string owner_entity_id = 2;
+    SignedUrlAction action = 3;  // READ or WRITE access
 }
 
 message GenerateMediaSignedUrlsResponse {

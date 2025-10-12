@@ -14,12 +14,20 @@ import (
 func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.GenerateMediaSignedUrlsRequest) (*pb.GenerateMediaSignedUrlsResponse, error) {
 	scanID := req.GetScanId()
 	ownerEntityID := req.GetOwnerEntityId()
+	action := req.GetAction()
 
 	if scanID == "" {
 		return nil, fmt.Errorf("missing scan ID")
 	}
-	if ownerEntityID == "" {
-		return nil, fmt.Errorf("missing owner entity ID")
+
+	var actionString string
+	switch action {
+	case pb.SignedUrlAction_READ:
+		actionString = action.String()
+	case pb.SignedUrlAction_WRITE:
+		actionString = action.String()
+	default:
+		return nil, fmt.Errorf("invalid url sign action specified")
 	}
 
 	// Verify the scan exists and is owned by the owner entity
@@ -54,23 +62,23 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 		thumbnailPath := fmt.Sprintf("/scans/%s/%s/media/thumbnails/%s.jpg", ownerEntityID, scanID, typeString)
 
 		// Generate signed URLs
-		signedURL, expiresAt, err := cs.generateGCSSignedURL(gcsPath, "READ")
+		signedURL, expiresAt, err := cs.generateGCSSignedURL(gcsPath, actionString)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate signed URL for %s: %v", typeString, err)
 		}
 
-		thumbnailURL, _, err := cs.generateGCSSignedURL(thumbnailPath, "READ")
+		thumbnailURL, _, err := cs.generateGCSSignedURL(thumbnailPath, actionString)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate thumbnail URL for %s: %v", typeString, err)
 		}
 
 		images = append(images, &pb.Image{
-			Type:          imageType,
-			SignedUrl:     signedURL,
-			ThumbnailUrl:  thumbnailURL,
-			GcsPath:       gcsPath,
-			ThumbnailPath: thumbnailPath,
-			ExpiresAt:     timestamppb.New(expiresAt),
+			Type:               imageType,
+			SignedUrl:          signedURL,
+			ThumbnailSignedUrl: thumbnailURL,
+			GcsPath:            gcsPath,
+			ThumbnailPath:      thumbnailPath,
+			ExpiresAt:          timestamppb.New(expiresAt),
 		})
 	}
 
@@ -84,23 +92,23 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 		thumbnailPath := fmt.Sprintf("/scans/%s/%s/media/thumbnails/%s.jpg", ownerEntityID, scanID, typeString)
 
 		// Generate signed URLs
-		signedURL, expiresAt, err := cs.generateGCSSignedURL(gcsPath, "READ")
+		signedURL, expiresAt, err := cs.generateGCSSignedURL(gcsPath, actionString)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate signed URL for %s: %v", typeString, err)
 		}
 
-		thumbnailURL, _, err := cs.generateGCSSignedURL(thumbnailPath, "READ")
+		thumbnailURL, _, err := cs.generateGCSSignedURL(thumbnailPath, actionString)
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate thumbnail URL for %s: %v", typeString, err)
 		}
 
 		videos = append(videos, &pb.Video{
-			Type:          videoType,
-			SignedUrl:     signedURL,
-			ThumbnailUrl:  thumbnailURL,
-			GcsPath:       gcsPath,
-			ThumbnailPath: thumbnailPath,
-			ExpiresAt:     timestamppb.New(expiresAt),
+			Type:               videoType,
+			SignedUrl:          signedURL,
+			ThumbnailSignedUrl: thumbnailURL,
+			GcsPath:            gcsPath,
+			ThumbnailPath:      thumbnailPath,
+			ExpiresAt:          timestamppb.New(expiresAt),
 		})
 	}
 
@@ -112,24 +120,6 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 
 // generateGCSSignedURL generates a signed URL for the given GCS path
 func (cs *CommonServer) generateGCSSignedURL(gcsPath string, action string) (string, time.Time, error) {
-	// Configuration (should come from environment/config)
-	bucketName := "podoai-scans" // TODO: Make this configurable
-	expirationDuration := 15 * time.Minute
-
-	if action == "WRITE" {
-		expirationDuration = time.Minute * 15 // Shorter expiration for uploads
-	}
-
-	expiresAt := time.Now().Add(expirationDuration)
-
-	// Placeholder implementation
-	method := "GET"
-	if action == "WRITE" {
-		method = "PUT"
-	}
-
-	signedURL := fmt.Sprintf("https://storage.googleapis.com/%s%s?method=%s&expires=%d&placeholder=true",
-		bucketName, gcsPath, method, expiresAt.Unix())
-
-	return signedURL, expiresAt, nil
+	ctx := context.Background()
+	return cs.StorageClient.GenerateSignedURL(ctx, gcsPath, action)
 }

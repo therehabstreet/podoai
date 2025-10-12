@@ -8,6 +8,7 @@ import (
 type Config struct {
 	WhatsApp *WhatsAppConfig
 	JWT      *JWTConfig
+	GCS      *GCSConfig
 }
 
 type WhatsAppConfig struct {
@@ -20,6 +21,12 @@ type JWTConfig struct {
 	Secret           string
 	AccessExpiryMin  int
 	RefreshExpiryMin int
+}
+
+type GCSConfig struct {
+	BucketName                string
+	ServiceAccountKeyPath     string // Path to service account JSON file
+	DefaultSignedURLExpiryMin int    // Default expiry for signed URLs in minutes
 }
 
 func NewConfig() *Config {
@@ -38,6 +45,14 @@ func NewConfig() *Config {
 		}
 	}
 
+	// GCS configuration
+	gcsSignedURLExpiryMin := 15 // 15 minutes default
+	if envValue := os.Getenv("GCS_SIGNED_URL_EXPIRY_MINUTES"); envValue != "" {
+		if val, err := strconv.Atoi(envValue); err == nil {
+			gcsSignedURLExpiryMin = val
+		}
+	}
+
 	return &Config{
 		WhatsApp: &WhatsAppConfig{
 			APIKey:    getEnvWithDefault("WHATSAPP_API_KEY", ""),
@@ -48,6 +63,11 @@ func NewConfig() *Config {
 			Secret:           getEnvWithDefault("JWT_SECRET", "your-secret-key-change-in-production"),
 			AccessExpiryMin:  accessExpiryMin,
 			RefreshExpiryMin: refreshExpiryMin,
+		},
+		GCS: &GCSConfig{
+			BucketName:                getEnvWithDefault("GCS_BUCKET_NAME", "podoai-scans"),
+			ServiceAccountKeyPath:     getEnvWithDefault("GCS_SERVICE_ACCOUNT_KEY_PATH", ""),
+			DefaultSignedURLExpiryMin: gcsSignedURLExpiryMin,
 		},
 	}
 }
