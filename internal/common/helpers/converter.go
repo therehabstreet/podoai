@@ -19,6 +19,7 @@ func ScanProtoToModel(proto *common.Scan) models.Scan {
 		PatientID:     proto.GetPatientId(),
 		OwnerEntityID: proto.GetOwnerEntityId(),
 		CreatedAt:     timestampPBToTime(proto.GetCreatedAt()),
+		UpdatedAt:     timestampPBToTime(proto.GetUpdatedAt()),
 		ScannedByID:   proto.GetScannedById(),
 		ReviewedByID:  proto.GetReviewedById(),
 	}
@@ -53,6 +54,7 @@ func ScanModelToProto(model models.Scan) *common.Scan {
 		PatientId:     model.PatientID,
 		OwnerEntityId: model.OwnerEntityID,
 		CreatedAt:     timestamppb.New(model.CreatedAt),
+		UpdatedAt:     timestamppb.New(model.UpdatedAt),
 		ScannedById:   model.ScannedByID,
 		ReviewedById:  model.ReviewedByID,
 	}
@@ -152,15 +154,21 @@ func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 // Image conversion
 func ImageProtoToModel(proto *common.Image) models.Image {
 	return models.Image{
-		Type:       proto.GetType(),
+		Type:       proto.GetType().String(),
 		URL:        proto.GetUrl(),
 		CapturedAt: timestampPBToTime(proto.GetCapturedAt()),
 	}
 }
 
 func ImageModelToProto(model models.Image) *common.Image {
+	// Convert string type to ImageType enum
+	imageType, exists := common.ImageType_value[model.Type]
+	if !exists {
+		// Default to unspecified if the type doesn't exist
+		imageType = int32(common.ImageType_IMAGE_TYPE_UNSPECIFIED)
+	}
 	return &common.Image{
-		Type:       model.Type,
+		Type:       common.ImageType(imageType),
 		Url:        model.URL,
 		CapturedAt: timestamppb.New(model.CapturedAt),
 	}
@@ -169,7 +177,7 @@ func ImageModelToProto(model models.Image) *common.Image {
 // Video conversion
 func VideoProtoToModel(proto *common.Video) models.Video {
 	return models.Video{
-		Type:       proto.GetType(),
+		Type:       proto.GetType().String(),
 		URL:        proto.GetUrl(),
 		Duration:   proto.GetDuration(),
 		CapturedAt: timestampPBToTime(proto.GetCapturedAt()),
@@ -177,8 +185,14 @@ func VideoProtoToModel(proto *common.Video) models.Video {
 }
 
 func VideoModelToProto(model models.Video) *common.Video {
+	// Convert string type to VideoType enum
+	videoType, exists := common.VideoType_value[model.Type]
+	if !exists {
+		// Default to unspecified if the type doesn't exist
+		videoType = int32(common.VideoType_VIDEO_TYPE_UNSPECIFIED)
+	}
 	return &common.Video{
-		Type:       model.Type,
+		Type:       common.VideoType(videoType),
 		Url:        model.URL,
 		Duration:   model.Duration,
 		CapturedAt: timestamppb.New(model.CapturedAt),

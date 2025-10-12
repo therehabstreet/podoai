@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/therehabstreet/podoai/internal/common/helpers"
 	pb "github.com/therehabstreet/podoai/proto/common"
@@ -55,6 +56,11 @@ func (cs *CommonServer) CreateScan(ctx context.Context, req *pb.CreateScanReques
 		return nil, fmt.Errorf("missing patient ID")
 	}
 
+	// Set timestamps for creation
+	now := time.Now()
+	scanModel.CreatedAt = now
+	scanModel.UpdatedAt = now
+
 	// ensure patient is owned by the owner entity
 	_, err := cs.DBClient.FetchPatientByID(ctx, scanModel.PatientID, scanModel.OwnerEntityID)
 	if err != nil {
@@ -68,6 +74,37 @@ func (cs *CommonServer) CreateScan(ctx context.Context, req *pb.CreateScanReques
 
 	return &pb.CreateScanResponse{
 		Scan: helpers.ScanModelToProto(*createdScan),
+	}, nil
+}
+
+// UpdateScan handles the UpdateScan gRPC request
+func (cs *CommonServer) UpdateScan(ctx context.Context, req *pb.UpdateScanRequest) (*pb.UpdateScanResponse, error) {
+	scanModel := helpers.ScanProtoToModel(req.GetScan())
+	if scanModel.ID == "" {
+		return nil, fmt.Errorf("missing scan ID")
+	}
+	if scanModel.PatientID == "" {
+		return nil, fmt.Errorf("missing patient ID")
+	}
+
+	// Verify the scan exists and is owned by the owner entity
+	existingScan, err := cs.DBClient.FetchScanByID(ctx, scanModel.ID, scanModel.OwnerEntityID)
+	if err != nil {
+		return nil, fmt.Errorf("unable to fetch existing scan: %v", err)
+	}
+
+	// Preserve creation timestamp, patient ID
+	scanModel.CreatedAt = existingScan.CreatedAt
+	scanModel.PatientID = existingScan.PatientID
+	scanModel.UpdatedAt = time.Now()
+
+	updatedScan, err := cs.DBClient.UpdateScan(ctx, scanModel)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateScanResponse{
+		Scan: helpers.ScanModelToProto(*updatedScan),
 	}, nil
 }
 

@@ -24,6 +24,7 @@ const (
 	CommonService_GetScans_FullMethodName      = "/podoai.CommonService/GetScans"
 	CommonService_GetScan_FullMethodName       = "/podoai.CommonService/GetScan"
 	CommonService_CreateScan_FullMethodName    = "/podoai.CommonService/CreateScan"
+	CommonService_UpdateScan_FullMethodName    = "/podoai.CommonService/UpdateScan"
 	CommonService_DeleteScan_FullMethodName    = "/podoai.CommonService/DeleteScan"
 	CommonService_GetProduct_FullMethodName    = "/podoai.CommonService/GetProduct"
 	CommonService_GetExercise_FullMethodName   = "/podoai.CommonService/GetExercise"
@@ -46,6 +47,7 @@ type CommonServiceClient interface {
 	GetScans(ctx context.Context, in *GetScansRequest, opts ...grpc.CallOption) (*GetScansResponse, error)
 	GetScan(ctx context.Context, in *GetScanRequest, opts ...grpc.CallOption) (*GetScanResponse, error)
 	CreateScan(ctx context.Context, in *CreateScanRequest, opts ...grpc.CallOption) (*CreateScanResponse, error)
+	UpdateScan(ctx context.Context, in *UpdateScanRequest, opts ...grpc.CallOption) (*UpdateScanResponse, error)
 	DeleteScan(ctx context.Context, in *DeleteScanRequest, opts ...grpc.CallOption) (*DeleteScanResponse, error)
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
 	GetExercise(ctx context.Context, in *GetExerciseRequest, opts ...grpc.CallOption) (*GetExerciseResponse, error)
@@ -110,6 +112,16 @@ func (c *commonServiceClient) CreateScan(ctx context.Context, in *CreateScanRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateScanResponse)
 	err := c.cc.Invoke(ctx, CommonService_CreateScan_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) UpdateScan(ctx context.Context, in *UpdateScanRequest, opts ...grpc.CallOption) (*UpdateScanResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateScanResponse)
+	err := c.cc.Invoke(ctx, CommonService_UpdateScan_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -217,6 +229,7 @@ type CommonServiceServer interface {
 	GetScans(context.Context, *GetScansRequest) (*GetScansResponse, error)
 	GetScan(context.Context, *GetScanRequest) (*GetScanResponse, error)
 	CreateScan(context.Context, *CreateScanRequest) (*CreateScanResponse, error)
+	UpdateScan(context.Context, *UpdateScanRequest) (*UpdateScanResponse, error)
 	DeleteScan(context.Context, *DeleteScanRequest) (*DeleteScanResponse, error)
 	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
 	GetExercise(context.Context, *GetExerciseRequest) (*GetExerciseResponse, error)
@@ -251,6 +264,9 @@ func (UnimplementedCommonServiceServer) GetScan(context.Context, *GetScanRequest
 }
 func (UnimplementedCommonServiceServer) CreateScan(context.Context, *CreateScanRequest) (*CreateScanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateScan not implemented")
+}
+func (UnimplementedCommonServiceServer) UpdateScan(context.Context, *UpdateScanRequest) (*UpdateScanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateScan not implemented")
 }
 func (UnimplementedCommonServiceServer) DeleteScan(context.Context, *DeleteScanRequest) (*DeleteScanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteScan not implemented")
@@ -386,6 +402,24 @@ func _CommonService_CreateScan_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommonServiceServer).CreateScan(ctx, req.(*CreateScanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_UpdateScan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateScanRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).UpdateScan(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_UpdateScan_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).UpdateScan(ctx, req.(*UpdateScanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -578,6 +612,10 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateScan",
 			Handler:    _CommonService_CreateScan_Handler,
+		},
+		{
+			MethodName: "UpdateScan",
+			Handler:    _CommonService_UpdateScan_Handler,
 		},
 		{
 			MethodName: "DeleteScan",

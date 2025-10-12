@@ -8,6 +8,7 @@ type Scan struct {
 	PatientID     string        `bson:"patient_id"`
 	OwnerEntityID string        `bson:"owner_entity_id"`
 	CreatedAt     time.Time     `bson:"created_at"`
+	UpdatedAt     time.Time     `bson:"updated_at"`
 	Images        []Image       `bson:"images"`
 	Videos        []Video       `bson:"videos"`
 	ScanAIResult  *ScanAIResult `bson:"scan_ai_result,omitempty"`

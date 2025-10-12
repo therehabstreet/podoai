@@ -14,6 +14,7 @@ service CommonService {
   rpc GetScans (GetScansRequest) returns (GetScansResponse);
   rpc GetScan (GetScanRequest) returns (GetScanResponse);
   rpc CreateScan (CreateScanRequest) returns (CreateScanResponse);
+  rpc UpdateScan (UpdateScanRequest) returns (UpdateScanResponse);
   rpc DeleteScan (DeleteScanRequest) returns (DeleteScanResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc GetExercise (GetExerciseRequest) returns (GetExerciseResponse);
@@ -32,12 +33,13 @@ message Scan {
   string patient_id = 2;
   string owner_entity_id = 3;
   google.protobuf.Timestamp created_at = 4;
-  repeated Image images = 5;
-  repeated Video videos = 6;
-  ScanAIResult scan_ai_result = 7;
-  string scanned_by_id = 8;
-  string reviewed_by_id = 9;
-  google.protobuf.Timestamp reviewed_at = 10;
+  google.protobuf.Timestamp updated_at = 5;
+  repeated Image images = 6;
+  repeated Video videos = 7;
+  ScanAIResult scan_ai_result = 8;
+  string scanned_by_id = 9;
+  string reviewed_by_id = 10;
+  google.protobuf.Timestamp reviewed_at = 11;
 }
 
 message ScanAIResult {
@@ -95,16 +97,48 @@ message Therapy {
 }
 
 message Image {
-  string type = 1;   // left_foot_top, right_foot_side, etc
+  ImageType type = 1;
   string url = 3;
   google.protobuf.Timestamp captured_at = 4;
 }
 
 message Video {
-  string type = 1; // rear_walk, front_walk, side_walk, etc
+  VideoType type = 1;
   string url = 2;
   int32 duration = 3;
   google.protobuf.Timestamp captured_at = 4;
+}
+
+enum ImageType {
+  IMAGE_TYPE_UNSPECIFIED = 0;
+  LEFT_FOOT_DORSAL = 1;
+  LEFT_FOOT_PLANTAR = 2;
+  LEFT_FOOT_MEDIAL_SIDE = 3;
+  LEFT_FOOT_LATERAL_SIDE = 4;
+  LEFT_FOOT_ANTERIOR = 5;
+  LEFT_FOOT_POSTERIOR = 6;
+  RIGHT_FOOT_DORSAL = 7;
+  RIGHT_FOOT_PLANTAR = 8;
+  RIGHT_FOOT_MEDIAL_SIDE = 9;
+  RIGHT_FOOT_LATERAL_SIDE = 10;
+  RIGHT_FOOT_ANTERIOR = 11;
+  RIGHT_FOOT_POSTERIOR = 12;
+}
+
+enum VideoType {
+  VIDEO_TYPE_UNSPECIFIED = 0;
+  GAIT_ANTERIOR = 1;
+  GAIT_POSTERIOR = 2;
+  GAIT_LATERAL_LEFT = 3;
+  GAIT_LATERAL_RIGHT = 4;
+  GAIT_OBLIQUE = 5;
+  BALANCE_STATIC = 6;
+  BALANCE_DYNAMIC = 7;
+  SQUAT_ASSESSMENT = 8;
+  HEEL_RAISE = 9;
+  TOE_WALK = 10;
+  HEEL_WALK = 11;
+  SINGLE_LEG_STANCE = 12;
 }
 
 enum Role {
@@ -165,6 +199,14 @@ message CreateScanRequest {
 }
 
 message CreateScanResponse {
+    Scan scan = 1;
+}
+
+message UpdateScanRequest {
+    Scan scan = 1;
+}
+
+message UpdateScanResponse {
     Scan scan = 1;
 }
 

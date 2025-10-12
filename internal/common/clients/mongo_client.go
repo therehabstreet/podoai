@@ -19,6 +19,7 @@ type DBClient interface {
 	FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Scan, int64, error)
 	FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (*models.Scan, error)
 	CreateScan(ctx context.Context, scan models.Scan) (*models.Scan, error)
+	UpdateScan(ctx context.Context, scan models.Scan) (*models.Scan, error)
 	DeleteScanByID(ctx context.Context, scanID string, ownerEntityID string) error
 	// Product methods
 	FetchProductByID(ctx context.Context, productID string) (*models.Product, error)
@@ -207,6 +208,24 @@ func (m *MongoDBClient) CreateScan(ctx context.Context, scan models.Scan) (*mode
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 	_, err := coll.InsertOne(ctx, scan)
 	return &scan, err
+}
+
+func (m *MongoDBClient) UpdateScan(ctx context.Context, scan models.Scan) (*models.Scan, error) {
+	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
+	filter := bson.M{"_id": scan.ID, "owner_entity_id": scan.OwnerEntityID}
+	update := bson.M{"$set": scan}
+	_, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch the updated scan to return the latest state
+	var updatedScan models.Scan
+	err = coll.FindOne(ctx, filter).Decode(&updatedScan)
+	if err != nil {
+		return nil, err
+	}
+	return &updatedScan, nil
 }
 
 func (m *MongoDBClient) DeleteScanByID(ctx context.Context, scanID string, ownerEntityID string) error {
