@@ -36,16 +36,26 @@ type ScanRecommendation struct {
 }
 
 type Image struct {
-	Type       string    `bson:"type"`
-	URL        string    `bson:"url"`
-	CapturedAt time.Time `bson:"captured_at"`
+	Type               string    `bson:"type"`
+	URL                string    `bson:"url"`
+	CapturedAt         time.Time `bson:"captured_at"`
+	SignedURL          string    `bson:"signed_url,omitempty"`           // Temporary signed URL
+	ThumbnailSignedURL string    `bson:"thumbnail_signed_url,omitempty"` // Thumbnail signed URL
+	Path               string    `bson:"path,omitempty"`                 // GCS path
+	ThumbnailPath      string    `bson:"thumbnail_path,omitempty"`       // Thumbnail GCS path
+	ExpiresAt          time.Time `bson:"expires_at,omitempty"`           // When signed URLs expire
 }
 
 type Video struct {
-	Type       string    `bson:"type"`
-	URL        string    `bson:"url"`
-	Duration   int32     `bson:"duration"`
-	CapturedAt time.Time `bson:"captured_at"`
+	Type               string    `bson:"type"`
+	URL                string    `bson:"url"`
+	Duration           int32     `bson:"duration"`
+	CapturedAt         time.Time `bson:"captured_at"`
+	SignedURL          string    `bson:"signed_url,omitempty"`           // Temporary signed URL
+	ThumbnailSignedURL string    `bson:"thumbnail_signed_url,omitempty"` // Video thumbnail signed URL
+	Path               string    `bson:"path,omitempty"`                 // GCS path
+	ThumbnailPath      string    `bson:"thumbnail_path,omitempty"`       // Thumbnail GCS path
+	ExpiresAt          time.Time `bson:"expires_at,omitempty"`           // When signed URLs expire
 }
 
 // Product, Exercise, Therapy models to match proto

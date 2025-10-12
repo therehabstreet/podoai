@@ -19,21 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CommonService_RequestOtp_FullMethodName    = "/podoai.CommonService/RequestOtp"
-	CommonService_VerifyOtp_FullMethodName     = "/podoai.CommonService/VerifyOtp"
-	CommonService_GetScans_FullMethodName      = "/podoai.CommonService/GetScans"
-	CommonService_GetScan_FullMethodName       = "/podoai.CommonService/GetScan"
-	CommonService_CreateScan_FullMethodName    = "/podoai.CommonService/CreateScan"
-	CommonService_UpdateScan_FullMethodName    = "/podoai.CommonService/UpdateScan"
-	CommonService_DeleteScan_FullMethodName    = "/podoai.CommonService/DeleteScan"
-	CommonService_GetProduct_FullMethodName    = "/podoai.CommonService/GetProduct"
-	CommonService_GetExercise_FullMethodName   = "/podoai.CommonService/GetExercise"
-	CommonService_GetTherapy_FullMethodName    = "/podoai.CommonService/GetTherapy"
-	CommonService_GetPatients_FullMethodName   = "/podoai.CommonService/GetPatients"
-	CommonService_GetPatient_FullMethodName    = "/podoai.CommonService/GetPatient"
-	CommonService_SearchPatient_FullMethodName = "/podoai.CommonService/SearchPatient"
-	CommonService_CreatePatient_FullMethodName = "/podoai.CommonService/CreatePatient"
-	CommonService_DeletePatient_FullMethodName = "/podoai.CommonService/DeletePatient"
+	CommonService_RequestOtp_FullMethodName              = "/podoai.CommonService/RequestOtp"
+	CommonService_VerifyOtp_FullMethodName               = "/podoai.CommonService/VerifyOtp"
+	CommonService_GetScans_FullMethodName                = "/podoai.CommonService/GetScans"
+	CommonService_GetScan_FullMethodName                 = "/podoai.CommonService/GetScan"
+	CommonService_CreateScan_FullMethodName              = "/podoai.CommonService/CreateScan"
+	CommonService_UpdateScan_FullMethodName              = "/podoai.CommonService/UpdateScan"
+	CommonService_DeleteScan_FullMethodName              = "/podoai.CommonService/DeleteScan"
+	CommonService_GenerateMediaSignedUrls_FullMethodName = "/podoai.CommonService/GenerateMediaSignedUrls"
+	CommonService_GetProduct_FullMethodName              = "/podoai.CommonService/GetProduct"
+	CommonService_GetExercise_FullMethodName             = "/podoai.CommonService/GetExercise"
+	CommonService_GetTherapy_FullMethodName              = "/podoai.CommonService/GetTherapy"
+	CommonService_GetPatients_FullMethodName             = "/podoai.CommonService/GetPatients"
+	CommonService_GetPatient_FullMethodName              = "/podoai.CommonService/GetPatient"
+	CommonService_SearchPatient_FullMethodName           = "/podoai.CommonService/SearchPatient"
+	CommonService_CreatePatient_FullMethodName           = "/podoai.CommonService/CreatePatient"
+	CommonService_DeletePatient_FullMethodName           = "/podoai.CommonService/DeletePatient"
 )
 
 // CommonServiceClient is the client API for CommonService service.
@@ -49,6 +50,7 @@ type CommonServiceClient interface {
 	CreateScan(ctx context.Context, in *CreateScanRequest, opts ...grpc.CallOption) (*CreateScanResponse, error)
 	UpdateScan(ctx context.Context, in *UpdateScanRequest, opts ...grpc.CallOption) (*UpdateScanResponse, error)
 	DeleteScan(ctx context.Context, in *DeleteScanRequest, opts ...grpc.CallOption) (*DeleteScanResponse, error)
+	GenerateMediaSignedUrls(ctx context.Context, in *GenerateMediaSignedUrlsRequest, opts ...grpc.CallOption) (*GenerateMediaSignedUrlsResponse, error)
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*GetProductResponse, error)
 	GetExercise(ctx context.Context, in *GetExerciseRequest, opts ...grpc.CallOption) (*GetExerciseResponse, error)
 	GetTherapy(ctx context.Context, in *GetTherapyRequest, opts ...grpc.CallOption) (*GetTherapyResponse, error)
@@ -132,6 +134,16 @@ func (c *commonServiceClient) DeleteScan(ctx context.Context, in *DeleteScanRequ
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteScanResponse)
 	err := c.cc.Invoke(ctx, CommonService_DeleteScan_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) GenerateMediaSignedUrls(ctx context.Context, in *GenerateMediaSignedUrlsRequest, opts ...grpc.CallOption) (*GenerateMediaSignedUrlsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateMediaSignedUrlsResponse)
+	err := c.cc.Invoke(ctx, CommonService_GenerateMediaSignedUrls_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -231,6 +243,7 @@ type CommonServiceServer interface {
 	CreateScan(context.Context, *CreateScanRequest) (*CreateScanResponse, error)
 	UpdateScan(context.Context, *UpdateScanRequest) (*UpdateScanResponse, error)
 	DeleteScan(context.Context, *DeleteScanRequest) (*DeleteScanResponse, error)
+	GenerateMediaSignedUrls(context.Context, *GenerateMediaSignedUrlsRequest) (*GenerateMediaSignedUrlsResponse, error)
 	GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error)
 	GetExercise(context.Context, *GetExerciseRequest) (*GetExerciseResponse, error)
 	GetTherapy(context.Context, *GetTherapyRequest) (*GetTherapyResponse, error)
@@ -270,6 +283,9 @@ func (UnimplementedCommonServiceServer) UpdateScan(context.Context, *UpdateScanR
 }
 func (UnimplementedCommonServiceServer) DeleteScan(context.Context, *DeleteScanRequest) (*DeleteScanResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteScan not implemented")
+}
+func (UnimplementedCommonServiceServer) GenerateMediaSignedUrls(context.Context, *GenerateMediaSignedUrlsRequest) (*GenerateMediaSignedUrlsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateMediaSignedUrls not implemented")
 }
 func (UnimplementedCommonServiceServer) GetProduct(context.Context, *GetProductRequest) (*GetProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
@@ -438,6 +454,24 @@ func _CommonService_DeleteScan_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommonServiceServer).DeleteScan(ctx, req.(*DeleteScanRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_GenerateMediaSignedUrls_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GenerateMediaSignedUrlsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).GenerateMediaSignedUrls(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_GenerateMediaSignedUrls_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).GenerateMediaSignedUrls(ctx, req.(*GenerateMediaSignedUrlsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -620,6 +654,10 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteScan",
 			Handler:    _CommonService_DeleteScan_Handler,
+		},
+		{
+			MethodName: "GenerateMediaSignedUrls",
+			Handler:    _CommonService_GenerateMediaSignedUrls_Handler,
 		},
 		{
 			MethodName: "GetProduct",

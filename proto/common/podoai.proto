@@ -16,6 +16,7 @@ service CommonService {
   rpc CreateScan (CreateScanRequest) returns (CreateScanResponse);
   rpc UpdateScan (UpdateScanRequest) returns (UpdateScanResponse);
   rpc DeleteScan (DeleteScanRequest) returns (DeleteScanResponse);
+  rpc GenerateMediaSignedUrls (GenerateMediaSignedUrlsRequest) returns (GenerateMediaSignedUrlsResponse);
   rpc GetProduct (GetProductRequest) returns (GetProductResponse);
   rpc GetExercise (GetExerciseRequest) returns (GetExerciseResponse);
   rpc GetTherapy (GetTherapyRequest) returns (GetTherapyResponse);
@@ -97,16 +98,26 @@ message Therapy {
 }
 
 message Image {
-  ImageType type = 1;
+  ImageType type = 1;           // Enum for type safety
   string url = 3;
   google.protobuf.Timestamp captured_at = 4;
+  string signed_url = 5;        // Signed URL for secure access
+  string thumbnail_url = 6;     // Thumbnail signed URL
+  string gcs_path = 7;          // GCS path
+  string thumbnail_path = 8;    // Thumbnail GCS path
+  google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
 }
 
 message Video {
-  VideoType type = 1;
+  VideoType type = 1;           // Enum for type safety
   string url = 2;
   int32 duration = 3;
   google.protobuf.Timestamp captured_at = 4;
+  string signed_url = 5;        // Signed URL for secure access
+  string thumbnail_url = 6;     // Video thumbnail signed URL (always .jpg)
+  string gcs_path = 7;          // GCS path
+  string thumbnail_path = 8;    // Thumbnail GCS path
+  google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
 }
 
 enum ImageType {
@@ -217,6 +228,16 @@ message DeleteScanRequest {
 
 message DeleteScanResponse {
     bool success = 1;
+}
+
+message GenerateMediaSignedUrlsRequest {
+    string scan_id = 1;
+    string owner_entity_id = 2;
+}
+
+message GenerateMediaSignedUrlsResponse {
+    repeated Image images = 1;
+    repeated Video videos = 2;
 }
 
 message GetProductRequest {

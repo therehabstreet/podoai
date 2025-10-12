@@ -154,9 +154,14 @@ func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 // Image conversion
 func ImageProtoToModel(proto *common.Image) models.Image {
 	return models.Image{
-		Type:       proto.GetType().String(),
-		URL:        proto.GetUrl(),
-		CapturedAt: timestampPBToTime(proto.GetCapturedAt()),
+		Type:               proto.GetType().String(),
+		URL:                proto.GetUrl(),
+		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
+		SignedURL:          proto.GetSignedUrl(),
+		ThumbnailSignedURL: proto.GetThumbnailUrl(),
+		Path:               proto.GetGcsPath(),
+		ThumbnailPath:      proto.GetThumbnailPath(),
+		ExpiresAt:          timestampPBToTime(proto.GetExpiresAt()),
 	}
 }
 
@@ -168,19 +173,29 @@ func ImageModelToProto(model models.Image) *common.Image {
 		imageType = int32(common.ImageType_IMAGE_TYPE_UNSPECIFIED)
 	}
 	return &common.Image{
-		Type:       common.ImageType(imageType),
-		Url:        model.URL,
-		CapturedAt: timestamppb.New(model.CapturedAt),
+		Type:          common.ImageType(imageType),
+		Url:           model.URL,
+		CapturedAt:    timestamppb.New(model.CapturedAt),
+		SignedUrl:     model.SignedURL,
+		ThumbnailUrl:  model.ThumbnailSignedURL,
+		GcsPath:       model.Path,
+		ThumbnailPath: model.ThumbnailPath,
+		ExpiresAt:     timestamppb.New(model.ExpiresAt),
 	}
 }
 
 // Video conversion
 func VideoProtoToModel(proto *common.Video) models.Video {
 	return models.Video{
-		Type:       proto.GetType().String(),
-		URL:        proto.GetUrl(),
-		Duration:   proto.GetDuration(),
-		CapturedAt: timestampPBToTime(proto.GetCapturedAt()),
+		Type:               proto.GetType().String(),
+		URL:                proto.GetUrl(),
+		Duration:           proto.GetDuration(),
+		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
+		SignedURL:          proto.GetSignedUrl(),
+		ThumbnailSignedURL: proto.GetThumbnailUrl(),
+		Path:               proto.GetGcsPath(),
+		ThumbnailPath:      proto.GetThumbnailPath(),
+		ExpiresAt:          timestampPBToTime(proto.GetExpiresAt()),
 	}
 }
 
@@ -192,10 +207,15 @@ func VideoModelToProto(model models.Video) *common.Video {
 		videoType = int32(common.VideoType_VIDEO_TYPE_UNSPECIFIED)
 	}
 	return &common.Video{
-		Type:       common.VideoType(videoType),
-		Url:        model.URL,
-		Duration:   model.Duration,
-		CapturedAt: timestamppb.New(model.CapturedAt),
+		Type:          common.VideoType(videoType),
+		Url:           model.URL,
+		Duration:      model.Duration,
+		CapturedAt:    timestamppb.New(model.CapturedAt),
+		SignedUrl:     model.SignedURL,
+		ThumbnailUrl:  model.ThumbnailSignedURL,
+		GcsPath:       model.Path,
+		ThumbnailPath: model.ThumbnailPath,
+		ExpiresAt:     timestamppb.New(model.ExpiresAt),
 	}
 }
 

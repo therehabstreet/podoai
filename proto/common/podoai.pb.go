@@ -947,9 +947,14 @@ func (x *Therapy) GetVideoUrl() string {
 
 type Image struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          ImageType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.ImageType" json:"type,omitempty"`
+	Type          ImageType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.ImageType" json:"type,omitempty"` // Enum for type safety
 	Url           string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
 	CapturedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	SignedUrl     string                 `protobuf:"bytes,5,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`             // Signed URL for secure access
+	ThumbnailUrl  string                 `protobuf:"bytes,6,opt,name=thumbnail_url,json=thumbnailUrl,proto3" json:"thumbnail_url,omitempty"`    // Thumbnail signed URL
+	GcsPath       string                 `protobuf:"bytes,7,opt,name=gcs_path,json=gcsPath,proto3" json:"gcs_path,omitempty"`                   // GCS path
+	ThumbnailPath string                 `protobuf:"bytes,8,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"` // Thumbnail GCS path
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`             // When signed URLs expire
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1005,12 +1010,52 @@ func (x *Image) GetCapturedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Image) GetSignedUrl() string {
+	if x != nil {
+		return x.SignedUrl
+	}
+	return ""
+}
+
+func (x *Image) GetThumbnailUrl() string {
+	if x != nil {
+		return x.ThumbnailUrl
+	}
+	return ""
+}
+
+func (x *Image) GetGcsPath() string {
+	if x != nil {
+		return x.GcsPath
+	}
+	return ""
+}
+
+func (x *Image) GetThumbnailPath() string {
+	if x != nil {
+		return x.ThumbnailPath
+	}
+	return ""
+}
+
+func (x *Image) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
 type Video struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          VideoType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.VideoType" json:"type,omitempty"`
+	Type          VideoType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.VideoType" json:"type,omitempty"` // Enum for type safety
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Duration      int32                  `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
 	CapturedAt    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	SignedUrl     string                 `protobuf:"bytes,5,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`             // Signed URL for secure access
+	ThumbnailUrl  string                 `protobuf:"bytes,6,opt,name=thumbnail_url,json=thumbnailUrl,proto3" json:"thumbnail_url,omitempty"`    // Video thumbnail signed URL (always .jpg)
+	GcsPath       string                 `protobuf:"bytes,7,opt,name=gcs_path,json=gcsPath,proto3" json:"gcs_path,omitempty"`                   // GCS path
+	ThumbnailPath string                 `protobuf:"bytes,8,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"` // Thumbnail GCS path
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`             // When signed URLs expire
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1069,6 +1114,41 @@ func (x *Video) GetDuration() int32 {
 func (x *Video) GetCapturedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CapturedAt
+	}
+	return nil
+}
+
+func (x *Video) GetSignedUrl() string {
+	if x != nil {
+		return x.SignedUrl
+	}
+	return ""
+}
+
+func (x *Video) GetThumbnailUrl() string {
+	if x != nil {
+		return x.ThumbnailUrl
+	}
+	return ""
+}
+
+func (x *Video) GetGcsPath() string {
+	if x != nil {
+		return x.GcsPath
+	}
+	return ""
+}
+
+func (x *Video) GetThumbnailPath() string {
+	if x != nil {
+		return x.ThumbnailPath
+	}
+	return ""
+}
+
+func (x *Video) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
 	}
 	return nil
 }
@@ -1693,6 +1773,110 @@ func (x *DeleteScanResponse) GetSuccess() bool {
 	return false
 }
 
+type GenerateMediaSignedUrlsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ScanId        string                 `protobuf:"bytes,1,opt,name=scan_id,json=scanId,proto3" json:"scan_id,omitempty"`
+	OwnerEntityId string                 `protobuf:"bytes,2,opt,name=owner_entity_id,json=ownerEntityId,proto3" json:"owner_entity_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateMediaSignedUrlsRequest) Reset() {
+	*x = GenerateMediaSignedUrlsRequest{}
+	mi := &file_common_podoai_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateMediaSignedUrlsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateMediaSignedUrlsRequest) ProtoMessage() {}
+
+func (x *GenerateMediaSignedUrlsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateMediaSignedUrlsRequest.ProtoReflect.Descriptor instead.
+func (*GenerateMediaSignedUrlsRequest) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GenerateMediaSignedUrlsRequest) GetScanId() string {
+	if x != nil {
+		return x.ScanId
+	}
+	return ""
+}
+
+func (x *GenerateMediaSignedUrlsRequest) GetOwnerEntityId() string {
+	if x != nil {
+		return x.OwnerEntityId
+	}
+	return ""
+}
+
+type GenerateMediaSignedUrlsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Images        []*Image               `protobuf:"bytes,1,rep,name=images,proto3" json:"images,omitempty"`
+	Videos        []*Video               `protobuf:"bytes,2,rep,name=videos,proto3" json:"videos,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GenerateMediaSignedUrlsResponse) Reset() {
+	*x = GenerateMediaSignedUrlsResponse{}
+	mi := &file_common_podoai_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GenerateMediaSignedUrlsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GenerateMediaSignedUrlsResponse) ProtoMessage() {}
+
+func (x *GenerateMediaSignedUrlsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_common_podoai_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GenerateMediaSignedUrlsResponse.ProtoReflect.Descriptor instead.
+func (*GenerateMediaSignedUrlsResponse) Descriptor() ([]byte, []int) {
+	return file_common_podoai_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GenerateMediaSignedUrlsResponse) GetImages() []*Image {
+	if x != nil {
+		return x.Images
+	}
+	return nil
+}
+
+func (x *GenerateMediaSignedUrlsResponse) GetVideos() []*Video {
+	if x != nil {
+		return x.Videos
+	}
+	return nil
+}
+
 type GetProductRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ProductId     string                 `protobuf:"bytes,1,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
@@ -1702,7 +1886,7 @@ type GetProductRequest struct {
 
 func (x *GetProductRequest) Reset() {
 	*x = GetProductRequest{}
-	mi := &file_common_podoai_proto_msgTypes[22]
+	mi := &file_common_podoai_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1714,7 +1898,7 @@ func (x *GetProductRequest) String() string {
 func (*GetProductRequest) ProtoMessage() {}
 
 func (x *GetProductRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[22]
+	mi := &file_common_podoai_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1727,7 +1911,7 @@ func (x *GetProductRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductRequest.ProtoReflect.Descriptor instead.
 func (*GetProductRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{22}
+	return file_common_podoai_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetProductRequest) GetProductId() string {
@@ -1746,7 +1930,7 @@ type GetProductResponse struct {
 
 func (x *GetProductResponse) Reset() {
 	*x = GetProductResponse{}
-	mi := &file_common_podoai_proto_msgTypes[23]
+	mi := &file_common_podoai_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1758,7 +1942,7 @@ func (x *GetProductResponse) String() string {
 func (*GetProductResponse) ProtoMessage() {}
 
 func (x *GetProductResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[23]
+	mi := &file_common_podoai_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1771,7 +1955,7 @@ func (x *GetProductResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProductResponse.ProtoReflect.Descriptor instead.
 func (*GetProductResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{23}
+	return file_common_podoai_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GetProductResponse) GetProduct() *Product {
@@ -1790,7 +1974,7 @@ type GetExerciseRequest struct {
 
 func (x *GetExerciseRequest) Reset() {
 	*x = GetExerciseRequest{}
-	mi := &file_common_podoai_proto_msgTypes[24]
+	mi := &file_common_podoai_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1802,7 +1986,7 @@ func (x *GetExerciseRequest) String() string {
 func (*GetExerciseRequest) ProtoMessage() {}
 
 func (x *GetExerciseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[24]
+	mi := &file_common_podoai_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1815,7 +1999,7 @@ func (x *GetExerciseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExerciseRequest.ProtoReflect.Descriptor instead.
 func (*GetExerciseRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{24}
+	return file_common_podoai_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *GetExerciseRequest) GetExerciseId() string {
@@ -1834,7 +2018,7 @@ type GetExerciseResponse struct {
 
 func (x *GetExerciseResponse) Reset() {
 	*x = GetExerciseResponse{}
-	mi := &file_common_podoai_proto_msgTypes[25]
+	mi := &file_common_podoai_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1846,7 +2030,7 @@ func (x *GetExerciseResponse) String() string {
 func (*GetExerciseResponse) ProtoMessage() {}
 
 func (x *GetExerciseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[25]
+	mi := &file_common_podoai_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1859,7 +2043,7 @@ func (x *GetExerciseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExerciseResponse.ProtoReflect.Descriptor instead.
 func (*GetExerciseResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{25}
+	return file_common_podoai_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetExerciseResponse) GetExercise() *Exercise {
@@ -1878,7 +2062,7 @@ type GetTherapyRequest struct {
 
 func (x *GetTherapyRequest) Reset() {
 	*x = GetTherapyRequest{}
-	mi := &file_common_podoai_proto_msgTypes[26]
+	mi := &file_common_podoai_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1890,7 +2074,7 @@ func (x *GetTherapyRequest) String() string {
 func (*GetTherapyRequest) ProtoMessage() {}
 
 func (x *GetTherapyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[26]
+	mi := &file_common_podoai_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1903,7 +2087,7 @@ func (x *GetTherapyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTherapyRequest.ProtoReflect.Descriptor instead.
 func (*GetTherapyRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{26}
+	return file_common_podoai_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetTherapyRequest) GetTherapyId() string {
@@ -1922,7 +2106,7 @@ type GetTherapyResponse struct {
 
 func (x *GetTherapyResponse) Reset() {
 	*x = GetTherapyResponse{}
-	mi := &file_common_podoai_proto_msgTypes[27]
+	mi := &file_common_podoai_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1934,7 +2118,7 @@ func (x *GetTherapyResponse) String() string {
 func (*GetTherapyResponse) ProtoMessage() {}
 
 func (x *GetTherapyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[27]
+	mi := &file_common_podoai_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1947,7 +2131,7 @@ func (x *GetTherapyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTherapyResponse.ProtoReflect.Descriptor instead.
 func (*GetTherapyResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{27}
+	return file_common_podoai_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *GetTherapyResponse) GetTherapy() *Therapy {
@@ -1967,7 +2151,7 @@ type RequestOtpRequest struct {
 
 func (x *RequestOtpRequest) Reset() {
 	*x = RequestOtpRequest{}
-	mi := &file_common_podoai_proto_msgTypes[28]
+	mi := &file_common_podoai_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1979,7 +2163,7 @@ func (x *RequestOtpRequest) String() string {
 func (*RequestOtpRequest) ProtoMessage() {}
 
 func (x *RequestOtpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[28]
+	mi := &file_common_podoai_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1992,7 +2176,7 @@ func (x *RequestOtpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestOtpRequest.ProtoReflect.Descriptor instead.
 func (*RequestOtpRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{28}
+	return file_common_podoai_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *RequestOtpRequest) GetPhoneNumber() string {
@@ -2012,7 +2196,7 @@ type RequestOtpResponse struct {
 
 func (x *RequestOtpResponse) Reset() {
 	*x = RequestOtpResponse{}
-	mi := &file_common_podoai_proto_msgTypes[29]
+	mi := &file_common_podoai_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2024,7 +2208,7 @@ func (x *RequestOtpResponse) String() string {
 func (*RequestOtpResponse) ProtoMessage() {}
 
 func (x *RequestOtpResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[29]
+	mi := &file_common_podoai_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2037,7 +2221,7 @@ func (x *RequestOtpResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestOtpResponse.ProtoReflect.Descriptor instead.
 func (*RequestOtpResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{29}
+	return file_common_podoai_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *RequestOtpResponse) GetSuccess() bool {
@@ -2064,7 +2248,7 @@ type VerifyOtpRequest struct {
 
 func (x *VerifyOtpRequest) Reset() {
 	*x = VerifyOtpRequest{}
-	mi := &file_common_podoai_proto_msgTypes[30]
+	mi := &file_common_podoai_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2076,7 +2260,7 @@ func (x *VerifyOtpRequest) String() string {
 func (*VerifyOtpRequest) ProtoMessage() {}
 
 func (x *VerifyOtpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[30]
+	mi := &file_common_podoai_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2089,7 +2273,7 @@ func (x *VerifyOtpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VerifyOtpRequest.ProtoReflect.Descriptor instead.
 func (*VerifyOtpRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{30}
+	return file_common_podoai_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *VerifyOtpRequest) GetPhoneNumber() string {
@@ -2118,7 +2302,7 @@ type LoginResponse struct {
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_common_podoai_proto_msgTypes[31]
+	mi := &file_common_podoai_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2130,7 +2314,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[31]
+	mi := &file_common_podoai_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2143,7 +2327,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{31}
+	return file_common_podoai_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *LoginResponse) GetToken() string {
@@ -2188,7 +2372,7 @@ type GetPatientsRequest struct {
 
 func (x *GetPatientsRequest) Reset() {
 	*x = GetPatientsRequest{}
-	mi := &file_common_podoai_proto_msgTypes[32]
+	mi := &file_common_podoai_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2200,7 +2384,7 @@ func (x *GetPatientsRequest) String() string {
 func (*GetPatientsRequest) ProtoMessage() {}
 
 func (x *GetPatientsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[32]
+	mi := &file_common_podoai_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2213,7 +2397,7 @@ func (x *GetPatientsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPatientsRequest.ProtoReflect.Descriptor instead.
 func (*GetPatientsRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{32}
+	return file_common_podoai_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetPatientsRequest) GetOwnerEntityId() string {
@@ -2261,7 +2445,7 @@ type GetPatientsResponse struct {
 
 func (x *GetPatientsResponse) Reset() {
 	*x = GetPatientsResponse{}
-	mi := &file_common_podoai_proto_msgTypes[33]
+	mi := &file_common_podoai_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2273,7 +2457,7 @@ func (x *GetPatientsResponse) String() string {
 func (*GetPatientsResponse) ProtoMessage() {}
 
 func (x *GetPatientsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[33]
+	mi := &file_common_podoai_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2286,7 +2470,7 @@ func (x *GetPatientsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPatientsResponse.ProtoReflect.Descriptor instead.
 func (*GetPatientsResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{33}
+	return file_common_podoai_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *GetPatientsResponse) GetPatients() []*Patient {
@@ -2313,7 +2497,7 @@ type GetPatientRequest struct {
 
 func (x *GetPatientRequest) Reset() {
 	*x = GetPatientRequest{}
-	mi := &file_common_podoai_proto_msgTypes[34]
+	mi := &file_common_podoai_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2325,7 +2509,7 @@ func (x *GetPatientRequest) String() string {
 func (*GetPatientRequest) ProtoMessage() {}
 
 func (x *GetPatientRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[34]
+	mi := &file_common_podoai_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2338,7 +2522,7 @@ func (x *GetPatientRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPatientRequest.ProtoReflect.Descriptor instead.
 func (*GetPatientRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{34}
+	return file_common_podoai_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *GetPatientRequest) GetPatientId() string {
@@ -2364,7 +2548,7 @@ type GetPatientResponse struct {
 
 func (x *GetPatientResponse) Reset() {
 	*x = GetPatientResponse{}
-	mi := &file_common_podoai_proto_msgTypes[35]
+	mi := &file_common_podoai_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2376,7 +2560,7 @@ func (x *GetPatientResponse) String() string {
 func (*GetPatientResponse) ProtoMessage() {}
 
 func (x *GetPatientResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[35]
+	mi := &file_common_podoai_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2389,7 +2573,7 @@ func (x *GetPatientResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPatientResponse.ProtoReflect.Descriptor instead.
 func (*GetPatientResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{35}
+	return file_common_podoai_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *GetPatientResponse) GetPatient() *Patient {
@@ -2411,7 +2595,7 @@ type SearchPatientRequest struct {
 
 func (x *SearchPatientRequest) Reset() {
 	*x = SearchPatientRequest{}
-	mi := &file_common_podoai_proto_msgTypes[36]
+	mi := &file_common_podoai_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2423,7 +2607,7 @@ func (x *SearchPatientRequest) String() string {
 func (*SearchPatientRequest) ProtoMessage() {}
 
 func (x *SearchPatientRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[36]
+	mi := &file_common_podoai_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2436,7 +2620,7 @@ func (x *SearchPatientRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPatientRequest.ProtoReflect.Descriptor instead.
 func (*SearchPatientRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{36}
+	return file_common_podoai_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *SearchPatientRequest) GetSearchTerm() string {
@@ -2477,7 +2661,7 @@ type SearchPatientResponse struct {
 
 func (x *SearchPatientResponse) Reset() {
 	*x = SearchPatientResponse{}
-	mi := &file_common_podoai_proto_msgTypes[37]
+	mi := &file_common_podoai_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2489,7 +2673,7 @@ func (x *SearchPatientResponse) String() string {
 func (*SearchPatientResponse) ProtoMessage() {}
 
 func (x *SearchPatientResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[37]
+	mi := &file_common_podoai_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2502,7 +2686,7 @@ func (x *SearchPatientResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchPatientResponse.ProtoReflect.Descriptor instead.
 func (*SearchPatientResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{37}
+	return file_common_podoai_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *SearchPatientResponse) GetPatients() []*Patient {
@@ -2528,7 +2712,7 @@ type CreatePatientRequest struct {
 
 func (x *CreatePatientRequest) Reset() {
 	*x = CreatePatientRequest{}
-	mi := &file_common_podoai_proto_msgTypes[38]
+	mi := &file_common_podoai_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2540,7 +2724,7 @@ func (x *CreatePatientRequest) String() string {
 func (*CreatePatientRequest) ProtoMessage() {}
 
 func (x *CreatePatientRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[38]
+	mi := &file_common_podoai_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2553,7 +2737,7 @@ func (x *CreatePatientRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePatientRequest.ProtoReflect.Descriptor instead.
 func (*CreatePatientRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{38}
+	return file_common_podoai_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CreatePatientRequest) GetPatient() *Patient {
@@ -2572,7 +2756,7 @@ type CreatePatientResponse struct {
 
 func (x *CreatePatientResponse) Reset() {
 	*x = CreatePatientResponse{}
-	mi := &file_common_podoai_proto_msgTypes[39]
+	mi := &file_common_podoai_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2584,7 +2768,7 @@ func (x *CreatePatientResponse) String() string {
 func (*CreatePatientResponse) ProtoMessage() {}
 
 func (x *CreatePatientResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[39]
+	mi := &file_common_podoai_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2597,7 +2781,7 @@ func (x *CreatePatientResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePatientResponse.ProtoReflect.Descriptor instead.
 func (*CreatePatientResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{39}
+	return file_common_podoai_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *CreatePatientResponse) GetPatient() *Patient {
@@ -2617,7 +2801,7 @@ type DeletePatientRequest struct {
 
 func (x *DeletePatientRequest) Reset() {
 	*x = DeletePatientRequest{}
-	mi := &file_common_podoai_proto_msgTypes[40]
+	mi := &file_common_podoai_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2629,7 +2813,7 @@ func (x *DeletePatientRequest) String() string {
 func (*DeletePatientRequest) ProtoMessage() {}
 
 func (x *DeletePatientRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[40]
+	mi := &file_common_podoai_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2642,7 +2826,7 @@ func (x *DeletePatientRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePatientRequest.ProtoReflect.Descriptor instead.
 func (*DeletePatientRequest) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{40}
+	return file_common_podoai_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *DeletePatientRequest) GetPatientId() string {
@@ -2668,7 +2852,7 @@ type DeletePatientResponse struct {
 
 func (x *DeletePatientResponse) Reset() {
 	*x = DeletePatientResponse{}
-	mi := &file_common_podoai_proto_msgTypes[41]
+	mi := &file_common_podoai_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2680,7 +2864,7 @@ func (x *DeletePatientResponse) String() string {
 func (*DeletePatientResponse) ProtoMessage() {}
 
 func (x *DeletePatientResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_common_podoai_proto_msgTypes[41]
+	mi := &file_common_podoai_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2693,7 +2877,7 @@ func (x *DeletePatientResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePatientResponse.ProtoReflect.Descriptor instead.
 func (*DeletePatientResponse) Descriptor() ([]byte, []int) {
-	return file_common_podoai_proto_rawDescGZIP(), []int{41}
+	return file_common_podoai_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *DeletePatientResponse) GetSuccess() bool {
@@ -2765,18 +2949,32 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1b\n" +
-	"\tvideo_url\x18\x04 \x01(\tR\bvideoUrl\"}\n" +
+	"\tvideo_url\x18\x04 \x01(\tR\bvideoUrl\"\xbe\x02\n" +
 	"\x05Image\x12%\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.ImageTypeR\x04type\x12\x10\n" +
 	"\x03url\x18\x03 \x01(\tR\x03url\x12;\n" +
 	"\vcaptured_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"capturedAt\"\x99\x01\n" +
+	"capturedAt\x12\x1d\n" +
+	"\n" +
+	"signed_url\x18\x05 \x01(\tR\tsignedUrl\x12#\n" +
+	"\rthumbnail_url\x18\x06 \x01(\tR\fthumbnailUrl\x12\x19\n" +
+	"\bgcs_path\x18\a \x01(\tR\agcsPath\x12%\n" +
+	"\x0ethumbnail_path\x18\b \x01(\tR\rthumbnailPath\x129\n" +
+	"\n" +
+	"expires_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xda\x02\n" +
 	"\x05Video\x12%\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.VideoTypeR\x04type\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x1a\n" +
 	"\bduration\x18\x03 \x01(\x05R\bduration\x12;\n" +
 	"\vcaptured_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"capturedAt\"\xed\x02\n" +
+	"capturedAt\x12\x1d\n" +
+	"\n" +
+	"signed_url\x18\x05 \x01(\tR\tsignedUrl\x12#\n" +
+	"\rthumbnail_url\x18\x06 \x01(\tR\fthumbnailUrl\x12\x19\n" +
+	"\bgcs_path\x18\a \x01(\tR\agcsPath\x12%\n" +
+	"\x0ethumbnail_path\x18\b \x01(\tR\rthumbnailPath\x129\n" +
+	"\n" +
+	"expires_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xed\x02\n" +
 	"\aPatient\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12!\n" +
@@ -2821,7 +3019,13 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\ascan_id\x18\x01 \x01(\tR\x06scanId\x12&\n" +
 	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\".\n" +
 	"\x12DeleteScanResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"2\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"a\n" +
+	"\x1eGenerateMediaSignedUrlsRequest\x12\x17\n" +
+	"\ascan_id\x18\x01 \x01(\tR\x06scanId\x12&\n" +
+	"\x0fowner_entity_id\x18\x02 \x01(\tR\rownerEntityId\"o\n" +
+	"\x1fGenerateMediaSignedUrlsResponse\x12%\n" +
+	"\x06images\x18\x01 \x03(\v2\r.podoai.ImageR\x06images\x12%\n" +
+	"\x06videos\x18\x02 \x03(\v2\r.podoai.VideoR\x06videos\"2\n" +
 	"\x11GetProductRequest\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x01 \x01(\tR\tproductId\"?\n" +
@@ -2932,7 +3136,7 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x04MALE\x10\x01\x12\n" +
 	"\n" +
 	"\x06FEMALE\x10\x02\x12\t\n" +
-	"\x05OTHER\x10\x032\xa5\b\n" +
+	"\x05OTHER\x10\x032\x91\t\n" +
 	"\rCommonService\x12C\n" +
 	"\n" +
 	"RequestOtp\x12\x19.podoai.RequestOtpRequest\x1a\x1a.podoai.RequestOtpResponse\x12<\n" +
@@ -2944,7 +3148,8 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\n" +
 	"UpdateScan\x12\x19.podoai.UpdateScanRequest\x1a\x1a.podoai.UpdateScanResponse\x12C\n" +
 	"\n" +
-	"DeleteScan\x12\x19.podoai.DeleteScanRequest\x1a\x1a.podoai.DeleteScanResponse\x12C\n" +
+	"DeleteScan\x12\x19.podoai.DeleteScanRequest\x1a\x1a.podoai.DeleteScanResponse\x12j\n" +
+	"\x17GenerateMediaSignedUrls\x12&.podoai.GenerateMediaSignedUrlsRequest\x1a'.podoai.GenerateMediaSignedUrlsResponse\x12C\n" +
 	"\n" +
 	"GetProduct\x12\x19.podoai.GetProductRequest\x1a\x1a.podoai.GetProductResponse\x12F\n" +
 	"\vGetExercise\x12\x1a.podoai.GetExerciseRequest\x1a\x1b.podoai.GetExerciseResponse\x12C\n" +
@@ -2970,63 +3175,65 @@ func file_common_podoai_proto_rawDescGZIP() []byte {
 }
 
 var file_common_podoai_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_common_podoai_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
+var file_common_podoai_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
 var file_common_podoai_proto_goTypes = []any{
-	(ImageType)(0),                // 0: podoai.ImageType
-	(VideoType)(0),                // 1: podoai.VideoType
-	(Role)(0),                     // 2: podoai.Role
-	(Gender)(0),                   // 3: podoai.Gender
-	(*Scan)(nil),                  // 4: podoai.Scan
-	(*ScanAIResult)(nil),          // 5: podoai.ScanAIResult
-	(*ScanLLMResult)(nil),         // 6: podoai.ScanLLMResult
-	(*ScanRecommendation)(nil),    // 7: podoai.ScanRecommendation
-	(*Product)(nil),               // 8: podoai.Product
-	(*ProductCategory)(nil),       // 9: podoai.ProductCategory
-	(*ProductPrice)(nil),          // 10: podoai.ProductPrice
-	(*Exercise)(nil),              // 11: podoai.Exercise
-	(*Therapy)(nil),               // 12: podoai.Therapy
-	(*Image)(nil),                 // 13: podoai.Image
-	(*Video)(nil),                 // 14: podoai.Video
-	(*Patient)(nil),               // 15: podoai.Patient
-	(*GetScansRequest)(nil),       // 16: podoai.GetScansRequest
-	(*GetScansResponse)(nil),      // 17: podoai.GetScansResponse
-	(*GetScanRequest)(nil),        // 18: podoai.GetScanRequest
-	(*GetScanResponse)(nil),       // 19: podoai.GetScanResponse
-	(*CreateScanRequest)(nil),     // 20: podoai.CreateScanRequest
-	(*CreateScanResponse)(nil),    // 21: podoai.CreateScanResponse
-	(*UpdateScanRequest)(nil),     // 22: podoai.UpdateScanRequest
-	(*UpdateScanResponse)(nil),    // 23: podoai.UpdateScanResponse
-	(*DeleteScanRequest)(nil),     // 24: podoai.DeleteScanRequest
-	(*DeleteScanResponse)(nil),    // 25: podoai.DeleteScanResponse
-	(*GetProductRequest)(nil),     // 26: podoai.GetProductRequest
-	(*GetProductResponse)(nil),    // 27: podoai.GetProductResponse
-	(*GetExerciseRequest)(nil),    // 28: podoai.GetExerciseRequest
-	(*GetExerciseResponse)(nil),   // 29: podoai.GetExerciseResponse
-	(*GetTherapyRequest)(nil),     // 30: podoai.GetTherapyRequest
-	(*GetTherapyResponse)(nil),    // 31: podoai.GetTherapyResponse
-	(*RequestOtpRequest)(nil),     // 32: podoai.RequestOtpRequest
-	(*RequestOtpResponse)(nil),    // 33: podoai.RequestOtpResponse
-	(*VerifyOtpRequest)(nil),      // 34: podoai.VerifyOtpRequest
-	(*LoginResponse)(nil),         // 35: podoai.LoginResponse
-	(*GetPatientsRequest)(nil),    // 36: podoai.GetPatientsRequest
-	(*GetPatientsResponse)(nil),   // 37: podoai.GetPatientsResponse
-	(*GetPatientRequest)(nil),     // 38: podoai.GetPatientRequest
-	(*GetPatientResponse)(nil),    // 39: podoai.GetPatientResponse
-	(*SearchPatientRequest)(nil),  // 40: podoai.SearchPatientRequest
-	(*SearchPatientResponse)(nil), // 41: podoai.SearchPatientResponse
-	(*CreatePatientRequest)(nil),  // 42: podoai.CreatePatientRequest
-	(*CreatePatientResponse)(nil), // 43: podoai.CreatePatientResponse
-	(*DeletePatientRequest)(nil),  // 44: podoai.DeletePatientRequest
-	(*DeletePatientResponse)(nil), // 45: podoai.DeletePatientResponse
-	(*timestamppb.Timestamp)(nil), // 46: google.protobuf.Timestamp
+	(ImageType)(0),                          // 0: podoai.ImageType
+	(VideoType)(0),                          // 1: podoai.VideoType
+	(Role)(0),                               // 2: podoai.Role
+	(Gender)(0),                             // 3: podoai.Gender
+	(*Scan)(nil),                            // 4: podoai.Scan
+	(*ScanAIResult)(nil),                    // 5: podoai.ScanAIResult
+	(*ScanLLMResult)(nil),                   // 6: podoai.ScanLLMResult
+	(*ScanRecommendation)(nil),              // 7: podoai.ScanRecommendation
+	(*Product)(nil),                         // 8: podoai.Product
+	(*ProductCategory)(nil),                 // 9: podoai.ProductCategory
+	(*ProductPrice)(nil),                    // 10: podoai.ProductPrice
+	(*Exercise)(nil),                        // 11: podoai.Exercise
+	(*Therapy)(nil),                         // 12: podoai.Therapy
+	(*Image)(nil),                           // 13: podoai.Image
+	(*Video)(nil),                           // 14: podoai.Video
+	(*Patient)(nil),                         // 15: podoai.Patient
+	(*GetScansRequest)(nil),                 // 16: podoai.GetScansRequest
+	(*GetScansResponse)(nil),                // 17: podoai.GetScansResponse
+	(*GetScanRequest)(nil),                  // 18: podoai.GetScanRequest
+	(*GetScanResponse)(nil),                 // 19: podoai.GetScanResponse
+	(*CreateScanRequest)(nil),               // 20: podoai.CreateScanRequest
+	(*CreateScanResponse)(nil),              // 21: podoai.CreateScanResponse
+	(*UpdateScanRequest)(nil),               // 22: podoai.UpdateScanRequest
+	(*UpdateScanResponse)(nil),              // 23: podoai.UpdateScanResponse
+	(*DeleteScanRequest)(nil),               // 24: podoai.DeleteScanRequest
+	(*DeleteScanResponse)(nil),              // 25: podoai.DeleteScanResponse
+	(*GenerateMediaSignedUrlsRequest)(nil),  // 26: podoai.GenerateMediaSignedUrlsRequest
+	(*GenerateMediaSignedUrlsResponse)(nil), // 27: podoai.GenerateMediaSignedUrlsResponse
+	(*GetProductRequest)(nil),               // 28: podoai.GetProductRequest
+	(*GetProductResponse)(nil),              // 29: podoai.GetProductResponse
+	(*GetExerciseRequest)(nil),              // 30: podoai.GetExerciseRequest
+	(*GetExerciseResponse)(nil),             // 31: podoai.GetExerciseResponse
+	(*GetTherapyRequest)(nil),               // 32: podoai.GetTherapyRequest
+	(*GetTherapyResponse)(nil),              // 33: podoai.GetTherapyResponse
+	(*RequestOtpRequest)(nil),               // 34: podoai.RequestOtpRequest
+	(*RequestOtpResponse)(nil),              // 35: podoai.RequestOtpResponse
+	(*VerifyOtpRequest)(nil),                // 36: podoai.VerifyOtpRequest
+	(*LoginResponse)(nil),                   // 37: podoai.LoginResponse
+	(*GetPatientsRequest)(nil),              // 38: podoai.GetPatientsRequest
+	(*GetPatientsResponse)(nil),             // 39: podoai.GetPatientsResponse
+	(*GetPatientRequest)(nil),               // 40: podoai.GetPatientRequest
+	(*GetPatientResponse)(nil),              // 41: podoai.GetPatientResponse
+	(*SearchPatientRequest)(nil),            // 42: podoai.SearchPatientRequest
+	(*SearchPatientResponse)(nil),           // 43: podoai.SearchPatientResponse
+	(*CreatePatientRequest)(nil),            // 44: podoai.CreatePatientRequest
+	(*CreatePatientResponse)(nil),           // 45: podoai.CreatePatientResponse
+	(*DeletePatientRequest)(nil),            // 46: podoai.DeletePatientRequest
+	(*DeletePatientResponse)(nil),           // 47: podoai.DeletePatientResponse
+	(*timestamppb.Timestamp)(nil),           // 48: google.protobuf.Timestamp
 }
 var file_common_podoai_proto_depIdxs = []int32{
-	46, // 0: podoai.Scan.created_at:type_name -> google.protobuf.Timestamp
-	46, // 1: podoai.Scan.updated_at:type_name -> google.protobuf.Timestamp
+	48, // 0: podoai.Scan.created_at:type_name -> google.protobuf.Timestamp
+	48, // 1: podoai.Scan.updated_at:type_name -> google.protobuf.Timestamp
 	13, // 2: podoai.Scan.images:type_name -> podoai.Image
 	14, // 3: podoai.Scan.videos:type_name -> podoai.Video
 	5,  // 4: podoai.Scan.scan_ai_result:type_name -> podoai.ScanAIResult
-	46, // 5: podoai.Scan.reviewed_at:type_name -> google.protobuf.Timestamp
+	48, // 5: podoai.Scan.reviewed_at:type_name -> google.protobuf.Timestamp
 	6,  // 6: podoai.ScanAIResult.llm_result:type_name -> podoai.ScanLLMResult
 	7,  // 7: podoai.ScanAIResult.recommendation:type_name -> podoai.ScanRecommendation
 	8,  // 8: podoai.ScanRecommendation.products:type_name -> podoai.Product
@@ -3035,62 +3242,68 @@ var file_common_podoai_proto_depIdxs = []int32{
 	9,  // 11: podoai.Product.category:type_name -> podoai.ProductCategory
 	10, // 12: podoai.Product.prices:type_name -> podoai.ProductPrice
 	0,  // 13: podoai.Image.type:type_name -> podoai.ImageType
-	46, // 14: podoai.Image.captured_at:type_name -> google.protobuf.Timestamp
-	1,  // 15: podoai.Video.type:type_name -> podoai.VideoType
-	46, // 16: podoai.Video.captured_at:type_name -> google.protobuf.Timestamp
-	3,  // 17: podoai.Patient.gender:type_name -> podoai.Gender
-	46, // 18: podoai.Patient.last_scan_date:type_name -> google.protobuf.Timestamp
-	46, // 19: podoai.Patient.created_at:type_name -> google.protobuf.Timestamp
-	4,  // 20: podoai.GetScansResponse.scans:type_name -> podoai.Scan
-	4,  // 21: podoai.GetScanResponse.scan:type_name -> podoai.Scan
-	4,  // 22: podoai.CreateScanRequest.scan:type_name -> podoai.Scan
-	4,  // 23: podoai.CreateScanResponse.scan:type_name -> podoai.Scan
-	4,  // 24: podoai.UpdateScanRequest.scan:type_name -> podoai.Scan
-	4,  // 25: podoai.UpdateScanResponse.scan:type_name -> podoai.Scan
-	8,  // 26: podoai.GetProductResponse.product:type_name -> podoai.Product
-	11, // 27: podoai.GetExerciseResponse.exercise:type_name -> podoai.Exercise
-	12, // 28: podoai.GetTherapyResponse.therapy:type_name -> podoai.Therapy
-	2,  // 29: podoai.LoginResponse.roles:type_name -> podoai.Role
-	15, // 30: podoai.GetPatientsResponse.patients:type_name -> podoai.Patient
-	15, // 31: podoai.GetPatientResponse.patient:type_name -> podoai.Patient
-	15, // 32: podoai.SearchPatientResponse.patients:type_name -> podoai.Patient
-	15, // 33: podoai.CreatePatientRequest.patient:type_name -> podoai.Patient
-	15, // 34: podoai.CreatePatientResponse.patient:type_name -> podoai.Patient
-	32, // 35: podoai.CommonService.RequestOtp:input_type -> podoai.RequestOtpRequest
-	34, // 36: podoai.CommonService.VerifyOtp:input_type -> podoai.VerifyOtpRequest
-	16, // 37: podoai.CommonService.GetScans:input_type -> podoai.GetScansRequest
-	18, // 38: podoai.CommonService.GetScan:input_type -> podoai.GetScanRequest
-	20, // 39: podoai.CommonService.CreateScan:input_type -> podoai.CreateScanRequest
-	22, // 40: podoai.CommonService.UpdateScan:input_type -> podoai.UpdateScanRequest
-	24, // 41: podoai.CommonService.DeleteScan:input_type -> podoai.DeleteScanRequest
-	26, // 42: podoai.CommonService.GetProduct:input_type -> podoai.GetProductRequest
-	28, // 43: podoai.CommonService.GetExercise:input_type -> podoai.GetExerciseRequest
-	30, // 44: podoai.CommonService.GetTherapy:input_type -> podoai.GetTherapyRequest
-	36, // 45: podoai.CommonService.GetPatients:input_type -> podoai.GetPatientsRequest
-	38, // 46: podoai.CommonService.GetPatient:input_type -> podoai.GetPatientRequest
-	40, // 47: podoai.CommonService.SearchPatient:input_type -> podoai.SearchPatientRequest
-	42, // 48: podoai.CommonService.CreatePatient:input_type -> podoai.CreatePatientRequest
-	44, // 49: podoai.CommonService.DeletePatient:input_type -> podoai.DeletePatientRequest
-	33, // 50: podoai.CommonService.RequestOtp:output_type -> podoai.RequestOtpResponse
-	35, // 51: podoai.CommonService.VerifyOtp:output_type -> podoai.LoginResponse
-	17, // 52: podoai.CommonService.GetScans:output_type -> podoai.GetScansResponse
-	19, // 53: podoai.CommonService.GetScan:output_type -> podoai.GetScanResponse
-	21, // 54: podoai.CommonService.CreateScan:output_type -> podoai.CreateScanResponse
-	23, // 55: podoai.CommonService.UpdateScan:output_type -> podoai.UpdateScanResponse
-	25, // 56: podoai.CommonService.DeleteScan:output_type -> podoai.DeleteScanResponse
-	27, // 57: podoai.CommonService.GetProduct:output_type -> podoai.GetProductResponse
-	29, // 58: podoai.CommonService.GetExercise:output_type -> podoai.GetExerciseResponse
-	31, // 59: podoai.CommonService.GetTherapy:output_type -> podoai.GetTherapyResponse
-	37, // 60: podoai.CommonService.GetPatients:output_type -> podoai.GetPatientsResponse
-	39, // 61: podoai.CommonService.GetPatient:output_type -> podoai.GetPatientResponse
-	41, // 62: podoai.CommonService.SearchPatient:output_type -> podoai.SearchPatientResponse
-	43, // 63: podoai.CommonService.CreatePatient:output_type -> podoai.CreatePatientResponse
-	45, // 64: podoai.CommonService.DeletePatient:output_type -> podoai.DeletePatientResponse
-	50, // [50:65] is the sub-list for method output_type
-	35, // [35:50] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	48, // 14: podoai.Image.captured_at:type_name -> google.protobuf.Timestamp
+	48, // 15: podoai.Image.expires_at:type_name -> google.protobuf.Timestamp
+	1,  // 16: podoai.Video.type:type_name -> podoai.VideoType
+	48, // 17: podoai.Video.captured_at:type_name -> google.protobuf.Timestamp
+	48, // 18: podoai.Video.expires_at:type_name -> google.protobuf.Timestamp
+	3,  // 19: podoai.Patient.gender:type_name -> podoai.Gender
+	48, // 20: podoai.Patient.last_scan_date:type_name -> google.protobuf.Timestamp
+	48, // 21: podoai.Patient.created_at:type_name -> google.protobuf.Timestamp
+	4,  // 22: podoai.GetScansResponse.scans:type_name -> podoai.Scan
+	4,  // 23: podoai.GetScanResponse.scan:type_name -> podoai.Scan
+	4,  // 24: podoai.CreateScanRequest.scan:type_name -> podoai.Scan
+	4,  // 25: podoai.CreateScanResponse.scan:type_name -> podoai.Scan
+	4,  // 26: podoai.UpdateScanRequest.scan:type_name -> podoai.Scan
+	4,  // 27: podoai.UpdateScanResponse.scan:type_name -> podoai.Scan
+	13, // 28: podoai.GenerateMediaSignedUrlsResponse.images:type_name -> podoai.Image
+	14, // 29: podoai.GenerateMediaSignedUrlsResponse.videos:type_name -> podoai.Video
+	8,  // 30: podoai.GetProductResponse.product:type_name -> podoai.Product
+	11, // 31: podoai.GetExerciseResponse.exercise:type_name -> podoai.Exercise
+	12, // 32: podoai.GetTherapyResponse.therapy:type_name -> podoai.Therapy
+	2,  // 33: podoai.LoginResponse.roles:type_name -> podoai.Role
+	15, // 34: podoai.GetPatientsResponse.patients:type_name -> podoai.Patient
+	15, // 35: podoai.GetPatientResponse.patient:type_name -> podoai.Patient
+	15, // 36: podoai.SearchPatientResponse.patients:type_name -> podoai.Patient
+	15, // 37: podoai.CreatePatientRequest.patient:type_name -> podoai.Patient
+	15, // 38: podoai.CreatePatientResponse.patient:type_name -> podoai.Patient
+	34, // 39: podoai.CommonService.RequestOtp:input_type -> podoai.RequestOtpRequest
+	36, // 40: podoai.CommonService.VerifyOtp:input_type -> podoai.VerifyOtpRequest
+	16, // 41: podoai.CommonService.GetScans:input_type -> podoai.GetScansRequest
+	18, // 42: podoai.CommonService.GetScan:input_type -> podoai.GetScanRequest
+	20, // 43: podoai.CommonService.CreateScan:input_type -> podoai.CreateScanRequest
+	22, // 44: podoai.CommonService.UpdateScan:input_type -> podoai.UpdateScanRequest
+	24, // 45: podoai.CommonService.DeleteScan:input_type -> podoai.DeleteScanRequest
+	26, // 46: podoai.CommonService.GenerateMediaSignedUrls:input_type -> podoai.GenerateMediaSignedUrlsRequest
+	28, // 47: podoai.CommonService.GetProduct:input_type -> podoai.GetProductRequest
+	30, // 48: podoai.CommonService.GetExercise:input_type -> podoai.GetExerciseRequest
+	32, // 49: podoai.CommonService.GetTherapy:input_type -> podoai.GetTherapyRequest
+	38, // 50: podoai.CommonService.GetPatients:input_type -> podoai.GetPatientsRequest
+	40, // 51: podoai.CommonService.GetPatient:input_type -> podoai.GetPatientRequest
+	42, // 52: podoai.CommonService.SearchPatient:input_type -> podoai.SearchPatientRequest
+	44, // 53: podoai.CommonService.CreatePatient:input_type -> podoai.CreatePatientRequest
+	46, // 54: podoai.CommonService.DeletePatient:input_type -> podoai.DeletePatientRequest
+	35, // 55: podoai.CommonService.RequestOtp:output_type -> podoai.RequestOtpResponse
+	37, // 56: podoai.CommonService.VerifyOtp:output_type -> podoai.LoginResponse
+	17, // 57: podoai.CommonService.GetScans:output_type -> podoai.GetScansResponse
+	19, // 58: podoai.CommonService.GetScan:output_type -> podoai.GetScanResponse
+	21, // 59: podoai.CommonService.CreateScan:output_type -> podoai.CreateScanResponse
+	23, // 60: podoai.CommonService.UpdateScan:output_type -> podoai.UpdateScanResponse
+	25, // 61: podoai.CommonService.DeleteScan:output_type -> podoai.DeleteScanResponse
+	27, // 62: podoai.CommonService.GenerateMediaSignedUrls:output_type -> podoai.GenerateMediaSignedUrlsResponse
+	29, // 63: podoai.CommonService.GetProduct:output_type -> podoai.GetProductResponse
+	31, // 64: podoai.CommonService.GetExercise:output_type -> podoai.GetExerciseResponse
+	33, // 65: podoai.CommonService.GetTherapy:output_type -> podoai.GetTherapyResponse
+	39, // 66: podoai.CommonService.GetPatients:output_type -> podoai.GetPatientsResponse
+	41, // 67: podoai.CommonService.GetPatient:output_type -> podoai.GetPatientResponse
+	43, // 68: podoai.CommonService.SearchPatient:output_type -> podoai.SearchPatientResponse
+	45, // 69: podoai.CommonService.CreatePatient:output_type -> podoai.CreatePatientResponse
+	47, // 70: podoai.CommonService.DeletePatient:output_type -> podoai.DeletePatientResponse
+	55, // [55:71] is the sub-list for method output_type
+	39, // [39:55] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_common_podoai_proto_init() }
@@ -3104,7 +3317,7 @@ func file_common_podoai_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_podoai_proto_rawDesc), len(file_common_podoai_proto_rawDesc)),
 			NumEnums:      4,
-			NumMessages:   42,
+			NumMessages:   44,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
