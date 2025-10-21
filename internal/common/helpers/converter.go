@@ -8,13 +8,12 @@ import (
 	"github.com/therehabstreet/podoai/proto/common"
 	pb "github.com/therehabstreet/podoai/proto/common"
 	podoai "github.com/therehabstreet/podoai/proto/common"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Scan Proto <-> Model conversion
-func ScanProtoToModel(proto *common.Scan) models.Scan {
-	scan := models.Scan{
+func ScanProtoToModel(proto *common.Scan) *models.Scan {
+	scan := &models.Scan{
 		ID:            proto.GetId(),
 		PatientID:     proto.GetPatientId(),
 		OwnerEntityID: proto.GetOwnerEntityId(),
@@ -48,7 +47,7 @@ func ScanProtoToModel(proto *common.Scan) models.Scan {
 	return scan
 }
 
-func ScanModelToProto(model models.Scan) *common.Scan {
+func ScanModelToProto(model *models.Scan) *common.Scan {
 	scan := &common.Scan{
 		Id:            model.ID,
 		PatientId:     model.PatientID,
@@ -152,8 +151,8 @@ func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 }
 
 // Image conversion
-func ImageProtoToModel(proto *common.Image) models.Image {
-	return models.Image{
+func ImageProtoToModel(proto *common.Image) *models.Image {
+	return &models.Image{
 		Type:               proto.GetType().String(),
 		URL:                proto.GetUrl(),
 		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
@@ -165,7 +164,7 @@ func ImageProtoToModel(proto *common.Image) models.Image {
 	}
 }
 
-func ImageModelToProto(model models.Image) *common.Image {
+func ImageModelToProto(model *models.Image) *common.Image {
 	// Convert string type to ImageType enum
 	imageType, exists := common.ImageType_value[model.Type]
 	if !exists {
@@ -185,8 +184,8 @@ func ImageModelToProto(model models.Image) *common.Image {
 }
 
 // Video conversion
-func VideoProtoToModel(proto *common.Video) models.Video {
-	return models.Video{
+func VideoProtoToModel(proto *common.Video) *models.Video {
+	return &models.Video{
 		Type:               proto.GetType().String(),
 		URL:                proto.GetUrl(),
 		Duration:           proto.GetDuration(),
@@ -199,7 +198,7 @@ func VideoProtoToModel(proto *common.Video) models.Video {
 	}
 }
 
-func VideoModelToProto(model models.Video) *common.Video {
+func VideoModelToProto(model *models.Video) *common.Video {
 	// Convert string type to VideoType enum
 	videoType, exists := common.VideoType_value[model.Type]
 	if !exists {
@@ -220,8 +219,8 @@ func VideoModelToProto(model models.Video) *common.Video {
 }
 
 // Product conversion
-func ProductProtoToModel(proto *common.Product) models.Product {
-	product := models.Product{
+func ProductProtoToModel(proto *common.Product) *models.Product {
+	product := &models.Product{
 		ID:          proto.GetId(),
 		Name:        proto.GetName(),
 		Description: proto.GetDescription(),
@@ -238,7 +237,7 @@ func ProductProtoToModel(proto *common.Product) models.Product {
 	}
 
 	for _, p := range proto.GetPrices() {
-		product.Prices = append(product.Prices, models.ProductPrice{
+		product.Prices = append(product.Prices, &models.ProductPrice{
 			ProductID: p.GetProductId(),
 			Price:     p.GetPrice(),
 			Currency:  p.GetCurrency(),
@@ -248,7 +247,7 @@ func ProductProtoToModel(proto *common.Product) models.Product {
 	return product
 }
 
-func ProductModelToProto(model models.Product) *common.Product {
+func ProductModelToProto(model *models.Product) *common.Product {
 	product := &common.Product{
 		Id:          model.ID,
 		Name:        model.Name,
@@ -277,8 +276,8 @@ func ProductModelToProto(model models.Product) *common.Product {
 }
 
 // Exercise conversion
-func ExerciseProtoToModel(proto *common.Exercise) models.Exercise {
-	return models.Exercise{
+func ExerciseProtoToModel(proto *common.Exercise) *models.Exercise {
+	return &models.Exercise{
 		ID:          proto.GetId(),
 		Name:        proto.GetName(),
 		Description: proto.GetDescription(),
@@ -286,7 +285,7 @@ func ExerciseProtoToModel(proto *common.Exercise) models.Exercise {
 	}
 }
 
-func ExerciseModelToProto(model models.Exercise) *common.Exercise {
+func ExerciseModelToProto(model *models.Exercise) *common.Exercise {
 	return &common.Exercise{
 		Id:          model.ID,
 		Name:        model.Name,
@@ -296,8 +295,8 @@ func ExerciseModelToProto(model models.Exercise) *common.Exercise {
 }
 
 // Therapy conversion
-func TherapyProtoToModel(proto *common.Therapy) models.Therapy {
-	return models.Therapy{
+func TherapyProtoToModel(proto *common.Therapy) *models.Therapy {
+	return &models.Therapy{
 		ID:          proto.GetId(),
 		Name:        proto.GetName(),
 		Description: proto.GetDescription(),
@@ -305,7 +304,7 @@ func TherapyProtoToModel(proto *common.Therapy) models.Therapy {
 	}
 }
 
-func TherapyModelToProto(model models.Therapy) *common.Therapy {
+func TherapyModelToProto(model *models.Therapy) *common.Therapy {
 	return &common.Therapy{
 		Id:          model.ID,
 		Name:        model.Name,
@@ -315,9 +314,9 @@ func TherapyModelToProto(model models.Therapy) *common.Therapy {
 }
 
 // Patient Proto <-> Model conversion
-func PatientModelToProto(m models.Patient) *podoai.Patient {
+func PatientModelToProto(m *models.Patient) *podoai.Patient {
 	return &podoai.Patient{
-		Id:            m.ID.Hex(),
+		Id:            m.ID,
 		Name:          m.Name,
 		PhoneNumber:   m.PhoneNumber,
 		OwnerEntityId: m.OwnerEntityID,
@@ -331,14 +330,7 @@ func PatientModelToProto(m models.Patient) *podoai.Patient {
 }
 
 // Proto Patient -> Model Patient
-func PatientProtoToModel(p *podoai.Patient) models.Patient {
-	var id primitive.ObjectID
-	if p.Id != "" {
-		oid, err := primitive.ObjectIDFromHex(p.Id)
-		if err == nil {
-			id = oid
-		}
-	}
+func PatientProtoToModel(p *podoai.Patient) *models.Patient {
 	var lastScanDate, createdAt time.Time
 	if p.LastScanDate != nil {
 		lastScanDate = p.LastScanDate.AsTime()
@@ -347,8 +339,8 @@ func PatientProtoToModel(p *podoai.Patient) models.Patient {
 		createdAt = p.CreatedAt.AsTime()
 	}
 
-	return models.Patient{
-		ID:            id,
+	return &models.Patient{
+		ID:            p.Id,
 		Name:          p.Name,
 		PhoneNumber:   p.PhoneNumber,
 		OwnerEntityID: p.OwnerEntityId,

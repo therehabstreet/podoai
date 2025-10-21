@@ -7,11 +7,11 @@ import (
 	"math/big"
 	"time"
 
+	"github.com/google/uuid"
 	clinicalModels "github.com/therehabstreet/podoai/internal/clinical/models"
 	"github.com/therehabstreet/podoai/internal/common/helpers"
 	"github.com/therehabstreet/podoai/internal/common/models"
 	pb "github.com/therehabstreet/podoai/proto/common"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // RequestOtp handles OTP request with different flows for clinical and consumer
@@ -139,15 +139,15 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 		if err == nil {
 			// User exists
 			consumerUser := user.(models.User)
-			userID = consumerUser.ID.Hex()
+			userID = consumerUser.ID
 			roles = consumerUser.Roles
 			if len(roles) == 0 {
 				roles = models.DefaultConsumerRoles()
 			}
 		} else {
 			// Create new consumer user
-			newUser := models.User{
-				ID:          primitive.NewObjectID(),
+			newUser := &models.User{
+				ID:          uuid.NewString(),
 				PhoneNumber: phoneNumber,
 				Roles:       models.DefaultConsumerRoles(),
 				CreatedAt:   time.Now(),

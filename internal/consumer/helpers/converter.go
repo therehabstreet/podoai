@@ -10,8 +10,8 @@ import (
 )
 
 // User Proto <-> Model conversion
-func UserProtoToModel(proto *pb.User) models.User {
-	return models.User{
+func UserProtoToModel(proto *pb.User) *models.User {
+	return &models.User{
 		ID:        proto.GetId(),
 		Name:      proto.GetName(),
 		Phone:     proto.GetPhone(),
@@ -23,7 +23,7 @@ func UserProtoToModel(proto *pb.User) models.User {
 	}
 }
 
-func UserModelToProto(model models.User) *pb.User {
+func UserModelToProto(model *models.User) *pb.User {
 	return &pb.User{
 		Id:        model.ID,
 		Name:      model.Name,

@@ -15,7 +15,7 @@ func (cs *ConsumerServer) GetUser(ctx context.Context, req *pb.GetUserRequest) (
 	}
 
 	return &pb.GetUserResponse{
-		User: helpers.UserModelToProto(*userModel),
+		User: helpers.UserModelToProto(userModel),
 	}, nil
 }
 
@@ -28,6 +28,6 @@ func (cs *ConsumerServer) UpdateUser(ctx context.Context, req *pb.UpdateUserRequ
 	}
 
 	return &pb.UpdateUserResponse{
-		User: helpers.UserModelToProto(*updatedUser),
+		User: helpers.UserModelToProto(updatedUser),
 	}, nil
 }

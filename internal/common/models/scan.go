@@ -9,8 +9,8 @@ type Scan struct {
 	OwnerEntityID string        `bson:"owner_entity_id"`
 	CreatedAt     time.Time     `bson:"created_at"`
 	UpdatedAt     time.Time     `bson:"updated_at"`
-	Images        []Image       `bson:"images"`
-	Videos        []Video       `bson:"videos"`
+	Images        []*Image      `bson:"images"`
+	Videos        []*Video      `bson:"videos"`
 	ScanAIResult  *ScanAIResult `bson:"scan_ai_result,omitempty"`
 	ScannedByID   string        `bson:"scanned_by_id"`
 	ReviewedByID  string        `bson:"reviewed_by_id"`
@@ -30,9 +30,9 @@ type ScanLLMResult struct {
 }
 
 type ScanRecommendation struct {
-	Products  []Product  `bson:"products"`
-	Exercises []Exercise `bson:"exercises"`
-	Therapies []Therapy  `bson:"therapies"`
+	Products  []*Product  `bson:"products"`
+	Exercises []*Exercise `bson:"exercises"`
+	Therapies []*Therapy  `bson:"therapies"`
 }
 
 type Image struct {
@@ -65,7 +65,7 @@ type Product struct {
 	Description string           `bson:"description"`
 	MediaURLs   []string         `bson:"media_urls"`
 	Category    *ProductCategory `bson:"category,omitempty"`
-	Prices      []ProductPrice   `bson:"prices"`
+	Prices      []*ProductPrice  `bson:"prices"`
 }
 
 type ProductCategory struct {

@@ -11,7 +11,7 @@ import (
 
 type DBClient interface {
 	FetchUserByID(ctx context.Context, userID string) (*models.User, error)
-	UpdateUser(ctx context.Context, user models.User) (*models.User, error)
+	UpdateUser(ctx context.Context, user *models.User) (*models.User, error)
 }
 
 // MongoDBClient implements DBClient
@@ -70,10 +70,10 @@ func (m *MongoDBClient) FetchUserByID(ctx context.Context, userID string) (*mode
 	return &user, err
 }
 
-func (m *MongoDBClient) UpdateUser(ctx context.Context, user models.User) (*models.User, error) {
+func (m *MongoDBClient) UpdateUser(ctx context.Context, user *models.User) (*models.User, error) {
 	coll := m.Client.Database(DatabaseName).Collection("users")
 	filter := bson.M{"_id": user.ID}
 	update := bson.M{"$set": user}
 	_, err := coll.UpdateOne(ctx, filter, update)
-	return &user, err
+	return user, err
 }

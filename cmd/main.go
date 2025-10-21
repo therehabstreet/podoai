@@ -33,8 +33,9 @@ func main() {
 		log.Fatalf("failed to connect to common MongoDB: %v", err)
 	}
 
-	consumerMongoClient := &consumerClients.MongoDBClient{
-		Client: clinicalMongoClient.Client, // Reuse the same connection
+	consumerMongoClient, err := consumerClients.InitConsumerMongoClient("mongodb://localhost:27017")
+	if err != nil {
+		log.Fatalf("failed to connect to consumer MongoDB: %v", err)
 	}
 
 	whatsappClient := commonClients.NewWhatsAppClient(config)

@@ -10,7 +10,6 @@ import (
 	"github.com/therehabstreet/podoai/internal/common/helpers"
 	"github.com/therehabstreet/podoai/internal/common/models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,8 +17,8 @@ import (
 type DBClient interface {
 	FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Scan, int64, error)
 	FetchScanByID(ctx context.Context, scanID string, ownerEntityID string) (*models.Scan, error)
-	CreateScan(ctx context.Context, scan models.Scan) (*models.Scan, error)
-	UpdateScan(ctx context.Context, scan models.Scan) (*models.Scan, error)
+	CreateScan(ctx context.Context, scan *models.Scan) (*models.Scan, error)
+	UpdateScan(ctx context.Context, scan *models.Scan) (*models.Scan, error)
 	DeleteScanByID(ctx context.Context, scanID string, ownerEntityID string) error
 	// Product methods
 	FetchProductByID(ctx context.Context, productID string) (*models.Product, error)
@@ -30,8 +29,8 @@ type DBClient interface {
 	// OTP methods
 	StoreOTP(ctx context.Context, otp *models.OTP) error
 	GetOTPByPhoneNumber(ctx context.Context, phoneNumber string) (*models.OTP, error)
-	MarkOTPAsUsed(ctx context.Context, otpID primitive.ObjectID) error
-	IncrementOTPAttempts(ctx context.Context, otpID primitive.ObjectID) error
+	MarkOTPAsUsed(ctx context.Context, otpID string) error
+	IncrementOTPAttempts(ctx context.Context, otpID string) error
 	CleanupExpiredOTPs(ctx context.Context) error
 	// User existence methods
 	ClinicalUserExists(ctx context.Context, phoneNumber string) (bool, error)
@@ -42,7 +41,7 @@ type DBClient interface {
 	FetchPatientByID(ctx context.Context, patientID string, ownerEntityID string) (*models.Patient, error)
 	FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Patient, int64, error)
 	SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]*models.Patient, int64, error)
-	CreatePatient(ctx context.Context, patient models.Patient) (*models.Patient, error)
+	CreatePatient(ctx context.Context, patient *models.Patient) (*models.Patient, error)
 	DeletePatientByID(ctx context.Context, patientID string, ownerEntityID string) error
 }
 
@@ -55,15 +54,12 @@ const (
 	DatabaseName = "podoai"
 )
 
-var CommonMongoClient *mongo.Client
-
 func InitCommonMongoClient(uri string) (*MongoDBClient, error) {
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
-	CommonMongoClient = client
 	mongoClient := &MongoDBClient{Client: client}
 
 	// Map of collection name to slice of index definitions
@@ -204,13 +200,13 @@ func (m *MongoDBClient) FetchScanByID(ctx context.Context, scanID string, ownerE
 	return &scan, err
 }
 
-func (m *MongoDBClient) CreateScan(ctx context.Context, scan models.Scan) (*models.Scan, error) {
+func (m *MongoDBClient) CreateScan(ctx context.Context, scan *models.Scan) (*models.Scan, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 	_, err := coll.InsertOne(ctx, scan)
-	return &scan, err
+	return scan, err
 }
 
-func (m *MongoDBClient) UpdateScan(ctx context.Context, scan models.Scan) (*models.Scan, error) {
+func (m *MongoDBClient) UpdateScan(ctx context.Context, scan *models.Scan) (*models.Scan, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 	filter := bson.M{"_id": scan.ID, "owner_entity_id": scan.OwnerEntityID}
 	update := bson.M{"$set": scan}
@@ -301,7 +297,7 @@ func (m *MongoDBClient) GetOTPByPhoneNumber(ctx context.Context, phoneNumber str
 }
 
 // MarkOTPAsUsed marks an OTP as used
-func (m *MongoDBClient) MarkOTPAsUsed(ctx context.Context, otpID primitive.ObjectID) error {
+func (m *MongoDBClient) MarkOTPAsUsed(ctx context.Context, otpID string) error {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "otps"))
 
 	_, err := coll.UpdateOne(
@@ -314,7 +310,7 @@ func (m *MongoDBClient) MarkOTPAsUsed(ctx context.Context, otpID primitive.Objec
 }
 
 // IncrementOTPAttempts increments the attempt count for an OTP
-func (m *MongoDBClient) IncrementOTPAttempts(ctx context.Context, otpID primitive.ObjectID) error {
+func (m *MongoDBClient) IncrementOTPAttempts(ctx context.Context, otpID string) error {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "otps"))
 
 	_, err := coll.UpdateOne(ctx,
@@ -370,15 +366,15 @@ func (m *MongoDBClient) GetUserByPhoneNumber(ctx context.Context, phoneNumber st
 func (m *MongoDBClient) CreateUser(ctx context.Context, user interface{}) (string, error) {
 	if helpers.IsClinicalApp(ctx) {
 		clinicalColl := m.Client.Database(DatabaseName).Collection("clinical_users")
-		clinicalUser := user.(clinicalModels.ClinicUser)
+		clinicalUser := user.(*clinicalModels.ClinicUser)
 		_, err := clinicalColl.InsertOne(ctx, clinicalUser)
 		return clinicalUser.ID, err
 	}
 
 	consumerColl := m.Client.Database(DatabaseName).Collection("consumer_users")
-	consumerUser := user.(models.User)
+	consumerUser := user.(*models.User)
 	_, err := consumerColl.InsertOne(ctx, consumerUser)
-	return consumerUser.ID.Hex(), err
+	return consumerUser.ID, err
 }
 
 // FetchPatientByID retrieves a patient by ID with owner entity validation
@@ -510,7 +506,7 @@ func (m *MongoDBClient) SearchPatients(ctx context.Context, searchTerm, ownerEnt
 }
 
 // CreatePatient creates a new patient
-func (m *MongoDBClient) CreatePatient(ctx context.Context, patient models.Patient) (*models.Patient, error) {
+func (m *MongoDBClient) CreatePatient(ctx context.Context, patient *models.Patient) (*models.Patient, error) {
 	if patient.Name == "" || len(strings.TrimSpace(patient.Name)) == 0 {
 		return nil, fmt.Errorf("patient name cannot be empty")
 	}
@@ -528,7 +524,7 @@ func (m *MongoDBClient) CreatePatient(ctx context.Context, patient models.Patien
 		return nil, fmt.Errorf("error creating patient")
 	}
 
-	return &patient, nil
+	return patient, nil
 }
 
 // DeletePatientByID deletes a patient by ID with owner entity validation

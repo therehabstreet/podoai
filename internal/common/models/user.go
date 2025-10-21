@@ -4,21 +4,20 @@ import (
 	"time"
 
 	pb "github.com/therehabstreet/podoai/proto/common"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // User represents a user in the system (common for both consumer and clinical)
 type User struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name"`
-	PhoneNumber string             `bson:"phone_number"`
-	Email       string             `bson:"email,omitempty"`
-	Roles       []string           `bson:"roles"` // Store as strings in MongoDB for simplicity
-	ClinicID    string             `bson:"clinic_id,omitempty"`
-	Age         string             `bson:"age,omitempty"`
-	Gender      string             `bson:"gender,omitempty"`
-	CreatedAt   time.Time          `bson:"created_at"`
-	UpdatedAt   time.Time          `bson:"updated_at"`
+	ID          string    `bson:"_id,omitempty"`
+	Name        string    `bson:"name"`
+	PhoneNumber string    `bson:"phone_number"`
+	Email       string    `bson:"email,omitempty"`
+	Roles       []string  `bson:"roles"` // Store as strings in MongoDB for simplicity
+	ClinicID    string    `bson:"clinic_id,omitempty"`
+	Age         string    `bson:"age,omitempty"`
+	Gender      string    `bson:"gender,omitempty"`
+	CreatedAt   time.Time `bson:"created_at"`
+	UpdatedAt   time.Time `bson:"updated_at"`
 }
 
 // DefaultConsumerRoles returns default roles for consumer users as strings

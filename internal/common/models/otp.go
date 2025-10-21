@@ -5,19 +5,19 @@ import (
 	"strconv"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/google/uuid"
 )
 
 // OTP model for storing OTP verification codes
 type OTP struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	PhoneNumber string             `bson:"phone_number"`
-	Code        string             `bson:"code"`
-	CreatedAt   time.Time          `bson:"created_at"`
-	ExpiresAt   time.Time          `bson:"expires_at"`
-	IsUsed      bool               `bson:"is_used"`
-	Attempts    int                `bson:"attempts"`
-	MaxAttempts int                `bson:"max_attempts"`
+	ID          string    `bson:"_id,omitempty"`
+	PhoneNumber string    `bson:"phone_number"`
+	Code        string    `bson:"code"`
+	CreatedAt   time.Time `bson:"created_at"`
+	ExpiresAt   time.Time `bson:"expires_at"`
+	IsUsed      bool      `bson:"is_used"`
+	Attempts    int       `bson:"attempts"`
+	MaxAttempts int       `bson:"max_attempts"`
 }
 
 // IsExpired checks if the OTP has expired
@@ -36,7 +36,7 @@ func NewOTP(phoneNumber, code string, expiryMinutes int) *OTP {
 	maxAttempts := getOTPMaxAttempts()
 
 	return &OTP{
-		ID:          primitive.NewObjectID(),
+		ID:          uuid.NewString(),
 		PhoneNumber: phoneNumber,
 		Code:        code,
 		CreatedAt:   now,

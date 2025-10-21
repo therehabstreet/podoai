@@ -4,22 +4,10 @@ import (
 	"time"
 
 	"github.com/therehabstreet/podoai/internal/clinical/models"
-	commonHelpers "github.com/therehabstreet/podoai/internal/common/helpers"
-	commonModels "github.com/therehabstreet/podoai/internal/common/models"
 	pb "github.com/therehabstreet/podoai/proto/clinical"
 	podoai "github.com/therehabstreet/podoai/proto/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-// Mongo Patient -> Proto Patient (delegate to common)
-func PatientModelToProto(m commonModels.Patient) *podoai.Patient {
-	return commonHelpers.PatientModelToProto(m)
-}
-
-// Proto Patient -> Mongo Patient (delegate to common)
-func PatientProtoToModel(p *podoai.Patient) commonModels.Patient {
-	return commonHelpers.PatientProtoToModel(p)
-}
 
 // Mongo Clinic -> Proto Clinic
 func ClinicModelToProto(m models.Clinic) *pb.Clinic {
