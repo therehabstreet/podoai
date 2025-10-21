@@ -15,6 +15,7 @@ type Scan struct {
 	ScannedByID   string        `bson:"scanned_by_id"`
 	ReviewedByID  string        `bson:"reviewed_by_id"`
 	ReviewedAt    *time.Time    `bson:"reviewed_at,omitempty"`
+	Status        string        `bson:"status"`
 }
 
 type ScanAIResult struct {

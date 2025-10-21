@@ -41,6 +41,7 @@ message Scan {
   string scanned_by_id = 9;
   string reviewed_by_id = 10;
   google.protobuf.Timestamp reviewed_at = 11;
+  ScanStatus status = 12;  // Current status of the scan
 }
 
 message ScanAIResult {
@@ -173,6 +174,15 @@ enum SignedUrlAction {
   SIGNED_URL_ACTION_UNSPECIFIED = 0;
   READ = 1;
   WRITE = 2;
+}
+
+enum ScanStatus {
+  SCAN_STATUS_UNSPECIFIED = 0;
+  CREATED = 1;
+  MEDIA_UPLOADED = 2;
+  AI_PROCESSING = 3;
+  REPORT_GENERATED = 4;
+  HUMAN_REVIEWED = 5;
 }
 
 message Patient {

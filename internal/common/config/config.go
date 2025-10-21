@@ -6,9 +6,10 @@ import (
 )
 
 type Config struct {
-	WhatsApp *WhatsAppConfig
-	JWT      *JWTConfig
-	GCS      *GCSConfig
+	WhatsApp   *WhatsAppConfig
+	JWT        *JWTConfig
+	GCS        *GCSConfig
+	MongoDBURI string
 }
 
 type WhatsAppConfig struct {
@@ -69,6 +70,7 @@ func NewConfig() *Config {
 			ServiceAccountKeyPath:     getEnvWithDefault("GCS_SERVICE_ACCOUNT_KEY_PATH", ""),
 			DefaultSignedURLExpiryMin: gcsSignedURLExpiryMin,
 		},
+		MongoDBURI: getEnvWithDefault("MONGODB_URI", "mongodb+srv://admin:Okn4YhEboRHLeQjj@clinicore-0.6f60ubr.mongodb.net/"),
 	}
 }
 

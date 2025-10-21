@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/therehabstreet/podoai/internal/common/helpers"
+	"github.com/therehabstreet/podoai/internal/common/workers"
 	pb "github.com/therehabstreet/podoai/proto/common"
 )
 
@@ -101,6 +102,25 @@ func (cs *CommonServer) UpdateScan(ctx context.Context, req *pb.UpdateScanReques
 	updatedScan, err := cs.DBClient.UpdateScan(ctx, scanModel)
 	if err != nil {
 		return nil, err
+	}
+
+	// Trigger async processing if status changed to MEDIA_UPLOADED
+	if scanModel.Status == pb.ScanStatus_MEDIA_UPLOADED.String() {
+		err := cs.ScanResultWorkflow.SubmitRun(
+			ctx,
+			&workers.ScanRun{
+				Input: map[string]any{"scan": updatedScan},
+				Steps: []workers.WorkflowStep{
+					&workers.RunAIAnalysisStep{},
+					&workers.GenerateLLMReportStep{},
+					&workers.GenerateRecommendationsStep{},
+				},
+			},
+		)
+		if err != nil {
+			// Log error but don't fail the update request
+			fmt.Printf("Warning: Failed to queue scan for processing: %v\n", err)
+		}
 	}
 
 	return &pb.UpdateScanResponse{

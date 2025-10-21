@@ -13,6 +13,7 @@ import (
 	"github.com/therehabstreet/podoai/internal/common/config"
 	commonHandlers "github.com/therehabstreet/podoai/internal/common/handlers"
 	commonMiddleware "github.com/therehabstreet/podoai/internal/common/middleware"
+	"github.com/therehabstreet/podoai/internal/common/workers"
 	consumerClients "github.com/therehabstreet/podoai/internal/consumer/clients"
 	consumerHandlers "github.com/therehabstreet/podoai/internal/consumer/handlers"
 	consumerMiddleware "github.com/therehabstreet/podoai/internal/consumer/middleware"
@@ -23,17 +24,17 @@ import (
 func main() {
 	config := config.NewConfig()
 
-	clinicalMongoClient, err := clients.InitClinicalMongoClient("mongodb://localhost:27017")
+	clinicalMongoClient, err := clients.InitClinicalMongoClient(config.MongoDBURI)
 	if err != nil {
 		log.Fatalf("failed to connect to clinical MongoDB: %v", err)
 	}
 
-	commonMongoClient, err := commonClients.InitCommonMongoClient("mongodb://localhost:27017")
+	commonMongoClient, err := commonClients.InitCommonMongoClient(config.MongoDBURI)
 	if err != nil {
 		log.Fatalf("failed to connect to common MongoDB: %v", err)
 	}
 
-	consumerMongoClient, err := consumerClients.InitConsumerMongoClient("mongodb://localhost:27017")
+	consumerMongoClient, err := consumerClients.InitConsumerMongoClient(config.MongoDBURI)
 	if err != nil {
 		log.Fatalf("failed to connect to consumer MongoDB: %v", err)
 	}
@@ -42,8 +43,15 @@ func main() {
 
 	storageClient, err := commonClients.NewGCSClient(config.GCS)
 	if err != nil {
-		log.Fatalf("Warning: failed to create GCS client: %v", err)
+		// TODO log.Fatalf("Warning: failed to create GCS client: %v", err)
 	}
+
+	scanResultWorkflow := workers.NewWorkflowEngine(&workers.WorkflowConfig{
+		Name:       "ScanResultWorkflow",
+		MaxWorkers: 10,
+		QueueSize:  20,
+	})
+	defer scanResultWorkflow.Shutdown()
 
 	// Start periodic cleanup of expired OTPs
 	go func() {
@@ -83,7 +91,7 @@ func main() {
 	clinicalHandlers.RegisterClinicalServer(grpcServer, clinicalServer)
 
 	// Register common server
-	commonServer := commonHandlers.NewCommonServer(config, commonMongoClient, whatsappClient, storageClient)
+	commonServer := commonHandlers.NewCommonServer(config, commonMongoClient, whatsappClient, storageClient, scanResultWorkflow)
 	commonHandlers.RegisterCommonServer(grpcServer, commonServer)
 
 	// Register consumer server
