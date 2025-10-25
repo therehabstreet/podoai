@@ -34,7 +34,7 @@ func (w *WhatsAppClient) SendOTP(ctx context.Context, phoneNumber, otp string) e
 	// TODO: Implement actual WhatsApp API integration
 	// This is a stub implementation
 
-	message := fmt.Sprintf("Your PodoAI verification code is: %s\n\nThis code will expire in 5 minutes. Do not share this code with anyone.", otp)
+	message := fmt.Sprintf("Your PodoAI login code is: %s\n\nThis code will expire in 5 minutes. Do not share this code with anyone.", otp)
 
 	// TODO: Format phone number properly (add country code if needed)
 	formattedPhone := formatPhoneNumber(phoneNumber)

@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package podoai.ai;
+
+option go_package = "github.com/therehabstreet/podoai/proto/ai";
+
+import "google/protobuf/timestamp.proto";
+
+service AIAnalysisService {
+  rpc AnalyzeScan(AnalyzeScanRequest) returns (AnalyzeScanResponse);
+  rpc GenerateLLMReport(GenerateLLMReportRequest) returns (GenerateLLMReportResponse);
+}
+
+message AnalyzeScanRequest {
+  string scan_id = 1;
+  repeated ImageInput images = 2;
+  repeated VideoInput videos = 3;
+}
+
+message ImageInput {
+  string type = 1;
+  string path = 2;
+}
+
+message VideoInput {
+  string type = 1;
+  string path = 2;
+  int32 duration = 3;
+}
+
+message AnalyzeScanResponse {
+  string scan_id = 1;
+  BiomechanicalMetrics metrics = 2;
+}
+
+message BiomechanicalMetrics {
+  float foot_score = 1;
+  float gait_score = 2;
+  float left_pronation_angle = 3;
+  float right_pronation_angle = 4;
+  float left_arch_height_index = 5;
+  float right_arch_height_index = 6;
+  float left_hallux_valgus_angle = 7;
+  float right_hallux_valgus_angle = 8;
+}
+
+// Request to generate LLM report
+message GenerateLLMReportRequest {
+  string scan_id = 1;
+  BiomechanicalMetrics metrics = 2;
+}
+
+// Response containing generated LLM report
+message GenerateLLMReportResponse {
+  string scan_id = 1;
+  string summary = 2;
+}

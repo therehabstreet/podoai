@@ -19,11 +19,16 @@ type Scan struct {
 }
 
 type ScanAIResult struct {
-	ArchType       string              `bson:"arch_type"`
-	Pronation      string              `bson:"pronation"`
-	BalanceScore   float32             `bson:"balance_score"`
-	LLMResult      *ScanLLMResult      `bson:"llm_result,omitempty"`
-	Recommendation *ScanRecommendation `bson:"recommendation,omitempty"`
+	FootScore              float32             `bson:"foot_score"`
+	GaitScore              float32             `bson:"gait_score"`
+	LeftPronationAngle     float32             `bson:"left_pronation_angle"`
+	RightPronationAngle    float32             `bson:"right_pronation_angle"`
+	LeftArchHeightIndex    float32             `bson:"left_arch_height_index"`
+	RightArchHeightIndex   float32             `bson:"right_arch_height_index"`
+	LeftHalluxValgusAngle  float32             `bson:"left_hallux_valgus_angle"`
+	RightHalluxValgusAngle float32             `bson:"right_hallux_valgus_angle"`
+	LLMResult              *ScanLLMResult      `bson:"llm_result,omitempty"`
+	Recommendation         *ScanRecommendation `bson:"recommendation,omitempty"`
 }
 
 type ScanLLMResult struct {
@@ -38,7 +43,6 @@ type ScanRecommendation struct {
 
 type Image struct {
 	Type               string    `bson:"type"`
-	URL                string    `bson:"url"`
 	CapturedAt         time.Time `bson:"captured_at"`
 	SignedURL          string    `bson:"signed_url,omitempty"`           // Temporary signed URL
 	ThumbnailSignedURL string    `bson:"thumbnail_signed_url,omitempty"` // Thumbnail signed URL
@@ -49,7 +53,6 @@ type Image struct {
 
 type Video struct {
 	Type               string    `bson:"type"`
-	URL                string    `bson:"url"`
 	Duration           int32     `bson:"duration"`
 	CapturedAt         time.Time `bson:"captured_at"`
 	SignedURL          string    `bson:"signed_url,omitempty"`           // Temporary signed URL

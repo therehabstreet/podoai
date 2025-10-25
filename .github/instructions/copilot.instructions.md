@@ -7,3 +7,8 @@ Provide project context and coding guidelines that AI should follow when generat
 - No test cases, unless you need them to verify a new code logic
 - We have not yet launched, so no need to consider backward compatibility, or migration from old versions.
 - We do not need examples, documentation and README files. So do not generate them.
+
+## Critical Rules (DO NOT VIOLATE)
+- ❌ NEVER create: .md files, README files, documentation, examples
+- ✅ ONLY create: source code, configuration files, proto files
+- Exception: Only create docs if user explicitly asks "create documentation for X"

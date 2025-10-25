@@ -536,14 +536,19 @@ func (x *Scan) GetStatus() ScanStatus {
 }
 
 type ScanAIResult struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	ArchType       string                 `protobuf:"bytes,1,opt,name=arch_type,json=archType,proto3" json:"arch_type,omitempty"`
-	Pronation      string                 `protobuf:"bytes,2,opt,name=pronation,proto3" json:"pronation,omitempty"`
-	BalanceScore   float32                `protobuf:"fixed32,3,opt,name=balance_score,json=balanceScore,proto3" json:"balance_score,omitempty"`
-	LlmResult      *ScanLLMResult         `protobuf:"bytes,4,opt,name=llm_result,json=llmResult,proto3" json:"llm_result,omitempty"`
-	Recommendation *ScanRecommendation    `protobuf:"bytes,5,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"open.v1"`
+	LlmResult              *ScanLLMResult         `protobuf:"bytes,1,opt,name=llm_result,json=llmResult,proto3" json:"llm_result,omitempty"`
+	Recommendation         *ScanRecommendation    `protobuf:"bytes,2,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
+	FootScore              float32                `protobuf:"fixed32,3,opt,name=foot_score,json=footScore,proto3" json:"foot_score,omitempty"`
+	GaitScore              float32                `protobuf:"fixed32,4,opt,name=gait_score,json=gaitScore,proto3" json:"gait_score,omitempty"`
+	LeftPronationAngle     float32                `protobuf:"fixed32,5,opt,name=left_pronation_angle,json=leftPronationAngle,proto3" json:"left_pronation_angle,omitempty"`
+	RightPronationAngle    float32                `protobuf:"fixed32,6,opt,name=right_pronation_angle,json=rightPronationAngle,proto3" json:"right_pronation_angle,omitempty"`
+	LeftArchHeightIndex    float32                `protobuf:"fixed32,7,opt,name=left_arch_height_index,json=leftArchHeightIndex,proto3" json:"left_arch_height_index,omitempty"`
+	RightArchHeightIndex   float32                `protobuf:"fixed32,8,opt,name=right_arch_height_index,json=rightArchHeightIndex,proto3" json:"right_arch_height_index,omitempty"`
+	LeftHalluxValgusAngle  float32                `protobuf:"fixed32,9,opt,name=left_hallux_valgus_angle,json=leftHalluxValgusAngle,proto3" json:"left_hallux_valgus_angle,omitempty"`
+	RightHalluxValgusAngle float32                `protobuf:"fixed32,10,opt,name=right_hallux_valgus_angle,json=rightHalluxValgusAngle,proto3" json:"right_hallux_valgus_angle,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ScanAIResult) Reset() {
@@ -576,27 +581,6 @@ func (*ScanAIResult) Descriptor() ([]byte, []int) {
 	return file_common_podoai_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ScanAIResult) GetArchType() string {
-	if x != nil {
-		return x.ArchType
-	}
-	return ""
-}
-
-func (x *ScanAIResult) GetPronation() string {
-	if x != nil {
-		return x.Pronation
-	}
-	return ""
-}
-
-func (x *ScanAIResult) GetBalanceScore() float32 {
-	if x != nil {
-		return x.BalanceScore
-	}
-	return 0
-}
-
 func (x *ScanAIResult) GetLlmResult() *ScanLLMResult {
 	if x != nil {
 		return x.LlmResult
@@ -609,6 +593,62 @@ func (x *ScanAIResult) GetRecommendation() *ScanRecommendation {
 		return x.Recommendation
 	}
 	return nil
+}
+
+func (x *ScanAIResult) GetFootScore() float32 {
+	if x != nil {
+		return x.FootScore
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetGaitScore() float32 {
+	if x != nil {
+		return x.GaitScore
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetLeftPronationAngle() float32 {
+	if x != nil {
+		return x.LeftPronationAngle
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetRightPronationAngle() float32 {
+	if x != nil {
+		return x.RightPronationAngle
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetLeftArchHeightIndex() float32 {
+	if x != nil {
+		return x.LeftArchHeightIndex
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetRightArchHeightIndex() float32 {
+	if x != nil {
+		return x.RightArchHeightIndex
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetLeftHalluxValgusAngle() float32 {
+	if x != nil {
+		return x.LeftHalluxValgusAngle
+	}
+	return 0
+}
+
+func (x *ScanAIResult) GetRightHalluxValgusAngle() float32 {
+	if x != nil {
+		return x.RightHalluxValgusAngle
+	}
+	return 0
 }
 
 type ScanLLMResult struct {
@@ -1065,14 +1105,13 @@ func (x *Therapy) GetVideoUrl() string {
 
 type Image struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Type               ImageType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.ImageType" json:"type,omitempty"` // Enum for type safety
-	Url                string                 `protobuf:"bytes,3,opt,name=url,proto3" json:"url,omitempty"`
-	CapturedAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
-	SignedUrl          string                 `protobuf:"bytes,5,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`                              // Signed URL for secure access
-	ThumbnailSignedUrl string                 `protobuf:"bytes,6,opt,name=thumbnail_signed_url,json=thumbnailSignedUrl,proto3" json:"thumbnail_signed_url,omitempty"` // Thumbnail signed URL
-	GcsPath            string                 `protobuf:"bytes,7,opt,name=gcs_path,json=gcsPath,proto3" json:"gcs_path,omitempty"`                                    // GCS path
-	ThumbnailPath      string                 `protobuf:"bytes,8,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"`                  // Thumbnail GCS path
-	ExpiresAt          *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`                              // When signed URLs expire
+	Type               ImageType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.ImageType" json:"type,omitempty"`
+	CapturedAt         *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	SignedUrl          string                 `protobuf:"bytes,3,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`
+	ThumbnailSignedUrl string                 `protobuf:"bytes,4,opt,name=thumbnail_signed_url,json=thumbnailSignedUrl,proto3" json:"thumbnail_signed_url,omitempty"`
+	Path               string                 `protobuf:"bytes,5,opt,name=path,proto3" json:"path,omitempty"`
+	ThumbnailPath      string                 `protobuf:"bytes,6,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"`
+	ExpiresAt          *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -1114,13 +1153,6 @@ func (x *Image) GetType() ImageType {
 	return ImageType_IMAGE_TYPE_UNSPECIFIED
 }
 
-func (x *Image) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
 func (x *Image) GetCapturedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CapturedAt
@@ -1142,9 +1174,9 @@ func (x *Image) GetThumbnailSignedUrl() string {
 	return ""
 }
 
-func (x *Image) GetGcsPath() string {
+func (x *Image) GetPath() string {
 	if x != nil {
-		return x.GcsPath
+		return x.Path
 	}
 	return ""
 }
@@ -1165,15 +1197,14 @@ func (x *Image) GetExpiresAt() *timestamppb.Timestamp {
 
 type Video struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
-	Type               VideoType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.VideoType" json:"type,omitempty"` // Enum for type safety
-	Url                string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	Duration           int32                  `protobuf:"varint,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	CapturedAt         *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
-	SignedUrl          string                 `protobuf:"bytes,5,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`                              // Signed URL for secure access
-	ThumbnailSignedUrl string                 `protobuf:"bytes,6,opt,name=thumbnail_signed_url,json=thumbnailSignedUrl,proto3" json:"thumbnail_signed_url,omitempty"` // Video thumbnail signed URL (always .jpg)
-	GcsPath            string                 `protobuf:"bytes,7,opt,name=gcs_path,json=gcsPath,proto3" json:"gcs_path,omitempty"`                                    // GCS path
-	ThumbnailPath      string                 `protobuf:"bytes,8,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"`                  // Thumbnail GCS path
-	ExpiresAt          *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`                              // When signed URLs expire
+	Type               VideoType              `protobuf:"varint,1,opt,name=type,proto3,enum=podoai.VideoType" json:"type,omitempty"`
+	Duration           int32                  `protobuf:"varint,2,opt,name=duration,proto3" json:"duration,omitempty"`
+	CapturedAt         *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	SignedUrl          string                 `protobuf:"bytes,4,opt,name=signed_url,json=signedUrl,proto3" json:"signed_url,omitempty"`
+	ThumbnailSignedUrl string                 `protobuf:"bytes,5,opt,name=thumbnail_signed_url,json=thumbnailSignedUrl,proto3" json:"thumbnail_signed_url,omitempty"`
+	Path               string                 `protobuf:"bytes,6,opt,name=path,proto3" json:"path,omitempty"`
+	ThumbnailPath      string                 `protobuf:"bytes,7,opt,name=thumbnail_path,json=thumbnailPath,proto3" json:"thumbnail_path,omitempty"`
+	ExpiresAt          *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -1215,13 +1246,6 @@ func (x *Video) GetType() VideoType {
 	return VideoType_VIDEO_TYPE_UNSPECIFIED
 }
 
-func (x *Video) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
 func (x *Video) GetDuration() int32 {
 	if x != nil {
 		return x.Duration
@@ -1250,9 +1274,9 @@ func (x *Video) GetThumbnailSignedUrl() string {
 	return ""
 }
 
-func (x *Video) GetGcsPath() string {
+func (x *Video) GetPath() string {
 	if x != nil {
-		return x.GcsPath
+		return x.Path
 	}
 	return ""
 }
@@ -3035,14 +3059,22 @@ const file_common_podoai_proto_rawDesc = "" +
 	" \x01(\tR\freviewedById\x12;\n" +
 	"\vreviewed_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"reviewedAt\x12*\n" +
-	"\x06status\x18\f \x01(\x0e2\x12.podoai.ScanStatusR\x06status\"\xe8\x01\n" +
-	"\fScanAIResult\x12\x1b\n" +
-	"\tarch_type\x18\x01 \x01(\tR\barchType\x12\x1c\n" +
-	"\tpronation\x18\x02 \x01(\tR\tpronation\x12#\n" +
-	"\rbalance_score\x18\x03 \x01(\x02R\fbalanceScore\x124\n" +
+	"\x06status\x18\f \x01(\x0e2\x12.podoai.ScanStatusR\x06status\"\x8c\x04\n" +
+	"\fScanAIResult\x124\n" +
 	"\n" +
-	"llm_result\x18\x04 \x01(\v2\x15.podoai.ScanLLMResultR\tllmResult\x12B\n" +
-	"\x0erecommendation\x18\x05 \x01(\v2\x1a.podoai.ScanRecommendationR\x0erecommendation\")\n" +
+	"llm_result\x18\x01 \x01(\v2\x15.podoai.ScanLLMResultR\tllmResult\x12B\n" +
+	"\x0erecommendation\x18\x02 \x01(\v2\x1a.podoai.ScanRecommendationR\x0erecommendation\x12\x1d\n" +
+	"\n" +
+	"foot_score\x18\x03 \x01(\x02R\tfootScore\x12\x1d\n" +
+	"\n" +
+	"gait_score\x18\x04 \x01(\x02R\tgaitScore\x120\n" +
+	"\x14left_pronation_angle\x18\x05 \x01(\x02R\x12leftPronationAngle\x122\n" +
+	"\x15right_pronation_angle\x18\x06 \x01(\x02R\x13rightPronationAngle\x123\n" +
+	"\x16left_arch_height_index\x18\a \x01(\x02R\x13leftArchHeightIndex\x125\n" +
+	"\x17right_arch_height_index\x18\b \x01(\x02R\x14rightArchHeightIndex\x127\n" +
+	"\x18left_hallux_valgus_angle\x18\t \x01(\x02R\x15leftHalluxValgusAngle\x129\n" +
+	"\x19right_hallux_valgus_angle\x18\n" +
+	" \x01(\x02R\x16rightHalluxValgusAngle\")\n" +
 	"\rScanLLMResult\x12\x18\n" +
 	"\asummary\x18\x01 \x01(\tR\asummary\"\xa0\x01\n" +
 	"\x12ScanRecommendation\x12+\n" +
@@ -3076,32 +3108,30 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x1b\n" +
-	"\tvideo_url\x18\x04 \x01(\tR\bvideoUrl\"\xcb\x02\n" +
+	"\tvideo_url\x18\x04 \x01(\tR\bvideoUrl\"\xb2\x02\n" +
 	"\x05Image\x12%\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.ImageTypeR\x04type\x12\x10\n" +
-	"\x03url\x18\x03 \x01(\tR\x03url\x12;\n" +
-	"\vcaptured_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.ImageTypeR\x04type\x12;\n" +
+	"\vcaptured_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"capturedAt\x12\x1d\n" +
 	"\n" +
-	"signed_url\x18\x05 \x01(\tR\tsignedUrl\x120\n" +
-	"\x14thumbnail_signed_url\x18\x06 \x01(\tR\x12thumbnailSignedUrl\x12\x19\n" +
-	"\bgcs_path\x18\a \x01(\tR\agcsPath\x12%\n" +
-	"\x0ethumbnail_path\x18\b \x01(\tR\rthumbnailPath\x129\n" +
+	"signed_url\x18\x03 \x01(\tR\tsignedUrl\x120\n" +
+	"\x14thumbnail_signed_url\x18\x04 \x01(\tR\x12thumbnailSignedUrl\x12\x12\n" +
+	"\x04path\x18\x05 \x01(\tR\x04path\x12%\n" +
+	"\x0ethumbnail_path\x18\x06 \x01(\tR\rthumbnailPath\x129\n" +
 	"\n" +
-	"expires_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xe7\x02\n" +
+	"expires_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xce\x02\n" +
 	"\x05Video\x12%\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.VideoTypeR\x04type\x12\x10\n" +
-	"\x03url\x18\x02 \x01(\tR\x03url\x12\x1a\n" +
-	"\bduration\x18\x03 \x01(\x05R\bduration\x12;\n" +
-	"\vcaptured_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x11.podoai.VideoTypeR\x04type\x12\x1a\n" +
+	"\bduration\x18\x02 \x01(\x05R\bduration\x12;\n" +
+	"\vcaptured_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"capturedAt\x12\x1d\n" +
 	"\n" +
-	"signed_url\x18\x05 \x01(\tR\tsignedUrl\x120\n" +
-	"\x14thumbnail_signed_url\x18\x06 \x01(\tR\x12thumbnailSignedUrl\x12\x19\n" +
-	"\bgcs_path\x18\a \x01(\tR\agcsPath\x12%\n" +
-	"\x0ethumbnail_path\x18\b \x01(\tR\rthumbnailPath\x129\n" +
+	"signed_url\x18\x04 \x01(\tR\tsignedUrl\x120\n" +
+	"\x14thumbnail_signed_url\x18\x05 \x01(\tR\x12thumbnailSignedUrl\x12\x12\n" +
+	"\x04path\x18\x06 \x01(\tR\x04path\x12%\n" +
+	"\x0ethumbnail_path\x18\a \x01(\tR\rthumbnailPath\x129\n" +
 	"\n" +
-	"expires_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xed\x02\n" +
+	"expires_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\xed\x02\n" +
 	"\aPatient\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12!\n" +

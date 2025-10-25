@@ -14,6 +14,7 @@ import (
 type ScanResultWorkflowRun struct {
 	Scan        *models.Scan
 	MongoClient clients.DBClient
+	AIClient    clients.AIClient
 	Steps       []WorkflowStep
 }
 
@@ -62,12 +63,34 @@ func (s *RunAIAnalysisStep) Execute(ctx context.Context, input map[string]any) e
 	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
 		return fmt.Errorf("failed to update scan status to AI_PROCESSING: %w", err)
 	}
+	log.Printf("Scan %s status updated to AI_PROCESSING", scanRun.Scan.ID)
 
-	// TODO: Implement AI analysis logic
-	// - Call AI service for arch type detection
-	// - Call AI service for pronation analysis
-	// - Calculate balance score
-	// - Update scan with AI results
+	// Call Python AI service to analyze scan
+	analysisResult, err := scanRun.AIClient.AnalyzeScan(ctx, scanRun.Scan.ID, scanRun.Scan.Images, scanRun.Scan.Videos)
+	if err != nil {
+		return fmt.Errorf("failed to analyze scan: %w", err)
+	}
+
+	// Initialize ScanAIResult if not exists
+	if scanRun.Scan.ScanAIResult == nil {
+		scanRun.Scan.ScanAIResult = &models.ScanAIResult{}
+	}
+
+	// Update scan with AI analysis results
+	scanRun.Scan.ScanAIResult.FootScore = analysisResult.FootScore
+	scanRun.Scan.ScanAIResult.GaitScore = analysisResult.GaitScore
+	scanRun.Scan.ScanAIResult.LeftPronationAngle = analysisResult.LeftPronationAngle
+	scanRun.Scan.ScanAIResult.RightPronationAngle = analysisResult.RightPronationAngle
+	scanRun.Scan.ScanAIResult.LeftArchHeightIndex = analysisResult.LeftArchHeightIndex
+	scanRun.Scan.ScanAIResult.RightArchHeightIndex = analysisResult.RightArchHeightIndex
+	scanRun.Scan.ScanAIResult.LeftHalluxValgusAngle = analysisResult.LeftHalluxValgusAngle
+	scanRun.Scan.ScanAIResult.RightHalluxValgusAngle = analysisResult.RightHalluxValgusAngle
+
+	// Save updated scan with AI results
+	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
+		return fmt.Errorf("failed to update scan with AI results: %w", err)
+	}
+	log.Printf("Scan %s AI analysis completed and saved", scanRun.Scan.ID)
 
 	return nil
 }
@@ -90,16 +113,40 @@ func (s *GenerateLLMReportStep) Execute(ctx context.Context, input map[string]an
 		return nil
 	}
 
-	// TODO: Implement LLM report generation logic
-	// - Extract AI analysis results from scan
-	// - Call LLM service to generate detailed report
-	// - Format report with findings and explanations
-	// - Update scan with generated report
+	// Ensure we have AI analysis results
+	if scanRun.Scan.ScanAIResult == nil {
+		return fmt.Errorf("scan %s has no AI analysis results", scanRun.Scan.ID)
+	}
 
+	// Prepare analysis result for LLM
+	analysisResult := &clients.AIAnalysisResult{
+		FootScore:              scanRun.Scan.ScanAIResult.FootScore,
+		GaitScore:              scanRun.Scan.ScanAIResult.GaitScore,
+		LeftPronationAngle:     scanRun.Scan.ScanAIResult.LeftPronationAngle,
+		RightPronationAngle:    scanRun.Scan.ScanAIResult.RightPronationAngle,
+		LeftArchHeightIndex:    scanRun.Scan.ScanAIResult.LeftArchHeightIndex,
+		RightArchHeightIndex:   scanRun.Scan.ScanAIResult.RightArchHeightIndex,
+		LeftHalluxValgusAngle:  scanRun.Scan.ScanAIResult.LeftHalluxValgusAngle,
+		RightHalluxValgusAngle: scanRun.Scan.ScanAIResult.RightHalluxValgusAngle,
+	}
+
+	// Call Python AI service to generate LLM report
+	llmResult, err := scanRun.AIClient.GenerateLLMReport(ctx, scanRun.Scan.ID, analysisResult)
+	if err != nil {
+		return fmt.Errorf("failed to generate LLM report: %w", err)
+	}
+
+	// Update scan with LLM report
+	scanRun.Scan.ScanAIResult.LLMResult = &models.ScanLLMResult{
+		Summary: llmResult.Summary,
+	}
+
+	// Update status to REPORT_GENERATED
 	scanRun.Scan.Status = pb.ScanStatus_REPORT_GENERATED.String()
 	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
-		return fmt.Errorf("failed to update scan %s with LLM report: %w", scanRun.Scan.ID, err)
+		return fmt.Errorf("failed to update scan with LLM report: %w", err)
 	}
+	log.Printf("Scan %s LLM report generated and saved", scanRun.Scan.ID)
 
 	return nil
 }

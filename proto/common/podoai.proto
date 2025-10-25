@@ -45,11 +45,16 @@ message Scan {
 }
 
 message ScanAIResult {
-  string arch_type = 1;
-  string pronation = 2;
-  float balance_score = 3;
-  ScanLLMResult llm_result = 4;
-  ScanRecommendation recommendation = 5;
+  ScanLLMResult llm_result = 1;
+  ScanRecommendation recommendation = 2;
+  float foot_score = 3;
+  float gait_score = 4;
+  float left_pronation_angle = 5;
+  float right_pronation_angle = 6;
+  float left_arch_height_index = 7;
+  float right_arch_height_index = 8;
+  float left_hallux_valgus_angle = 9;
+  float right_hallux_valgus_angle = 10;
 }
 
 message ScanLLMResult {
@@ -99,26 +104,24 @@ message Therapy {
 }
 
 message Image {
-  ImageType type = 1;           // Enum for type safety
-  string url = 3;
-  google.protobuf.Timestamp captured_at = 4;
-  string signed_url = 5;        // Signed URL for secure access
-  string thumbnail_signed_url = 6;     // Thumbnail signed URL
-  string gcs_path = 7;          // GCS path
-  string thumbnail_path = 8;    // Thumbnail GCS path
-  google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
+  ImageType type = 1;
+  google.protobuf.Timestamp captured_at = 2;
+  string signed_url = 3;
+  string thumbnail_signed_url = 4;
+  string path = 5;
+  string thumbnail_path = 6;
+  google.protobuf.Timestamp expires_at = 7;
 }
 
 message Video {
-  VideoType type = 1;           // Enum for type safety
-  string url = 2;
-  int32 duration = 3;
-  google.protobuf.Timestamp captured_at = 4;
-  string signed_url = 5;        // Signed URL for secure access
-  string thumbnail_signed_url = 6;     // Video thumbnail signed URL (always .jpg)
-  string gcs_path = 7;          // GCS path
-  string thumbnail_path = 8;    // Thumbnail GCS path
-  google.protobuf.Timestamp expires_at = 9;  // When signed URLs expire
+  VideoType type = 1;
+  int32 duration = 2;
+  google.protobuf.Timestamp captured_at = 3;
+  string signed_url = 4;
+  string thumbnail_signed_url = 5;
+  string path = 6;
+  string thumbnail_path = 7;
+  google.protobuf.Timestamp expires_at = 8;
 }
 
 enum ImageType {

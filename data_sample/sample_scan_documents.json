@@ -1,0 +1,231 @@
+[
+    {
+        "_id": "6723abc123def456789",
+        "patient_id": "6743f8e1a9b2c3d4e5f67890",
+        "owner_entity_id": "clinic_trs",
+        "created_at": {
+            "$date": "2025-10-25T10:30:00.000Z"
+        },
+        "updated_at": {
+            "$date": "2025-10-25T10:45:30.000Z"
+        },
+        "scanned_by_id": "user_clinic_001",
+        "reviewed_by_id": "",
+        "status": "RECOMMENDATIONS_GENERATED",
+        "images": [
+            {
+                "type": "LEFT_FOOT_DORSAL",
+                "path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/left_foot_dorsal.jpg",
+                "thumbnail_path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/thumbnails/left_foot_dorsal_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T10:30:15.000Z"
+                }
+            },
+            {
+                "type": "LEFT_FOOT_PLANTAR",
+                "path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/left_foot_plantar.jpg",
+                "thumbnail_path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/thumbnails/left_foot_plantar_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T10:30:20.000Z"
+                }
+            },
+            {
+                "type": "RIGHT_FOOT_DORSAL",
+                "path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/right_foot_dorsal.jpg",
+                "thumbnail_path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/thumbnails/right_foot_dorsal_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T10:30:25.000Z"
+                }
+            },
+            {
+                "type": "RIGHT_FOOT_PLANTAR",
+                "path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/right_foot_plantar.jpg",
+                "thumbnail_path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/thumbnails/right_foot_plantar_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T10:30:30.000Z"
+                }
+            }
+        ],
+        "videos": [
+            {
+                "type": "GAIT_ANTERIOR",
+                "path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/gait_anterior.mp4",
+                "thumbnail_path": "patient_6743f8e1a9b2c3d4e5f67890/scan_6723abc123def456789/thumbnails/gait_anterior_thumb.jpg",
+                "duration": 15,
+                "captured_at": {
+                    "$date": "2025-10-25T10:31:00.000Z"
+                }
+            }
+        ],
+        "scan_ai_result": {
+            "foot_score": 8.2,
+            "gait_score": 7.5,
+            "left_pronation_angle": 12.3,
+            "right_pronation_angle": 11.8,
+            "left_arch_height_index": 0.32,
+            "right_arch_height_index": 0.31,
+            "left_hallux_valgus_angle": 8.5,
+            "right_hallux_valgus_angle": 9.2,
+            "llm_result": {
+                "summary": "Analysis of the patient's foot scan reveals high arch structure with bilateral overpronation during gait. Pronation angles of 12.3° (left) and 11.8° (right) exceed normal range. Arch height indices of 0.32 (left) and 0.31 (right) indicate pes cavus. Mild hallux valgus present bilaterally (8.5° left, 9.2° right). Overall foot score of 8.2/10 and gait score of 7.5/10 suggest good baseline function with targeted intervention opportunities. Pressure distribution shows increased lateral loading with reduced midfoot contact. Recommendations include arch support insoles, stability exercises, and orthotic intervention to improve alignment and reduce pronation."
+            },
+            "recommendation": {
+                "products": [
+                    {
+                        "_id": "prod_arch_support_001",
+                        "name": "Premium Arch Support Insoles",
+                        "description": "Medical-grade orthotic insoles designed for high arches with overpronation control. Features EVA foam cushioning and reinforced arch support.",
+                        "media_urls": [
+                            "https://storage.googleapis.com/podoai-products/arch_support_001_1.jpg",
+                            "https://storage.googleapis.com/podoai-products/arch_support_001_2.jpg"
+                        ],
+                        "category": {
+                            "_id": "cat_insoles",
+                            "name": "Orthotic Insoles",
+                            "description": "Therapeutic insoles for foot support and correction",
+                            "image_url": "https://storage.googleapis.com/podoai-products/categories/insoles.jpg"
+                        },
+                        "prices": [
+                            {
+                                "product_id": "prod_arch_support_001",
+                                "price": 89.99,
+                                "currency": "USD"
+                            }
+                        ]
+                    },
+                    {
+                        "_id": "prod_stability_shoes_002",
+                        "name": "Motion Control Running Shoes",
+                        "description": "Athletic footwear with enhanced medial support to control overpronation and provide stability during movement.",
+                        "media_urls": [
+                            "https://storage.googleapis.com/podoai-products/stability_shoes_002_1.jpg"
+                        ],
+                        "category": {
+                            "_id": "cat_footwear",
+                            "name": "Therapeutic Footwear",
+                            "description": "Specialized shoes for foot health and comfort",
+                            "image_url": "https://storage.googleapis.com/podoai-products/categories/footwear.jpg"
+                        },
+                        "prices": [
+                            {
+                                "product_id": "prod_stability_shoes_002",
+                                "price": 149.99,
+                                "currency": "USD"
+                            }
+                        ]
+                    }
+                ],
+                "exercises": [
+                    {
+                        "_id": "ex_ankle_stability_001",
+                        "name": "Single Leg Balance Exercise",
+                        "description": "Stand on one leg for 30 seconds, repeat 3 times each side. Helps improve ankle stability and proprioception. Perform daily.",
+                        "video_url": "https://storage.googleapis.com/podoai-exercises/single_leg_balance.mp4"
+                    },
+                    {
+                        "_id": "ex_arch_strengthen_002",
+                        "name": "Towel Scrunch",
+                        "description": "Place a towel on the floor and use your toes to scrunch it towards you. Strengthens the intrinsic foot muscles and arch. 3 sets of 10 repetitions.",
+                        "video_url": "https://storage.googleapis.com/podoai-exercises/towel_scrunch.mp4"
+                    },
+                    {
+                        "_id": "ex_calf_stretch_003",
+                        "name": "Wall Calf Stretch",
+                        "description": "Stand facing a wall, place one foot back and press heel down. Hold for 30 seconds each leg. Improves ankle flexibility and reduces pronation stress.",
+                        "video_url": "https://storage.googleapis.com/podoai-exercises/calf_stretch.mp4"
+                    }
+                ],
+                "therapies": [
+                    {
+                        "_id": "therapy_custom_orthotics_001",
+                        "name": "Custom Orthotic Consultation",
+                        "description": "Professional assessment and creation of custom-molded orthotics tailored to your specific foot structure and biomechanical needs. Recommended for optimal arch support and pronation control.",
+                        "video_url": "https://storage.googleapis.com/podoai-therapies/orthotic_consultation.mp4"
+                    },
+                    {
+                        "_id": "therapy_physical_therapy_002",
+                        "name": "Gait Retraining Program",
+                        "description": "6-week physical therapy program focused on improving walking mechanics, strengthening supporting muscles, and reducing overpronation patterns.",
+                        "video_url": "https://storage.googleapis.com/podoai-therapies/gait_retraining.mp4"
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "_id": "scan_6723abc987654321000",
+        "patient_id": "patient_987654",
+        "owner_entity_id": "clinic_789",
+        "created_at": {
+            "$date": "2025-10-25T14:15:00.000Z"
+        },
+        "updated_at": {
+            "$date": "2025-10-25T14:16:20.000Z"
+        },
+        "scanned_by_id": "user_clinic_002",
+        "reviewed_by_id": "",
+        "status": "AI_PROCESSING",
+        "images": [
+            {
+                "type": "LEFT_FOOT_DORSAL",
+                "path": "patient_987654/scan_6723abc987654321000/left_foot_dorsal.jpg",
+                "thumbnail_path": "patient_987654/scan_6723abc987654321000/thumbnails/left_foot_dorsal_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T14:15:10.000Z"
+                }
+            },
+            {
+                "type": "RIGHT_FOOT_DORSAL",
+                "path": "patient_987654/scan_6723abc987654321000/right_foot_dorsal.jpg",
+                "thumbnail_path": "patient_987654/scan_6723abc987654321000/thumbnails/right_foot_dorsal_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T14:15:15.000Z"
+                }
+            }
+        ],
+        "videos": [],
+        "scan_ai_result": {
+            "foot_score": 9.1,
+            "gait_score": 8.8,
+            "left_pronation_angle": 4.2,
+            "right_pronation_angle": 4.5,
+            "left_arch_height_index": 0.24,
+            "right_arch_height_index": 0.24,
+            "left_hallux_valgus_angle": 3.1,
+            "right_hallux_valgus_angle": 2.8
+        }
+    },
+    {
+        "_id": "scan_6723abc111222333444",
+        "patient_id": "patient_555666",
+        "owner_entity_id": "clinic_456",
+        "created_at": {
+            "$date": "2025-10-25T09:00:00.000Z"
+        },
+        "updated_at": {
+            "$date": "2025-10-25T09:00:30.000Z"
+        },
+        "scanned_by_id": "user_clinic_003",
+        "reviewed_by_id": "",
+        "status": "MEDIA_UPLOADED",
+        "images": [
+            {
+                "type": "LEFT_FOOT_PLANTAR",
+                "path": "patient_555666/scan_6723abc111222333444/left_foot_plantar.jpg",
+                "thumbnail_path": "patient_555666/scan_6723abc111222333444/thumbnails/left_foot_plantar_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T09:00:20.000Z"
+                }
+            },
+            {
+                "type": "RIGHT_FOOT_PLANTAR",
+                "path": "patient_555666/scan_6723abc111222333444/right_foot_plantar.jpg",
+                "thumbnail_path": "patient_555666/scan_6723abc111222333444/thumbnails/right_foot_plantar_thumb.jpg",
+                "captured_at": {
+                    "$date": "2025-10-25T09:00:25.000Z"
+                }
+            }
+        ],
+        "videos": []
+    }
+]
