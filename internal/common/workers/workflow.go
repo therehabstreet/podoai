@@ -12,6 +12,7 @@ type WorkflowRun interface {
 	GetID() string
 	GetType() string
 	GetSteps() []WorkflowStep
+	GetInput() map[string]any
 }
 
 // WorkflowStep represents a single step in a workflow run
@@ -110,7 +111,7 @@ func (we *WorkflowEngine) executeRun(run WorkflowRun) {
 		log.Printf("Workflow '%s': Run %s - Executing step %d/%d: %s",
 			we.name, run.GetID(), i+1, len(steps), step.GetName())
 
-		if err := step.Execute(ctx, nil); err != nil {
+		if err := step.Execute(ctx, run.GetInput()); err != nil {
 			log.Printf("Workflow '%s': Error processing run %s at step '%s': %v",
 				we.name, run.GetID(), step.GetName(), err)
 			return

@@ -108,8 +108,9 @@ func (cs *CommonServer) UpdateScan(ctx context.Context, req *pb.UpdateScanReques
 	if scanModel.Status == pb.ScanStatus_MEDIA_UPLOADED.String() {
 		err := cs.ScanResultWorkflow.SubmitRun(
 			ctx,
-			&workers.ScanRun{
-				Input: map[string]any{"scan": updatedScan},
+			&workers.ScanResultWorkflowRun{
+				Scan:        updatedScan,
+				MongoClient: cs.DBClient,
 				Steps: []workers.WorkflowStep{
 					&workers.RunAIAnalysisStep{},
 					&workers.GenerateLLMReportStep{},

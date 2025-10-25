@@ -3,28 +3,38 @@ package workers
 import (
 	"context"
 	"fmt"
+	"log"
 
+	"github.com/therehabstreet/podoai/internal/common/clients"
 	"github.com/therehabstreet/podoai/internal/common/models"
+	pb "github.com/therehabstreet/podoai/proto/common"
 )
 
-// ScanRun implements WorkflowRun for scan processing
-type ScanRun struct {
-	Input map[string]any
-	Steps []WorkflowStep
+// ScanResultWorkflowRun implements WorkflowRun for scan processing
+type ScanResultWorkflowRun struct {
+	Scan        *models.Scan
+	MongoClient clients.DBClient
+	Steps       []WorkflowStep
 }
 
 // GetID returns the scan ID
-func (st *ScanRun) GetID() string {
-	return st.Input["scan"].(*models.Scan).ID
+func (st *ScanResultWorkflowRun) GetID() string {
+	return st.Scan.ID
 }
 
 // GetType returns the workflow type
-func (st *ScanRun) GetType() string {
+func (st *ScanResultWorkflowRun) GetType() string {
 	return "scan_result_workflow"
 }
 
-func (st *ScanRun) GetSteps() []WorkflowStep {
+func (st *ScanResultWorkflowRun) GetSteps() []WorkflowStep {
 	return st.Steps
+}
+
+func (st *ScanResultWorkflowRun) GetInput() map[string]any {
+	return map[string]any{
+		"scan": st.Scan,
+	}
 }
 
 /****************************** Steps ***************************************/
@@ -36,9 +46,21 @@ func (s *RunAIAnalysisStep) GetName() string {
 }
 
 func (s *RunAIAnalysisStep) Execute(ctx context.Context, input map[string]any) error {
-	scanRun, ok := input["scan"].(*ScanRun)
+	scanRun, ok := input["scan"].(*ScanResultWorkflowRun)
 	if !ok {
 		return fmt.Errorf("invalid run type for RunAIAnalysisStep")
+	}
+
+	// Check if already completed this step
+	if scanRun.Scan.Status != pb.ScanStatus_MEDIA_UPLOADED.String() {
+		log.Printf("Scan %s already past AI analysis stage (status: %s), skipping", scanRun.Scan.ID, scanRun.Scan.Status)
+		return nil
+	}
+
+	// Update status to AI_PROCESSING
+	scanRun.Scan.Status = pb.ScanStatus_AI_PROCESSING.String()
+	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
+		return fmt.Errorf("failed to update scan status to AI_PROCESSING: %w", err)
 	}
 
 	// TODO: Implement AI analysis logic
@@ -47,7 +69,6 @@ func (s *RunAIAnalysisStep) Execute(ctx context.Context, input map[string]any) e
 	// - Calculate balance score
 	// - Update scan with AI results
 
-	_ = scanRun
 	return nil
 }
 
@@ -58,9 +79,15 @@ func (s *GenerateLLMReportStep) GetName() string {
 }
 
 func (s *GenerateLLMReportStep) Execute(ctx context.Context, input map[string]any) error {
-	scanRun, ok := input["scan"].(*ScanRun)
+	scanRun, ok := input["scan"].(*ScanResultWorkflowRun)
 	if !ok {
 		return fmt.Errorf("invalid run type for GenerateLLMReportStep")
+	}
+
+	// Check if already completed this step
+	if scanRun.Scan.Status != pb.ScanStatus_AI_PROCESSING.String() {
+		log.Printf("Scan %s already past LLM report stage (status: %s), skipping", scanRun.Scan.ID, scanRun.Scan.Status)
+		return nil
 	}
 
 	// TODO: Implement LLM report generation logic
@@ -69,7 +96,11 @@ func (s *GenerateLLMReportStep) Execute(ctx context.Context, input map[string]an
 	// - Format report with findings and explanations
 	// - Update scan with generated report
 
-	_ = scanRun
+	scanRun.Scan.Status = pb.ScanStatus_REPORT_GENERATED.String()
+	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
+		return fmt.Errorf("failed to update scan %s with LLM report: %w", scanRun.Scan.ID, err)
+	}
+
 	return nil
 }
 
@@ -80,9 +111,15 @@ func (s *GenerateRecommendationsStep) GetName() string {
 }
 
 func (s *GenerateRecommendationsStep) Execute(ctx context.Context, input map[string]any) error {
-	scanRun, ok := input["scan"].(*ScanRun)
+	scanRun, ok := input["scan"].(*ScanResultWorkflowRun)
 	if !ok {
 		return fmt.Errorf("invalid run type for GenerateRecommendationsStep")
+	}
+
+	// Check if already completed this step
+	if scanRun.Scan.Status == pb.ScanStatus_RECOMMENDATIONS_GENERATED.String() {
+		log.Printf("Scan %s already has recommendations (status: %s), skipping", scanRun.Scan.ID, scanRun.Scan.Status)
+		return nil
 	}
 
 	// TODO: Implement recommendations logic
@@ -91,6 +128,11 @@ func (s *GenerateRecommendationsStep) Execute(ctx context.Context, input map[str
 	// - Recommend therapies
 	// - Update scan with recommendations
 
-	_ = scanRun
+	// Update status to RECOMMENDATIONS_GENERATED
+	scanRun.Scan.Status = pb.ScanStatus_RECOMMENDATIONS_GENERATED.String()
+	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
+		return fmt.Errorf("failed to update scan %s status to RECOMMENDATIONS_GENERATED: %w", scanRun.Scan.ID, err)
+	}
+
 	return nil
 }

@@ -345,12 +345,13 @@ func (SignedUrlAction) EnumDescriptor() ([]byte, []int) {
 type ScanStatus int32
 
 const (
-	ScanStatus_SCAN_STATUS_UNSPECIFIED ScanStatus = 0
-	ScanStatus_CREATED                 ScanStatus = 1
-	ScanStatus_MEDIA_UPLOADED          ScanStatus = 2
-	ScanStatus_AI_PROCESSING           ScanStatus = 3
-	ScanStatus_REPORT_GENERATED        ScanStatus = 4
-	ScanStatus_HUMAN_REVIEWED          ScanStatus = 5
+	ScanStatus_SCAN_STATUS_UNSPECIFIED   ScanStatus = 0
+	ScanStatus_CREATED                   ScanStatus = 1
+	ScanStatus_MEDIA_UPLOADED            ScanStatus = 2
+	ScanStatus_AI_PROCESSING             ScanStatus = 3
+	ScanStatus_REPORT_GENERATED          ScanStatus = 4
+	ScanStatus_RECOMMENDATIONS_GENERATED ScanStatus = 5
+	ScanStatus_HUMAN_REVIEWED            ScanStatus = 6
 )
 
 // Enum value maps for ScanStatus.
@@ -361,15 +362,17 @@ var (
 		2: "MEDIA_UPLOADED",
 		3: "AI_PROCESSING",
 		4: "REPORT_GENERATED",
-		5: "HUMAN_REVIEWED",
+		5: "RECOMMENDATIONS_GENERATED",
+		6: "HUMAN_REVIEWED",
 	}
 	ScanStatus_value = map[string]int32{
-		"SCAN_STATUS_UNSPECIFIED": 0,
-		"CREATED":                 1,
-		"MEDIA_UPLOADED":          2,
-		"AI_PROCESSING":           3,
-		"REPORT_GENERATED":        4,
-		"HUMAN_REVIEWED":          5,
+		"SCAN_STATUS_UNSPECIFIED":   0,
+		"CREATED":                   1,
+		"MEDIA_UPLOADED":            2,
+		"AI_PROCESSING":             3,
+		"REPORT_GENERATED":          4,
+		"RECOMMENDATIONS_GENERATED": 5,
+		"HUMAN_REVIEWED":            6,
 	}
 )
 
@@ -3265,15 +3268,16 @@ const file_common_podoai_proto_rawDesc = "" +
 	"\x0fSignedUrlAction\x12!\n" +
 	"\x1dSIGNED_URL_ACTION_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04READ\x10\x01\x12\t\n" +
-	"\x05WRITE\x10\x02*\x87\x01\n" +
+	"\x05WRITE\x10\x02*\xa6\x01\n" +
 	"\n" +
 	"ScanStatus\x12\x1b\n" +
 	"\x17SCAN_STATUS_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aCREATED\x10\x01\x12\x12\n" +
 	"\x0eMEDIA_UPLOADED\x10\x02\x12\x11\n" +
 	"\rAI_PROCESSING\x10\x03\x12\x14\n" +
-	"\x10REPORT_GENERATED\x10\x04\x12\x12\n" +
-	"\x0eHUMAN_REVIEWED\x10\x052\x91\t\n" +
+	"\x10REPORT_GENERATED\x10\x04\x12\x1d\n" +
+	"\x19RECOMMENDATIONS_GENERATED\x10\x05\x12\x12\n" +
+	"\x0eHUMAN_REVIEWED\x10\x062\x91\t\n" +
 	"\rCommonService\x12C\n" +
 	"\n" +
 	"RequestOtp\x12\x19.podoai.RequestOtpRequest\x1a\x1a.podoai.RequestOtpResponse\x12<\n" +
