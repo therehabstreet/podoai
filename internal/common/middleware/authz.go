@@ -56,6 +56,7 @@ func (am *AuthZMiddleware) shouldSkipAuth(method string) bool {
 	skipMethods := []string{
 		"/podoai.CommonService/RequestOtp",
 		"/podoai.CommonService/VerifyOtp",
+		"/podoai.CommonService/RefreshToken",
 	}
 
 	for _, skipMethod := range skipMethods {
@@ -151,6 +152,14 @@ func (am *AuthZMiddleware) authorize(ctx context.Context, method string, req any
 			}
 		}
 		return status.Errorf(codes.PermissionDenied, "unauthorized to create patient for different owner entity")
+
+	case "/podoai.CommonService/UpdatePatient":
+		if r, ok := req.(*pb.UpdatePatientRequest); ok {
+			if r.GetPatient() != nil && r.GetPatient().GetOwnerEntityId() == ownerEntityID {
+				return nil
+			}
+		}
+		return status.Errorf(codes.PermissionDenied, "unauthorized to update patient for different owner entity")
 
 	case "/podoai.CommonService/DeletePatient":
 		if r, ok := req.(*pb.DeletePatientRequest); ok {

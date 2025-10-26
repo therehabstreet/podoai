@@ -35,21 +35,22 @@ type JWTHeader struct {
 }
 
 // GenerateAccessTokenWithExpiry generates a JWT access token and returns the expiration time
-func GenerateAccessTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string) (string, int64, error) {
+func GenerateAccessTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string, ownerEntityID string) (string, int64, error) {
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(cfg.JWT.AccessExpiryMin) * time.Minute).Unix()
 
 	claims := JWTClaims{
-		UserID:    userID,
-		Roles:     roles,
-		TokenType: "access",
-		AppType:   appType,
-		ExpiresAt: expiresAt,
-		IssuedAt:  now.Unix(),
-		NotBefore: now.Unix(),
-		Issuer:    "podoai",
-		Subject:   userID,
-		ID:        generateTokenID(),
+		UserID:        userID,
+		Roles:         roles,
+		TokenType:     "access",
+		AppType:       appType,
+		OwnerEntityID: ownerEntityID,
+		ExpiresAt:     expiresAt,
+		IssuedAt:      now.Unix(),
+		NotBefore:     now.Unix(),
+		Issuer:        "podoai",
+		Subject:       userID,
+		ID:            generateTokenID(),
 	}
 
 	token, err := generateJWT(claims, cfg.JWT.Secret)
@@ -57,21 +58,22 @@ func GenerateAccessTokenWithExpiry(cfg *config.Config, userID string, roles []st
 }
 
 // GenerateRefreshTokenWithExpiry generates a JWT refresh token and returns the expiration time
-func GenerateRefreshTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string) (string, int64, error) {
+func GenerateRefreshTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string, ownerEntityID string) (string, int64, error) {
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(cfg.JWT.RefreshExpiryMin) * time.Minute).Unix()
 
 	claims := JWTClaims{
-		UserID:    userID,
-		Roles:     roles,
-		TokenType: "refresh",
-		AppType:   appType,
-		ExpiresAt: expiresAt,
-		IssuedAt:  now.Unix(),
-		NotBefore: now.Unix(),
-		Issuer:    "podoai",
-		Subject:   userID,
-		ID:        generateTokenID(),
+		UserID:        userID,
+		Roles:         roles,
+		TokenType:     "refresh",
+		AppType:       appType,
+		OwnerEntityID: ownerEntityID,
+		ExpiresAt:     expiresAt,
+		IssuedAt:      now.Unix(),
+		NotBefore:     now.Unix(),
+		Issuer:        "podoai",
+		Subject:       userID,
+		ID:            generateTokenID(),
 	}
 
 	token, err := generateJWT(claims, cfg.JWT.Secret)

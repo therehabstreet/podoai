@@ -42,6 +42,7 @@ type DBClient interface {
 	FetchPatients(ctx context.Context, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Patient, int64, error)
 	SearchPatients(ctx context.Context, searchTerm, ownerEntityID string, page, pageSize int32) ([]*models.Patient, int64, error)
 	CreatePatient(ctx context.Context, patient *models.Patient) (*models.Patient, error)
+	UpdatePatient(ctx context.Context, patient *models.Patient) (*models.Patient, error)
 	DeletePatientByID(ctx context.Context, patientID string, ownerEntityID string) error
 }
 
@@ -522,6 +523,52 @@ func (m *MongoDBClient) CreatePatient(ctx context.Context, patient *models.Patie
 	_, err := coll.InsertOne(ctx, patient)
 	if err != nil {
 		return nil, fmt.Errorf("error creating patient")
+	}
+
+	return patient, nil
+}
+
+// UpdatePatient updates an existing patient
+func (m *MongoDBClient) UpdatePatient(ctx context.Context, patient *models.Patient) (*models.Patient, error) {
+	if patient.ID == "" {
+		return nil, fmt.Errorf("patient ID is required")
+	}
+	if patient.OwnerEntityID == "" {
+		return nil, fmt.Errorf("owner entity ID is required")
+	}
+	if patient.Name == "" || len(strings.TrimSpace(patient.Name)) == 0 {
+		return nil, fmt.Errorf("patient name cannot be empty")
+	}
+
+	filter := bson.M{
+		"_id":             patient.ID,
+		"owner_entity_id": patient.OwnerEntityID,
+	}
+
+	update := bson.M{
+		"$set": bson.M{
+			"name":           patient.Name,
+			"phone_number":   patient.PhoneNumber,
+			"age":            patient.Age,
+			"gender":         patient.Gender,
+			"foot_size":      patient.FootSize,
+			"total_scans":    patient.TotalScans,
+			"last_scan_date": patient.LastScanDate,
+		},
+	}
+
+	// Get collection name with context-based prefix
+	collectionName := getCollectionNameWithPrefix(ctx, "patients")
+	coll := m.Client.Database(DatabaseName).Collection(collectionName)
+
+	// Update the patient
+	result, err := coll.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, fmt.Errorf("error updating patient: %v", err)
+	}
+
+	if result.MatchedCount == 0 {
+		return nil, fmt.Errorf("patient not found")
 	}
 
 	return patient, nil

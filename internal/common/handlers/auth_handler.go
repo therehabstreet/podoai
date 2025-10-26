@@ -114,6 +114,7 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 	// Get or create user based on app type
 	var userID string
 	var roles []string
+	var ownerEntityID string
 
 	if helpers.IsClinicalApp(ctx) {
 		// For clinical apps, user must exist
@@ -124,6 +125,7 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 		clinicalUser := user.(clinicalModels.ClinicUser)
 		userID = clinicalUser.ID
 		roles = clinicalUser.Roles
+		ownerEntityID = clinicalUser.ClinicID // For clinical, ownerEntityID is clinic ID
 		if len(roles) == 0 {
 			roles = clinicalModels.DefaultClinicUserRoles()
 		}
@@ -135,6 +137,7 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 			consumerUser := user.(models.User)
 			userID = consumerUser.ID
 			roles = consumerUser.Roles
+			ownerEntityID = consumerUser.ID // For consumer, ownerEntityID is user ID
 			if len(roles) == 0 {
 				roles = models.DefaultConsumerRoles()
 			}
@@ -152,18 +155,19 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 				return nil, fmt.Errorf("failed to create user: %v", err)
 			}
 			roles = newUser.Roles
+			ownerEntityID = userID // For consumer, ownerEntityID is user ID
 		}
 	}
 
 	// Get app type from context
 	appType := helpers.GetAppTypeFromContext(ctx)
 
-	token, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, userID, roles, appType)
+	token, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, userID, roles, appType, ownerEntityID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %v", err)
 	}
 
-	refreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, userID, roles, appType)
+	refreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, userID, roles, appType, ownerEntityID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate refresh token: %v", err)
 	}
@@ -199,13 +203,13 @@ func (cs *CommonServer) RefreshToken(ctx context.Context, req *pb.RefreshTokenRe
 	}
 
 	// Generate new access token with same claims
-	newAccessToken, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType)
+	newAccessToken, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType, claims.OwnerEntityID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate new access token: %v", err)
 	}
 
 	// Optionally generate a new refresh token (token rotation for better security)
-	newRefreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType)
+	newRefreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType, claims.OwnerEntityID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate new refresh token: %v", err)
 	}

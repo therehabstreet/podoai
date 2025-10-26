@@ -13,7 +13,6 @@ type User struct {
 	PhoneNumber string    `bson:"phone_number"`
 	Email       string    `bson:"email,omitempty"`
 	Roles       []string  `bson:"roles"` // Store as strings in MongoDB for simplicity
-	ClinicID    string    `bson:"clinic_id,omitempty"`
 	Age         string    `bson:"age,omitempty"`
 	Gender      string    `bson:"gender,omitempty"`
 	CreatedAt   time.Time `bson:"created_at"`

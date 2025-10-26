@@ -35,6 +35,7 @@ const (
 	CommonService_GetPatient_FullMethodName              = "/podoai.CommonService/GetPatient"
 	CommonService_SearchPatient_FullMethodName           = "/podoai.CommonService/SearchPatient"
 	CommonService_CreatePatient_FullMethodName           = "/podoai.CommonService/CreatePatient"
+	CommonService_UpdatePatient_FullMethodName           = "/podoai.CommonService/UpdatePatient"
 	CommonService_DeletePatient_FullMethodName           = "/podoai.CommonService/DeletePatient"
 )
 
@@ -61,6 +62,7 @@ type CommonServiceClient interface {
 	GetPatient(ctx context.Context, in *GetPatientRequest, opts ...grpc.CallOption) (*GetPatientResponse, error)
 	SearchPatient(ctx context.Context, in *SearchPatientRequest, opts ...grpc.CallOption) (*SearchPatientResponse, error)
 	CreatePatient(ctx context.Context, in *CreatePatientRequest, opts ...grpc.CallOption) (*CreatePatientResponse, error)
+	UpdatePatient(ctx context.Context, in *UpdatePatientRequest, opts ...grpc.CallOption) (*UpdatePatientResponse, error)
 	DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error)
 }
 
@@ -232,6 +234,16 @@ func (c *commonServiceClient) CreatePatient(ctx context.Context, in *CreatePatie
 	return out, nil
 }
 
+func (c *commonServiceClient) UpdatePatient(ctx context.Context, in *UpdatePatientRequest, opts ...grpc.CallOption) (*UpdatePatientResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePatientResponse)
+	err := c.cc.Invoke(ctx, CommonService_UpdatePatient_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *commonServiceClient) DeletePatient(ctx context.Context, in *DeletePatientRequest, opts ...grpc.CallOption) (*DeletePatientResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeletePatientResponse)
@@ -265,6 +277,7 @@ type CommonServiceServer interface {
 	GetPatient(context.Context, *GetPatientRequest) (*GetPatientResponse, error)
 	SearchPatient(context.Context, *SearchPatientRequest) (*SearchPatientResponse, error)
 	CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error)
+	UpdatePatient(context.Context, *UpdatePatientRequest) (*UpdatePatientResponse, error)
 	DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error)
 	mustEmbedUnimplementedCommonServiceServer()
 }
@@ -323,6 +336,9 @@ func (UnimplementedCommonServiceServer) SearchPatient(context.Context, *SearchPa
 }
 func (UnimplementedCommonServiceServer) CreatePatient(context.Context, *CreatePatientRequest) (*CreatePatientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePatient not implemented")
+}
+func (UnimplementedCommonServiceServer) UpdatePatient(context.Context, *UpdatePatientRequest) (*UpdatePatientResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePatient not implemented")
 }
 func (UnimplementedCommonServiceServer) DeletePatient(context.Context, *DeletePatientRequest) (*DeletePatientResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePatient not implemented")
@@ -636,6 +652,24 @@ func _CommonService_CreatePatient_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommonService_UpdatePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePatientRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).UpdatePatient(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_UpdatePatient_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).UpdatePatient(ctx, req.(*UpdatePatientRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _CommonService_DeletePatient_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeletePatientRequest)
 	if err := dec(in); err != nil {
@@ -724,6 +758,10 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreatePatient",
 			Handler:    _CommonService_CreatePatient_Handler,
+		},
+		{
+			MethodName: "UpdatePatient",
+			Handler:    _CommonService_UpdatePatient_Handler,
 		},
 		{
 			MethodName: "DeletePatient",

@@ -27,6 +27,7 @@ service CommonService {
   rpc GetPatient (GetPatientRequest) returns (GetPatientResponse);
   rpc SearchPatient (SearchPatientRequest) returns (SearchPatientResponse);
   rpc CreatePatient (CreatePatientRequest) returns (CreatePatientResponse);
+  rpc UpdatePatient (UpdatePatientRequest) returns (UpdatePatientResponse);
   rpc DeletePatient (DeletePatientRequest) returns (DeletePatientResponse);
 }
 
@@ -354,6 +355,14 @@ message CreatePatientRequest {
 }
 
 message CreatePatientResponse {
+    Patient patient = 1;
+}
+
+message UpdatePatientRequest {
+    Patient patient = 1;
+}
+
+message UpdatePatientResponse {
     Patient patient = 1;
 }
 

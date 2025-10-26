@@ -90,6 +90,18 @@ func (cs *CommonServer) CreatePatient(ctx context.Context, req *pb.CreatePatient
 	}, nil
 }
 
+// UpdatePatient handler
+func (cs *CommonServer) UpdatePatient(ctx context.Context, req *pb.UpdatePatientRequest) (*pb.UpdatePatientResponse, error) {
+	patientModel := helpers.PatientProtoToModel(req.GetPatient())
+	updatedPatient, err := cs.DBClient.UpdatePatient(ctx, patientModel)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UpdatePatientResponse{
+		Patient: helpers.PatientModelToProto(updatedPatient),
+	}, nil
+}
+
 // DeletePatient handler
 func (cs *CommonServer) DeletePatient(ctx context.Context, req *pb.DeletePatientRequest) (*pb.DeletePatientResponse, error) {
 	patientID := req.GetPatientId()
