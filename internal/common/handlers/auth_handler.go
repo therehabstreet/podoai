@@ -12,6 +12,7 @@ import (
 	"github.com/therehabstreet/podoai/internal/common/helpers"
 	"github.com/therehabstreet/podoai/internal/common/models"
 	pb "github.com/therehabstreet/podoai/proto/common"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // RequestOtp handles OTP request with different flows for clinical and consumer
@@ -20,10 +21,7 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 
 	// Validate phone number
 	if phoneNumber == "" {
-		return &pb.RequestOtpResponse{
-			Success: false,
-			Message: "Phone number is required",
-		}, nil
+		return nil, fmt.Errorf("phone number is required")
 	}
 
 	// Check if this is a clinical app and validate user existence
@@ -31,16 +29,10 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 	if helpers.IsClinicalApp(ctx) {
 		exists, err := cs.DBClient.ClinicalUserExists(ctx, phoneNumber)
 		if err != nil {
-			return &pb.RequestOtpResponse{
-				Success: false,
-				Message: "Failed to validate user",
-			}, nil
+			return nil, fmt.Errorf("failed to validate user")
 		}
 		if !exists {
-			return &pb.RequestOtpResponse{
-				Success: false,
-				Message: "User not found. Please contact your admin.",
-			}, nil
+			return nil, fmt.Errorf("user not found. Please contact your admin")
 		}
 	}
 
@@ -50,20 +42,14 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 		// Check if there's a recent valid OTP (within last 60 seconds)
 		timeSinceCreation := time.Since(existingOTP.CreatedAt)
 		if timeSinceCreation < 60*time.Second && !existingOTP.IsUsed {
-			return &pb.RequestOtpResponse{
-				Success: false,
-				Message: fmt.Sprintf("Please wait %d seconds before requesting another OTP", 60-int(timeSinceCreation.Seconds())),
-			}, nil
+			return nil, fmt.Errorf("please wait %d seconds before requesting another OTP", 60-int(timeSinceCreation.Seconds()))
 		}
 	}
 
 	// Generate OTP
 	otp, err := generateOTP()
 	if err != nil {
-		return &pb.RequestOtpResponse{
-			Success: false,
-			Message: "Failed to generate OTP",
-		}, nil
+		return nil, fmt.Errorf("failed to generate OTP")
 	}
 
 	// Store OTP in database with expiration
@@ -71,18 +57,12 @@ func (cs *CommonServer) RequestOtp(ctx context.Context, req *pb.RequestOtpReques
 	otpModel.Code = "000000"                       // TODO: For testing purposes, override with fixed OTP
 	err = cs.DBClient.StoreOTP(ctx, otpModel)
 	if err != nil {
-		return &pb.RequestOtpResponse{
-			Success: false,
-			Message: "Failed to store OTP",
-		}, nil
+		return nil, fmt.Errorf("failed to store OTP")
 	}
 
 	err = cs.MessagingClient.SendOTP(ctx, phoneNumber, otp)
 	if err != nil {
-		return &pb.RequestOtpResponse{
-			Success: false,
-			Message: fmt.Sprintf("Failed to send OTP via %s", cs.MessagingClient.GetProviderName()),
-		}, nil
+		return nil, fmt.Errorf("failed to send OTP via %s", cs.MessagingClient.GetProviderName())
 	}
 
 	return &pb.RequestOtpResponse{
@@ -178,21 +158,65 @@ func (cs *CommonServer) VerifyOtp(ctx context.Context, req *pb.VerifyOtpRequest)
 	// Get app type from context
 	appType := helpers.GetAppTypeFromContext(ctx)
 
-	token, err := helpers.GenerateAccessToken(cs.Config, userID, roles, appType)
+	token, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, userID, roles, appType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %v", err)
 	}
 
-	refreshToken, err := helpers.GenerateRefreshToken(cs.Config, userID, roles, appType)
+	refreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, userID, roles, appType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate refresh token: %v", err)
 	}
 
 	return &pb.LoginResponse{
-		Token:        token,
-		RefreshToken: refreshToken,
-		Roles:        helpers.StringsToRoles(roles),
-		UserId:       userID,
+		Token:                 token,
+		RefreshToken:          refreshToken,
+		Roles:                 helpers.StringsToRoles(roles),
+		UserId:                userID,
+		AccessTokenExpiresAt:  timestamppb.New(time.Unix(accessExpiresAt, 0)),
+		RefreshTokenExpiresAt: timestamppb.New(time.Unix(refreshExpiresAt, 0)),
+	}, nil
+}
+
+// RefreshToken handles token refresh using a valid refresh token
+func (cs *CommonServer) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.LoginResponse, error) {
+	refreshToken := req.GetRefreshToken()
+
+	// Validate input
+	if refreshToken == "" {
+		return nil, fmt.Errorf("refresh token is required")
+	}
+
+	// Validate refresh token
+	claims, err := helpers.ValidateToken(cs.Config, refreshToken)
+	if err != nil {
+		return nil, fmt.Errorf("invalid refresh token")
+	}
+
+	// Ensure it's a refresh token
+	if claims.TokenType != "refresh" {
+		return nil, fmt.Errorf("token is not a refresh token")
+	}
+
+	// Generate new access token with same claims
+	newAccessToken, accessExpiresAt, err := helpers.GenerateAccessTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate new access token: %v", err)
+	}
+
+	// Optionally generate a new refresh token (token rotation for better security)
+	newRefreshToken, refreshExpiresAt, err := helpers.GenerateRefreshTokenWithExpiry(cs.Config, claims.UserID, claims.Roles, claims.AppType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate new refresh token: %v", err)
+	}
+
+	return &pb.LoginResponse{
+		Token:                 newAccessToken,
+		RefreshToken:          newRefreshToken,
+		Roles:                 helpers.StringsToRoles(claims.Roles),
+		UserId:                claims.UserID,
+		AccessTokenExpiresAt:  timestamppb.New(time.Unix(accessExpiresAt, 0)),
+		RefreshTokenExpiresAt: timestamppb.New(time.Unix(refreshExpiresAt, 0)),
 	}, nil
 }
 

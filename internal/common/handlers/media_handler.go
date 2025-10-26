@@ -76,7 +76,7 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 			Type:               imageType,
 			SignedUrl:          signedURL,
 			ThumbnailSignedUrl: thumbnailURL,
-			GcsPath:            gcsPath,
+			Path:               gcsPath,
 			ThumbnailPath:      thumbnailPath,
 			ExpiresAt:          timestamppb.New(expiresAt),
 		})
@@ -106,7 +106,7 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 			Type:               videoType,
 			SignedUrl:          signedURL,
 			ThumbnailSignedUrl: thumbnailURL,
-			GcsPath:            gcsPath,
+			Path:               gcsPath,
 			ThumbnailPath:      thumbnailPath,
 			ExpiresAt:          timestamppb.New(expiresAt),
 		})

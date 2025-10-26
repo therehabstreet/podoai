@@ -9,6 +9,7 @@ service CommonService {
   // Authentication RPCs
   rpc RequestOtp(RequestOtpRequest) returns (RequestOtpResponse);
   rpc VerifyOtp(VerifyOtpRequest) returns (LoginResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (LoginResponse);
 
   // Scan and related RPCs
   rpc GetScans (GetScansRequest) returns (GetScansResponse);
@@ -300,11 +301,17 @@ message VerifyOtpRequest {
   string otp = 2;
 }
 
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
 message LoginResponse {
   string token = 1;
   string refresh_token = 2;
   repeated Role roles = 3;
   string user_id = 4;
+  google.protobuf.Timestamp access_token_expires_at = 5;
+  google.protobuf.Timestamp refresh_token_expires_at = 6;
 }
 
 // Patient API messages

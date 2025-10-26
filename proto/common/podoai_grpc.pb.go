@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	CommonService_RequestOtp_FullMethodName              = "/podoai.CommonService/RequestOtp"
 	CommonService_VerifyOtp_FullMethodName               = "/podoai.CommonService/VerifyOtp"
+	CommonService_RefreshToken_FullMethodName            = "/podoai.CommonService/RefreshToken"
 	CommonService_GetScans_FullMethodName                = "/podoai.CommonService/GetScans"
 	CommonService_GetScan_FullMethodName                 = "/podoai.CommonService/GetScan"
 	CommonService_CreateScan_FullMethodName              = "/podoai.CommonService/CreateScan"
@@ -44,6 +45,7 @@ type CommonServiceClient interface {
 	// Authentication RPCs
 	RequestOtp(ctx context.Context, in *RequestOtpRequest, opts ...grpc.CallOption) (*RequestOtpResponse, error)
 	VerifyOtp(ctx context.Context, in *VerifyOtpRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// Scan and related RPCs
 	GetScans(ctx context.Context, in *GetScansRequest, opts ...grpc.CallOption) (*GetScansResponse, error)
 	GetScan(ctx context.Context, in *GetScanRequest, opts ...grpc.CallOption) (*GetScanResponse, error)
@@ -84,6 +86,16 @@ func (c *commonServiceClient) VerifyOtp(ctx context.Context, in *VerifyOtpReques
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, CommonService_VerifyOtp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commonServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, CommonService_RefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -237,6 +249,7 @@ type CommonServiceServer interface {
 	// Authentication RPCs
 	RequestOtp(context.Context, *RequestOtpRequest) (*RequestOtpResponse, error)
 	VerifyOtp(context.Context, *VerifyOtpRequest) (*LoginResponse, error)
+	RefreshToken(context.Context, *RefreshTokenRequest) (*LoginResponse, error)
 	// Scan and related RPCs
 	GetScans(context.Context, *GetScansRequest) (*GetScansResponse, error)
 	GetScan(context.Context, *GetScanRequest) (*GetScanResponse, error)
@@ -268,6 +281,9 @@ func (UnimplementedCommonServiceServer) RequestOtp(context.Context, *RequestOtpR
 }
 func (UnimplementedCommonServiceServer) VerifyOtp(context.Context, *VerifyOtpRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyOtp not implemented")
+}
+func (UnimplementedCommonServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedCommonServiceServer) GetScans(context.Context, *GetScansRequest) (*GetScansResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetScans not implemented")
@@ -364,6 +380,24 @@ func _CommonService_VerifyOtp_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommonServiceServer).VerifyOtp(ctx, req.(*VerifyOtpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommonService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommonServiceServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommonService_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommonServiceServer).RefreshToken(ctx, req.(*RefreshTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -634,6 +668,10 @@ var CommonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyOtp",
 			Handler:    _CommonService_VerifyOtp_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _CommonService_RefreshToken_Handler,
 		},
 		{
 			MethodName: "GetScans",

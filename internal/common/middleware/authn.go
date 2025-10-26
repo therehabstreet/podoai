@@ -42,13 +42,18 @@ func (am *AuthNMiddleware) UnaryInterceptor() grpc.UnaryServerInterceptor {
 		// For authenticated APIs, extract token first
 		token, err := am.extractTokenFromContext(ctx)
 		if err != nil {
-			return nil, status.Errorf(codes.Unauthenticated, "missing or invalid token: %v", err)
+			return nil, status.Error(codes.Unauthenticated, "missing authorization token")
 		}
 
 		// Validate token
 		claims, err := helpers.ValidateToken(am.config, token)
 		if err != nil {
-			return nil, status.Errorf(codes.Unauthenticated, "invalid token: %v", err)
+			// Check if token is expired specifically
+			if strings.Contains(err.Error(), "token is expired") {
+				return nil, status.Error(codes.Unauthenticated, "token expired")
+			}
+			// All other validation failures (invalid signature, format, etc.)
+			return nil, status.Error(codes.Unauthenticated, "invalid token")
 		}
 
 		// Validate app type in JWT claims
@@ -69,6 +74,7 @@ func (am *AuthNMiddleware) shouldSkipAuth(method string) bool {
 	skipMethods := []string{
 		"/podoai.CommonService/RequestOtp",
 		"/podoai.CommonService/VerifyOtp",
+		"/podoai.CommonService/RefreshToken",
 	}
 
 	for _, skipMethod := range skipMethods {

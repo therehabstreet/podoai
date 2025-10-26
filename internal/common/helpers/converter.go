@@ -6,8 +6,6 @@ import (
 
 	"github.com/therehabstreet/podoai/internal/common/models"
 	"github.com/therehabstreet/podoai/proto/common"
-	pb "github.com/therehabstreet/podoai/proto/common"
-	podoai "github.com/therehabstreet/podoai/proto/common"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -84,9 +82,14 @@ func ScanModelToProto(model *models.Scan) *common.Scan {
 // ScanAIResult conversion
 func ScanAIResultProtoToModel(proto *common.ScanAIResult) *models.ScanAIResult {
 	result := &models.ScanAIResult{
-		ArchType:     proto.GetArchType(),
-		Pronation:    proto.GetPronation(),
-		BalanceScore: proto.GetBalanceScore(),
+		FootScore:              proto.GetFootScore(),
+		GaitScore:              proto.GetGaitScore(),
+		LeftPronationAngle:     proto.GetLeftPronationAngle(),
+		RightPronationAngle:    proto.GetRightPronationAngle(),
+		LeftArchHeightIndex:    proto.GetLeftArchHeightIndex(),
+		RightArchHeightIndex:   proto.GetRightArchHeightIndex(),
+		LeftHalluxValgusAngle:  proto.GetLeftHalluxValgusAngle(),
+		RightHalluxValgusAngle: proto.GetRightHalluxValgusAngle(),
 	}
 
 	if proto.GetLlmResult() != nil {
@@ -118,9 +121,14 @@ func ScanAIResultProtoToModel(proto *common.ScanAIResult) *models.ScanAIResult {
 
 func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 	result := &common.ScanAIResult{
-		ArchType:     model.ArchType,
-		Pronation:    model.Pronation,
-		BalanceScore: model.BalanceScore,
+		FootScore:              model.FootScore,
+		GaitScore:              model.GaitScore,
+		LeftPronationAngle:     model.LeftPronationAngle,
+		RightPronationAngle:    model.RightPronationAngle,
+		LeftArchHeightIndex:    model.LeftArchHeightIndex,
+		RightArchHeightIndex:   model.RightArchHeightIndex,
+		LeftHalluxValgusAngle:  model.LeftHalluxValgusAngle,
+		RightHalluxValgusAngle: model.RightHalluxValgusAngle,
 	}
 
 	if model.LLMResult != nil {
@@ -154,11 +162,10 @@ func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 func ImageProtoToModel(proto *common.Image) *models.Image {
 	return &models.Image{
 		Type:               proto.GetType().String(),
-		URL:                proto.GetUrl(),
 		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
 		SignedURL:          proto.GetSignedUrl(),
 		ThumbnailSignedURL: proto.GetThumbnailSignedUrl(),
-		Path:               proto.GetGcsPath(),
+		Path:               proto.GetPath(),
 		ThumbnailPath:      proto.GetThumbnailPath(),
 		ExpiresAt:          timestampPBToTime(proto.GetExpiresAt()),
 	}
@@ -173,11 +180,10 @@ func ImageModelToProto(model *models.Image) *common.Image {
 	}
 	return &common.Image{
 		Type:               common.ImageType(imageType),
-		Url:                model.URL,
 		CapturedAt:         timestamppb.New(model.CapturedAt),
 		SignedUrl:          model.SignedURL,
 		ThumbnailSignedUrl: model.ThumbnailSignedURL,
-		GcsPath:            model.Path,
+		Path:               model.Path,
 		ThumbnailPath:      model.ThumbnailPath,
 		ExpiresAt:          timestamppb.New(model.ExpiresAt),
 	}
@@ -187,12 +193,11 @@ func ImageModelToProto(model *models.Image) *common.Image {
 func VideoProtoToModel(proto *common.Video) *models.Video {
 	return &models.Video{
 		Type:               proto.GetType().String(),
-		URL:                proto.GetUrl(),
 		Duration:           proto.GetDuration(),
 		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
 		SignedURL:          proto.GetSignedUrl(),
 		ThumbnailSignedURL: proto.GetThumbnailSignedUrl(),
-		Path:               proto.GetGcsPath(),
+		Path:               proto.GetPath(),
 		ThumbnailPath:      proto.GetThumbnailPath(),
 		ExpiresAt:          timestampPBToTime(proto.GetExpiresAt()),
 	}
@@ -207,12 +212,11 @@ func VideoModelToProto(model *models.Video) *common.Video {
 	}
 	return &common.Video{
 		Type:               common.VideoType(videoType),
-		Url:                model.URL,
 		Duration:           model.Duration,
 		CapturedAt:         timestamppb.New(model.CapturedAt),
 		SignedUrl:          model.SignedURL,
 		ThumbnailSignedUrl: model.ThumbnailSignedURL,
-		GcsPath:            model.Path,
+		Path:               model.Path,
 		ThumbnailPath:      model.ThumbnailPath,
 		ExpiresAt:          timestamppb.New(model.ExpiresAt),
 	}
@@ -314,8 +318,8 @@ func TherapyModelToProto(model *models.Therapy) *common.Therapy {
 }
 
 // Patient Proto <-> Model conversion
-func PatientModelToProto(m *models.Patient) *podoai.Patient {
-	return &podoai.Patient{
+func PatientModelToProto(m *models.Patient) *common.Patient {
+	return &common.Patient{
 		Id:            m.ID,
 		Name:          m.Name,
 		PhoneNumber:   m.PhoneNumber,
@@ -330,7 +334,7 @@ func PatientModelToProto(m *models.Patient) *podoai.Patient {
 }
 
 // Proto Patient -> Model Patient
-func PatientProtoToModel(p *podoai.Patient) *models.Patient {
+func PatientProtoToModel(p *common.Patient) *models.Patient {
 	var lastScanDate, createdAt time.Time
 	if p.LastScanDate != nil {
 		lastScanDate = p.LastScanDate.AsTime()
@@ -354,26 +358,26 @@ func PatientProtoToModel(p *podoai.Patient) *models.Patient {
 }
 
 // Gender conversion helpers
-func GenderStringToProto(gender string) podoai.Gender {
+func GenderStringToProto(gender string) common.Gender {
 	switch gender {
 	case "MALE":
-		return podoai.Gender_MALE
+		return common.Gender_MALE
 	case "FEMALE":
-		return podoai.Gender_FEMALE
+		return common.Gender_FEMALE
 	case "OTHER":
-		return podoai.Gender_OTHER
+		return common.Gender_OTHER
 	default:
-		return podoai.Gender_GENDER_UNSPECIFIED
+		return common.Gender_GENDER_UNSPECIFIED
 	}
 }
 
-func GenderProtoToString(gender podoai.Gender) string {
+func GenderProtoToString(gender common.Gender) string {
 	switch gender {
-	case podoai.Gender_MALE:
+	case common.Gender_MALE:
 		return "MALE"
-	case podoai.Gender_FEMALE:
+	case common.Gender_FEMALE:
 		return "FEMALE"
-	case podoai.Gender_OTHER:
+	case common.Gender_OTHER:
 		return "OTHER"
 	default:
 		return "GENDER_UNSPECIFIED"
@@ -381,10 +385,10 @@ func GenderProtoToString(gender podoai.Gender) string {
 }
 
 // RolesToStrings converts proto Roles to string slice using proto's built-in String() method
-func RolesToStrings(roles []pb.Role) []string {
+func RolesToStrings(roles []common.Role) []string {
 	var roleStrs []string
 	for _, role := range roles {
-		if role != pb.Role_ROLE_UNSPECIFIED {
+		if role != common.Role_ROLE_UNSPECIFIED {
 			// Use proto's built-in String() method and convert to lowercase
 			roleStrs = append(roleStrs, strings.ToLower(role.String()))
 		}
@@ -393,16 +397,16 @@ func RolesToStrings(roles []pb.Role) []string {
 }
 
 // StringsToRoles converts string slice to proto Roles using proto's built-in parsing
-func StringsToRoles(roleStrs []string) []pb.Role {
-	var roles []pb.Role
+func StringsToRoles(roleStrs []string) []common.Role {
+	var roles []common.Role
 	for _, roleStr := range roleStrs {
 		// Convert to uppercase since proto enum values are uppercase
 		upperRoleStr := strings.ToUpper(roleStr)
 
 		// Use proto's built-in parsing with Role_value map
-		if roleValue, exists := pb.Role_value[upperRoleStr]; exists {
-			role := pb.Role(roleValue)
-			if role != pb.Role_ROLE_UNSPECIFIED {
+		if roleValue, exists := common.Role_value[upperRoleStr]; exists {
+			role := common.Role(roleValue)
+			if role != common.Role_ROLE_UNSPECIFIED {
 				roles = append(roles, role)
 			}
 		}

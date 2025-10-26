@@ -34,17 +34,17 @@ type JWTHeader struct {
 	Type      string `json:"typ"`
 }
 
-// GenerateAccessToken generates a JWT access token
-// Accepts string roles directly to avoid conversion overhead
-func GenerateAccessToken(cfg *config.Config, userID string, roles []string, appType string) (string, error) {
+// GenerateAccessTokenWithExpiry generates a JWT access token and returns the expiration time
+func GenerateAccessTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string) (string, int64, error) {
 	now := time.Now()
+	expiresAt := now.Add(time.Duration(cfg.JWT.AccessExpiryMin) * time.Minute).Unix()
 
 	claims := JWTClaims{
 		UserID:    userID,
 		Roles:     roles,
 		TokenType: "access",
 		AppType:   appType,
-		ExpiresAt: now.Add(time.Duration(cfg.JWT.AccessExpiryMin) * time.Minute).Unix(),
+		ExpiresAt: expiresAt,
 		IssuedAt:  now.Unix(),
 		NotBefore: now.Unix(),
 		Issuer:    "podoai",
@@ -52,20 +52,21 @@ func GenerateAccessToken(cfg *config.Config, userID string, roles []string, appT
 		ID:        generateTokenID(),
 	}
 
-	return generateJWT(claims, cfg.JWT.Secret)
+	token, err := generateJWT(claims, cfg.JWT.Secret)
+	return token, expiresAt, err
 }
 
-// GenerateRefreshToken generates a JWT refresh token
-// Accepts string roles directly to avoid conversion overhead
-func GenerateRefreshToken(cfg *config.Config, userID string, roles []string, appType string) (string, error) {
+// GenerateRefreshTokenWithExpiry generates a JWT refresh token and returns the expiration time
+func GenerateRefreshTokenWithExpiry(cfg *config.Config, userID string, roles []string, appType string) (string, int64, error) {
 	now := time.Now()
+	expiresAt := now.Add(time.Duration(cfg.JWT.RefreshExpiryMin) * time.Minute).Unix()
 
 	claims := JWTClaims{
 		UserID:    userID,
 		Roles:     roles,
 		TokenType: "refresh",
 		AppType:   appType,
-		ExpiresAt: now.Add(time.Duration(cfg.JWT.RefreshExpiryMin) * time.Minute).Unix(),
+		ExpiresAt: expiresAt,
 		IssuedAt:  now.Unix(),
 		NotBefore: now.Unix(),
 		Issuer:    "podoai",
@@ -73,7 +74,8 @@ func GenerateRefreshToken(cfg *config.Config, userID string, roles []string, app
 		ID:        generateTokenID(),
 	}
 
-	return generateJWT(claims, cfg.JWT.Secret)
+	token, err := generateJWT(claims, cfg.JWT.Secret)
+	return token, expiresAt, err
 }
 
 // ValidateToken validates a JWT token and returns the claims
@@ -131,25 +133,6 @@ func IsTokenExpired(cfg *config.Config, tokenString string) bool {
 	}
 
 	return time.Now().Unix() > claims.ExpiresAt
-}
-
-// RefreshAccessToken generates a new access token from a valid refresh token
-func RefreshAccessToken(cfg *config.Config, refreshTokenString string) (string, error) {
-	claims, err := ValidateToken(cfg, refreshTokenString)
-	if err != nil {
-		return "", fmt.Errorf("invalid refresh token: %v", err)
-	}
-
-	if claims.TokenType != "refresh" {
-		return "", fmt.Errorf("token is not a refresh token")
-	}
-
-	if time.Now().Unix() > claims.ExpiresAt {
-		return "", fmt.Errorf("refresh token is expired")
-	}
-
-	// Generate new access token with string roles directly
-	return GenerateAccessToken(cfg, claims.UserID, claims.Roles, claims.AppType)
 }
 
 func GetRolesFromToken(cfg *config.Config, tokenString string) ([]string, error) {
