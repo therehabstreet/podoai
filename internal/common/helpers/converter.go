@@ -23,17 +23,17 @@ func ScanProtoToModel(proto *common.Scan) *models.Scan {
 
 	// Convert images
 	for _, img := range proto.GetImages() {
-		scan.Images = append(scan.Images, ImageProtoToModel(img))
+		scan.Images = append(scan.Images, ScanImageProtoToModel(img))
 	}
 
 	// Convert videos
 	for _, vid := range proto.GetVideos() {
-		scan.Videos = append(scan.Videos, VideoProtoToModel(vid))
+		scan.Videos = append(scan.Videos, ScanVideoProtoToModel(vid))
 	}
 
 	// Convert ScanAIResult
 	if proto.GetScanAiResult() != nil {
-		scan.ScanAIResult = ScanAIResultProtoToModel(proto.GetScanAiResult())
+		scan.AIResult = ScanAIResultProtoToModel(proto.GetScanAiResult())
 	}
 
 	// Convert ReviewedAt
@@ -58,17 +58,17 @@ func ScanModelToProto(model *models.Scan) *common.Scan {
 
 	// Convert images
 	for _, img := range model.Images {
-		scan.Images = append(scan.Images, ImageModelToProto(img))
+		scan.Images = append(scan.Images, ScanImageModelToProto(img))
 	}
 
 	// Convert videos
 	for _, vid := range model.Videos {
-		scan.Videos = append(scan.Videos, VideoModelToProto(vid))
+		scan.Videos = append(scan.Videos, ScanVideoModelToProto(vid))
 	}
 
 	// Convert ScanAIResult
-	if model.ScanAIResult != nil {
-		scan.ScanAiResult = ScanAIResultModelToProto(model.ScanAIResult)
+	if model.AIResult != nil {
+		scan.ScanAiResult = ScanAIResultModelToProto(model.AIResult)
 	}
 
 	// Convert ReviewedAt
@@ -159,8 +159,8 @@ func ScanAIResultModelToProto(model *models.ScanAIResult) *common.ScanAIResult {
 }
 
 // Image conversion
-func ImageProtoToModel(proto *common.Image) *models.Image {
-	return &models.Image{
+func ScanImageProtoToModel(proto *common.ScanImage) *models.ScanImage {
+	return &models.ScanImage{
 		Type:               proto.GetType().String(),
 		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
 		SignedURL:          proto.GetSignedUrl(),
@@ -171,14 +171,14 @@ func ImageProtoToModel(proto *common.Image) *models.Image {
 	}
 }
 
-func ImageModelToProto(model *models.Image) *common.Image {
+func ScanImageModelToProto(model *models.ScanImage) *common.ScanImage {
 	// Convert string type to ImageType enum
 	imageType, exists := common.ImageType_value[model.Type]
 	if !exists {
 		// Default to unspecified if the type doesn't exist
 		imageType = int32(common.ImageType_IMAGE_TYPE_UNSPECIFIED)
 	}
-	return &common.Image{
+	return &common.ScanImage{
 		Type:               common.ImageType(imageType),
 		CapturedAt:         timestamppb.New(model.CapturedAt),
 		SignedUrl:          model.SignedURL,
@@ -190,8 +190,8 @@ func ImageModelToProto(model *models.Image) *common.Image {
 }
 
 // Video conversion
-func VideoProtoToModel(proto *common.Video) *models.Video {
-	return &models.Video{
+func ScanVideoProtoToModel(proto *common.ScanVideo) *models.ScanVideo {
+	return &models.ScanVideo{
 		Type:               proto.GetType().String(),
 		Duration:           proto.GetDuration(),
 		CapturedAt:         timestampPBToTime(proto.GetCapturedAt()),
@@ -203,14 +203,14 @@ func VideoProtoToModel(proto *common.Video) *models.Video {
 	}
 }
 
-func VideoModelToProto(model *models.Video) *common.Video {
+func ScanVideoModelToProto(model *models.ScanVideo) *common.ScanVideo {
 	// Convert string type to VideoType enum
 	videoType, exists := common.VideoType_value[model.Type]
 	if !exists {
 		// Default to unspecified if the type doesn't exist
 		videoType = int32(common.VideoType_VIDEO_TYPE_UNSPECIFIED)
 	}
-	return &common.Video{
+	return &common.ScanVideo{
 		Type:               common.VideoType(videoType),
 		Duration:           model.Duration,
 		CapturedAt:         timestamppb.New(model.CapturedAt),
@@ -219,6 +219,42 @@ func VideoModelToProto(model *models.Video) *common.Video {
 		Path:               model.Path,
 		ThumbnailPath:      model.ThumbnailPath,
 		ExpiresAt:          timestamppb.New(model.ExpiresAt),
+	}
+}
+
+// GeneralImage conversion
+func GeneralImageProtoToModel(proto *common.GeneralImage) *models.GeneralImage {
+	return &models.GeneralImage{
+		Path:          proto.GetPath(),
+		ThumbnailPath: proto.GetThumbnailPath(),
+		CapturedAt:    timestampPBToTime(proto.GetCapturedAt()),
+	}
+}
+
+func GeneralImageModelToProto(model *models.GeneralImage) *common.GeneralImage {
+	return &common.GeneralImage{
+		Path:          model.Path,
+		ThumbnailPath: model.ThumbnailPath,
+		CapturedAt:    timestamppb.New(model.CapturedAt),
+	}
+}
+
+// GeneralVideo conversion
+func GeneralVideoProtoToModel(proto *common.GeneralVideo) *models.GeneralVideo {
+	return &models.GeneralVideo{
+		Path:          proto.GetPath(),
+		ThumbnailPath: proto.GetThumbnailPath(),
+		Duration:      proto.GetDuration(),
+		CapturedAt:    timestampPBToTime(proto.GetCapturedAt()),
+	}
+}
+
+func GeneralVideoModelToProto(model *models.GeneralVideo) *common.GeneralVideo {
+	return &common.GeneralVideo{
+		Path:          model.Path,
+		ThumbnailPath: model.ThumbnailPath,
+		Duration:      model.Duration,
+		CapturedAt:    timestamppb.New(model.CapturedAt),
 	}
 }
 
@@ -330,6 +366,7 @@ func PatientModelToProto(m *models.Patient) *common.Patient {
 		TotalScans:    m.TotalScans,
 		LastScanDate:  timestamppb.New(m.LastScanDate),
 		CreatedAt:     timestamppb.New(m.CreatedAt),
+		Weight:        m.Weight,
 	}
 }
 
@@ -354,6 +391,7 @@ func PatientProtoToModel(p *common.Patient) *models.Patient {
 		TotalScans:    p.TotalScans,
 		LastScanDate:  lastScanDate,
 		CreatedAt:     createdAt,
+		Weight:        p.Weight,
 	}
 }
 

@@ -8,19 +8,19 @@ import (
 )
 
 type AIClient interface {
-	AnalyzeScan(ctx context.Context, scanID string, images []*models.Image, videos []*models.Video) (*AIAnalysisResult, error)
+	AnalyzeScan(ctx context.Context, scanID string, images []*models.ScanImage, videos []*models.ScanVideo) (*AIAnalysisResult, error)
 	GenerateLLMReport(ctx context.Context, scanID string, analysisResult *AIAnalysisResult) (*LLMReportResult, error)
 }
 
 type AIAnalysisResult struct {
-	FootScore              float32
-	GaitScore              float32
-	LeftPronationAngle     float32
-	RightPronationAngle    float32
-	LeftArchHeightIndex    float32
-	RightArchHeightIndex   float32
-	LeftHalluxValgusAngle  float32
-	RightHalluxValgusAngle float32
+	FootScore              float64
+	GaitScore              float64
+	LeftPronationAngle     float64
+	RightPronationAngle    float64
+	LeftArchHeightIndex    float64
+	RightArchHeightIndex   float64
+	LeftHalluxValgusAngle  float64
+	RightHalluxValgusAngle float64
 }
 
 type LLMReportResult struct {
@@ -37,7 +37,7 @@ func NewPythonAIClient(baseURL string) *PythonAIClient {
 	}
 }
 
-func (c *PythonAIClient) AnalyzeScan(ctx context.Context, scanID string, images []*models.Image, videos []*models.Video) (*AIAnalysisResult, error) {
+func (c *PythonAIClient) AnalyzeScan(ctx context.Context, scanID string, images []*models.ScanImage, videos []*models.ScanVideo) (*AIAnalysisResult, error) {
 	// TODO: Implement gRPC/HTTP call to Python AI service
 	// This will call the Python microservice's AnalyzeScan endpoint
 	//
@@ -51,7 +51,7 @@ func (c *PythonAIClient) AnalyzeScan(ctx context.Context, scanID string, images 
 	// 3. Parse response and map to AIAnalysisResult
 	// 4. Return result
 
-	return nil, fmt.Errorf("Python AI service not yet implemented")
+	return nil, fmt.Errorf("ai service not yet implemented")
 }
 
 func (c *PythonAIClient) GenerateLLMReport(ctx context.Context, scanID string, analysisResult *AIAnalysisResult) (*LLMReportResult, error) {
@@ -68,5 +68,5 @@ func (c *PythonAIClient) GenerateLLMReport(ctx context.Context, scanID string, a
 	// 3. Parse response and extract summary text
 	// 4. Return LLMReportResult
 
-	return nil, fmt.Errorf("Python AI service not yet implemented")
+	return nil, fmt.Errorf("ai service not yet implemented")
 }

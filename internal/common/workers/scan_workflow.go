@@ -72,19 +72,19 @@ func (s *RunAIAnalysisStep) Execute(ctx context.Context, input map[string]any) e
 	}
 
 	// Initialize ScanAIResult if not exists
-	if scanRun.Scan.ScanAIResult == nil {
-		scanRun.Scan.ScanAIResult = &models.ScanAIResult{}
+	if scanRun.Scan.AIResult == nil {
+		scanRun.Scan.AIResult = &models.ScanAIResult{}
 	}
 
 	// Update scan with AI analysis results
-	scanRun.Scan.ScanAIResult.FootScore = analysisResult.FootScore
-	scanRun.Scan.ScanAIResult.GaitScore = analysisResult.GaitScore
-	scanRun.Scan.ScanAIResult.LeftPronationAngle = analysisResult.LeftPronationAngle
-	scanRun.Scan.ScanAIResult.RightPronationAngle = analysisResult.RightPronationAngle
-	scanRun.Scan.ScanAIResult.LeftArchHeightIndex = analysisResult.LeftArchHeightIndex
-	scanRun.Scan.ScanAIResult.RightArchHeightIndex = analysisResult.RightArchHeightIndex
-	scanRun.Scan.ScanAIResult.LeftHalluxValgusAngle = analysisResult.LeftHalluxValgusAngle
-	scanRun.Scan.ScanAIResult.RightHalluxValgusAngle = analysisResult.RightHalluxValgusAngle
+	scanRun.Scan.AIResult.FootScore = analysisResult.FootScore
+	scanRun.Scan.AIResult.GaitScore = analysisResult.GaitScore
+	scanRun.Scan.AIResult.LeftPronationAngle = analysisResult.LeftPronationAngle
+	scanRun.Scan.AIResult.RightPronationAngle = analysisResult.RightPronationAngle
+	scanRun.Scan.AIResult.LeftArchHeightIndex = analysisResult.LeftArchHeightIndex
+	scanRun.Scan.AIResult.RightArchHeightIndex = analysisResult.RightArchHeightIndex
+	scanRun.Scan.AIResult.LeftHalluxValgusAngle = analysisResult.LeftHalluxValgusAngle
+	scanRun.Scan.AIResult.RightHalluxValgusAngle = analysisResult.RightHalluxValgusAngle
 
 	// Save updated scan with AI results
 	if _, err := scanRun.MongoClient.UpdateScan(ctx, scanRun.Scan); err != nil {
@@ -114,20 +114,20 @@ func (s *GenerateLLMReportStep) Execute(ctx context.Context, input map[string]an
 	}
 
 	// Ensure we have AI analysis results
-	if scanRun.Scan.ScanAIResult == nil {
+	if scanRun.Scan.AIResult == nil {
 		return fmt.Errorf("scan %s has no AI analysis results", scanRun.Scan.ID)
 	}
 
 	// Prepare analysis result for LLM
 	analysisResult := &clients.AIAnalysisResult{
-		FootScore:              scanRun.Scan.ScanAIResult.FootScore,
-		GaitScore:              scanRun.Scan.ScanAIResult.GaitScore,
-		LeftPronationAngle:     scanRun.Scan.ScanAIResult.LeftPronationAngle,
-		RightPronationAngle:    scanRun.Scan.ScanAIResult.RightPronationAngle,
-		LeftArchHeightIndex:    scanRun.Scan.ScanAIResult.LeftArchHeightIndex,
-		RightArchHeightIndex:   scanRun.Scan.ScanAIResult.RightArchHeightIndex,
-		LeftHalluxValgusAngle:  scanRun.Scan.ScanAIResult.LeftHalluxValgusAngle,
-		RightHalluxValgusAngle: scanRun.Scan.ScanAIResult.RightHalluxValgusAngle,
+		FootScore:              scanRun.Scan.AIResult.FootScore,
+		GaitScore:              scanRun.Scan.AIResult.GaitScore,
+		LeftPronationAngle:     scanRun.Scan.AIResult.LeftPronationAngle,
+		RightPronationAngle:    scanRun.Scan.AIResult.RightPronationAngle,
+		LeftArchHeightIndex:    scanRun.Scan.AIResult.LeftArchHeightIndex,
+		RightArchHeightIndex:   scanRun.Scan.AIResult.RightArchHeightIndex,
+		LeftHalluxValgusAngle:  scanRun.Scan.AIResult.LeftHalluxValgusAngle,
+		RightHalluxValgusAngle: scanRun.Scan.AIResult.RightHalluxValgusAngle,
 	}
 
 	// Call Python AI service to generate LLM report
@@ -137,7 +137,7 @@ func (s *GenerateLLMReportStep) Execute(ctx context.Context, input map[string]an
 	}
 
 	// Update scan with LLM report
-	scanRun.Scan.ScanAIResult.LLMResult = &models.ScanLLMResult{
+	scanRun.Scan.AIResult.LLMResult = &models.ScanLLMResult{
 		Summary: llmResult.Summary,
 	}
 

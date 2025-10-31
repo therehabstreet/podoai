@@ -248,14 +248,14 @@ func (x *AnalyzeScanResponse) GetMetrics() *BiomechanicalMetrics {
 
 type BiomechanicalMetrics struct {
 	state                  protoimpl.MessageState `protogen:"open.v1"`
-	FootScore              float32                `protobuf:"fixed32,1,opt,name=foot_score,json=footScore,proto3" json:"foot_score,omitempty"`
-	GaitScore              float32                `protobuf:"fixed32,2,opt,name=gait_score,json=gaitScore,proto3" json:"gait_score,omitempty"`
-	LeftPronationAngle     float32                `protobuf:"fixed32,3,opt,name=left_pronation_angle,json=leftPronationAngle,proto3" json:"left_pronation_angle,omitempty"`
-	RightPronationAngle    float32                `protobuf:"fixed32,4,opt,name=right_pronation_angle,json=rightPronationAngle,proto3" json:"right_pronation_angle,omitempty"`
-	LeftArchHeightIndex    float32                `protobuf:"fixed32,5,opt,name=left_arch_height_index,json=leftArchHeightIndex,proto3" json:"left_arch_height_index,omitempty"`
-	RightArchHeightIndex   float32                `protobuf:"fixed32,6,opt,name=right_arch_height_index,json=rightArchHeightIndex,proto3" json:"right_arch_height_index,omitempty"`
-	LeftHalluxValgusAngle  float32                `protobuf:"fixed32,7,opt,name=left_hallux_valgus_angle,json=leftHalluxValgusAngle,proto3" json:"left_hallux_valgus_angle,omitempty"`
-	RightHalluxValgusAngle float32                `protobuf:"fixed32,8,opt,name=right_hallux_valgus_angle,json=rightHalluxValgusAngle,proto3" json:"right_hallux_valgus_angle,omitempty"`
+	FootScore              float64                `protobuf:"fixed64,1,opt,name=foot_score,json=footScore,proto3" json:"foot_score,omitempty"`
+	GaitScore              float64                `protobuf:"fixed64,2,opt,name=gait_score,json=gaitScore,proto3" json:"gait_score,omitempty"`
+	LeftPronationAngle     float64                `protobuf:"fixed64,3,opt,name=left_pronation_angle,json=leftPronationAngle,proto3" json:"left_pronation_angle,omitempty"`
+	RightPronationAngle    float64                `protobuf:"fixed64,4,opt,name=right_pronation_angle,json=rightPronationAngle,proto3" json:"right_pronation_angle,omitempty"`
+	LeftArchHeightIndex    float64                `protobuf:"fixed64,5,opt,name=left_arch_height_index,json=leftArchHeightIndex,proto3" json:"left_arch_height_index,omitempty"`
+	RightArchHeightIndex   float64                `protobuf:"fixed64,6,opt,name=right_arch_height_index,json=rightArchHeightIndex,proto3" json:"right_arch_height_index,omitempty"`
+	LeftHalluxValgusAngle  float64                `protobuf:"fixed64,7,opt,name=left_hallux_valgus_angle,json=leftHalluxValgusAngle,proto3" json:"left_hallux_valgus_angle,omitempty"`
+	RightHalluxValgusAngle float64                `protobuf:"fixed64,8,opt,name=right_hallux_valgus_angle,json=rightHalluxValgusAngle,proto3" json:"right_hallux_valgus_angle,omitempty"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -290,56 +290,56 @@ func (*BiomechanicalMetrics) Descriptor() ([]byte, []int) {
 	return file_ai_podoai_ai_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *BiomechanicalMetrics) GetFootScore() float32 {
+func (x *BiomechanicalMetrics) GetFootScore() float64 {
 	if x != nil {
 		return x.FootScore
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetGaitScore() float32 {
+func (x *BiomechanicalMetrics) GetGaitScore() float64 {
 	if x != nil {
 		return x.GaitScore
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetLeftPronationAngle() float32 {
+func (x *BiomechanicalMetrics) GetLeftPronationAngle() float64 {
 	if x != nil {
 		return x.LeftPronationAngle
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetRightPronationAngle() float32 {
+func (x *BiomechanicalMetrics) GetRightPronationAngle() float64 {
 	if x != nil {
 		return x.RightPronationAngle
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetLeftArchHeightIndex() float32 {
+func (x *BiomechanicalMetrics) GetLeftArchHeightIndex() float64 {
 	if x != nil {
 		return x.LeftArchHeightIndex
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetRightArchHeightIndex() float32 {
+func (x *BiomechanicalMetrics) GetRightArchHeightIndex() float64 {
 	if x != nil {
 		return x.RightArchHeightIndex
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetLeftHalluxValgusAngle() float32 {
+func (x *BiomechanicalMetrics) GetLeftHalluxValgusAngle() float64 {
 	if x != nil {
 		return x.LeftHalluxValgusAngle
 	}
 	return 0
 }
 
-func (x *BiomechanicalMetrics) GetRightHalluxValgusAngle() float32 {
+func (x *BiomechanicalMetrics) GetRightHalluxValgusAngle() float64 {
 	if x != nil {
 		return x.RightHalluxValgusAngle
 	}
@@ -475,15 +475,15 @@ const file_ai_podoai_ai_proto_rawDesc = "" +
 	"\ametrics\x18\x02 \x01(\v2\x1f.podoai.ai.BiomechanicalMetricsR\ametrics\"\x9a\x03\n" +
 	"\x14BiomechanicalMetrics\x12\x1d\n" +
 	"\n" +
-	"foot_score\x18\x01 \x01(\x02R\tfootScore\x12\x1d\n" +
+	"foot_score\x18\x01 \x01(\x01R\tfootScore\x12\x1d\n" +
 	"\n" +
-	"gait_score\x18\x02 \x01(\x02R\tgaitScore\x120\n" +
-	"\x14left_pronation_angle\x18\x03 \x01(\x02R\x12leftPronationAngle\x122\n" +
-	"\x15right_pronation_angle\x18\x04 \x01(\x02R\x13rightPronationAngle\x123\n" +
-	"\x16left_arch_height_index\x18\x05 \x01(\x02R\x13leftArchHeightIndex\x125\n" +
-	"\x17right_arch_height_index\x18\x06 \x01(\x02R\x14rightArchHeightIndex\x127\n" +
-	"\x18left_hallux_valgus_angle\x18\a \x01(\x02R\x15leftHalluxValgusAngle\x129\n" +
-	"\x19right_hallux_valgus_angle\x18\b \x01(\x02R\x16rightHalluxValgusAngle\"n\n" +
+	"gait_score\x18\x02 \x01(\x01R\tgaitScore\x120\n" +
+	"\x14left_pronation_angle\x18\x03 \x01(\x01R\x12leftPronationAngle\x122\n" +
+	"\x15right_pronation_angle\x18\x04 \x01(\x01R\x13rightPronationAngle\x123\n" +
+	"\x16left_arch_height_index\x18\x05 \x01(\x01R\x13leftArchHeightIndex\x125\n" +
+	"\x17right_arch_height_index\x18\x06 \x01(\x01R\x14rightArchHeightIndex\x127\n" +
+	"\x18left_hallux_valgus_angle\x18\a \x01(\x01R\x15leftHalluxValgusAngle\x129\n" +
+	"\x19right_hallux_valgus_angle\x18\b \x01(\x01R\x16rightHalluxValgusAngle\"n\n" +
 	"\x18GenerateLLMReportRequest\x12\x17\n" +
 	"\ascan_id\x18\x01 \x01(\tR\x06scanId\x129\n" +
 	"\ametrics\x18\x02 \x01(\v2\x1f.podoai.ai.BiomechanicalMetricsR\ametrics\"N\n" +

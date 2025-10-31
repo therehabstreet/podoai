@@ -16,4 +16,5 @@ type Patient struct {
 	TotalScans    int32     `bson:"total_scans"`
 	LastScanDate  time.Time `bson:"last_scan_date"`
 	CreatedAt     time.Time `bson:"created_at"`
+	Weight        float64   `bson:"weight"` // Weight in kg
 }

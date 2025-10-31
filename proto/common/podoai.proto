@@ -37,8 +37,8 @@ message Scan {
   string owner_entity_id = 3;
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp updated_at = 5;
-  repeated Image images = 6;
-  repeated Video videos = 7;
+  repeated ScanImage images = 6;
+  repeated ScanVideo videos = 7;
   ScanAIResult scan_ai_result = 8;
   string scanned_by_id = 9;
   string reviewed_by_id = 10;
@@ -49,14 +49,14 @@ message Scan {
 message ScanAIResult {
   ScanLLMResult llm_result = 1;
   ScanRecommendation recommendation = 2;
-  float foot_score = 3;
-  float gait_score = 4;
-  float left_pronation_angle = 5;
-  float right_pronation_angle = 6;
-  float left_arch_height_index = 7;
-  float right_arch_height_index = 8;
-  float left_hallux_valgus_angle = 9;
-  float right_hallux_valgus_angle = 10;
+  double foot_score = 3;
+  double gait_score = 4;
+  double left_pronation_angle = 5;
+  double right_pronation_angle = 6;
+  double left_arch_height_index = 7;
+  double right_arch_height_index = 8;
+  double left_hallux_valgus_angle = 9;
+  double right_hallux_valgus_angle = 10;
 }
 
 message ScanLLMResult {
@@ -87,7 +87,7 @@ message ProductCategory {
 
 message ProductPrice {
   string product_id = 1;
-  float price = 2;
+  double price = 2;
   string currency = 3;
 }
 
@@ -105,7 +105,7 @@ message Therapy {
   string video_url = 4;
 }
 
-message Image {
+message ScanImage {
   ImageType type = 1;
   google.protobuf.Timestamp captured_at = 2;
   string signed_url = 3;
@@ -115,7 +115,7 @@ message Image {
   google.protobuf.Timestamp expires_at = 7;
 }
 
-message Video {
+message ScanVideo {
   VideoType type = 1;
   int32 duration = 2;
   google.protobuf.Timestamp captured_at = 3;
@@ -124,6 +124,19 @@ message Video {
   string path = 6;
   string thumbnail_path = 7;
   google.protobuf.Timestamp expires_at = 8;
+}
+
+message GeneralImage {
+  string path = 1;
+  string thumbnail_path = 2;
+  google.protobuf.Timestamp captured_at = 3;
+}
+
+message GeneralVideo {
+  string path = 1;
+  string thumbnail_path = 2;
+  int32 duration = 3;
+  google.protobuf.Timestamp captured_at = 4;
 }
 
 enum ImageType {
@@ -202,6 +215,7 @@ message Patient {
   int32 total_scans = 8;
   google.protobuf.Timestamp last_scan_date = 9;
   google.protobuf.Timestamp created_at = 10;
+  double weight = 11;  // Weight in kg
 }
 
 message GetScansRequest {
@@ -259,8 +273,8 @@ message GenerateMediaSignedUrlsRequest {
 }
 
 message GenerateMediaSignedUrlsResponse {
-    repeated Image images = 1;
-    repeated Video videos = 2;
+    repeated ScanImage images = 1;
+    repeated ScanVideo videos = 2;
 }
 
 message GetProductRequest {

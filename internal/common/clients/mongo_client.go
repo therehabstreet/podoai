@@ -153,6 +153,11 @@ func InitCommonMongoClient(uri string) (*MongoDBClient, error) {
 func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerEntityID string, page, pageSize int32, sortBy, sortOrder string) ([]*models.Scan, int64, error) {
 	coll := m.Client.Database(DatabaseName).Collection(getCollectionNameWithPrefix(ctx, "scans"))
 
+	// TODO
+	fmt.Println("owner", ownerEntityID)
+	fmt.Println("patient", patientID)
+	fmt.Println("sort. by", sortBy)
+
 	filter := bson.M{"owner_entity_id": ownerEntityID}
 	validPatientID := patientID != "" && len(strings.TrimSpace(patientID)) > 0
 	if validPatientID {
@@ -182,6 +187,7 @@ func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerE
 	for cursor.Next(ctx) {
 		var scan models.Scan
 		if err := cursor.Decode(&scan); err != nil {
+			fmt.Println(err)
 			continue
 		}
 		scans = append(scans, &scan)
@@ -190,6 +196,7 @@ func (m *MongoDBClient) FetchScans(ctx context.Context, patientID string, ownerE
 	if err != nil {
 		total = int64(len(scans))
 	}
+	fmt.Println("total scans", len(scans))
 	return scans, total, nil
 }
 
@@ -554,6 +561,7 @@ func (m *MongoDBClient) UpdatePatient(ctx context.Context, patient *models.Patie
 			"foot_size":      patient.FootSize,
 			"total_scans":    patient.TotalScans,
 			"last_scan_date": patient.LastScanDate,
+			"weight":         patient.Weight,
 		},
 	}
 

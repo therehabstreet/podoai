@@ -49,8 +49,8 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 		pb.VideoType_GAIT_POSTERIOR,
 	}
 
-	var images []*pb.Image
-	var videos []*pb.Video
+	var images []*pb.ScanImage
+	var videos []*pb.ScanVideo
 
 	// Generate signed URLs for images
 	for _, imageType := range imageTypes {
@@ -72,7 +72,7 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 			return nil, fmt.Errorf("failed to generate thumbnail URL for %s: %v", typeString, err)
 		}
 
-		images = append(images, &pb.Image{
+		images = append(images, &pb.ScanImage{
 			Type:               imageType,
 			SignedUrl:          signedURL,
 			ThumbnailSignedUrl: thumbnailURL,
@@ -102,7 +102,7 @@ func (cs *CommonServer) GenerateMediaSignedUrls(ctx context.Context, req *pb.Gen
 			return nil, fmt.Errorf("failed to generate thumbnail URL for %s: %v", typeString, err)
 		}
 
-		videos = append(videos, &pb.Video{
+		videos = append(videos, &pb.ScanVideo{
 			Type:               videoType,
 			SignedUrl:          signedURL,
 			ThumbnailSignedUrl: thumbnailURL,

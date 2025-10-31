@@ -7,26 +7,26 @@ type Scan struct {
 	ID            string        `bson:"_id"`
 	PatientID     string        `bson:"patient_id"`
 	OwnerEntityID string        `bson:"owner_entity_id"`
-	CreatedAt     time.Time     `bson:"created_at"`
-	UpdatedAt     time.Time     `bson:"updated_at"`
-	Images        []*Image      `bson:"images"`
-	Videos        []*Video      `bson:"videos"`
-	ScanAIResult  *ScanAIResult `bson:"scan_ai_result,omitempty"`
+	Status        string        `bson:"status"`
+	Images        []*ScanImage  `bson:"images"`
+	Videos        []*ScanVideo  `bson:"videos"`
+	AIResult      *ScanAIResult `bson:"ai_result,omitempty"`
 	ScannedByID   string        `bson:"scanned_by_id"`
 	ReviewedByID  string        `bson:"reviewed_by_id"`
 	ReviewedAt    *time.Time    `bson:"reviewed_at,omitempty"`
-	Status        string        `bson:"status"`
+	CreatedAt     time.Time     `bson:"created_at"`
+	UpdatedAt     time.Time     `bson:"updated_at"`
 }
 
 type ScanAIResult struct {
-	FootScore              float32             `bson:"foot_score"`
-	GaitScore              float32             `bson:"gait_score"`
-	LeftPronationAngle     float32             `bson:"left_pronation_angle"`
-	RightPronationAngle    float32             `bson:"right_pronation_angle"`
-	LeftArchHeightIndex    float32             `bson:"left_arch_height_index"`
-	RightArchHeightIndex   float32             `bson:"right_arch_height_index"`
-	LeftHalluxValgusAngle  float32             `bson:"left_hallux_valgus_angle"`
-	RightHalluxValgusAngle float32             `bson:"right_hallux_valgus_angle"`
+	FootScore              float64             `bson:"foot_score"`
+	GaitScore              float64             `bson:"gait_score"`
+	LeftPronationAngle     float64             `bson:"left_pronation_angle"`
+	RightPronationAngle    float64             `bson:"right_pronation_angle"`
+	LeftArchHeightIndex    float64             `bson:"left_arch_height_index"`
+	RightArchHeightIndex   float64             `bson:"right_arch_height_index"`
+	LeftHalluxValgusAngle  float64             `bson:"left_hallux_valgus_angle"`
+	RightHalluxValgusAngle float64             `bson:"right_hallux_valgus_angle"`
 	LLMResult              *ScanLLMResult      `bson:"llm_result,omitempty"`
 	Recommendation         *ScanRecommendation `bson:"recommendation,omitempty"`
 }
@@ -41,7 +41,7 @@ type ScanRecommendation struct {
 	Therapies []*Therapy  `bson:"therapies"`
 }
 
-type Image struct {
+type ScanImage struct {
 	Type               string    `bson:"type"`
 	CapturedAt         time.Time `bson:"captured_at"`
 	SignedURL          string    `bson:"signed_url,omitempty"`           // Temporary signed URL
@@ -51,7 +51,7 @@ type Image struct {
 	ExpiresAt          time.Time `bson:"expires_at,omitempty"`           // When signed URLs expire
 }
 
-type Video struct {
+type ScanVideo struct {
 	Type               string    `bson:"type"`
 	Duration           int32     `bson:"duration"`
 	CapturedAt         time.Time `bson:"captured_at"`
@@ -60,6 +60,19 @@ type Video struct {
 	Path               string    `bson:"path,omitempty"`                 // GCS path
 	ThumbnailPath      string    `bson:"thumbnail_path,omitempty"`       // Thumbnail GCS path
 	ExpiresAt          time.Time `bson:"expires_at,omitempty"`           // When signed URLs expire
+}
+
+type GeneralImage struct {
+	Path          string    `bson:"path"`
+	ThumbnailPath string    `bson:"thumbnail_path,omitempty"`
+	CapturedAt    time.Time `bson:"captured_at"`
+}
+
+type GeneralVideo struct {
+	Path          string    `bson:"path"`
+	ThumbnailPath string    `bson:"thumbnail_path,omitempty"`
+	Duration      int32     `bson:"duration"`
+	CapturedAt    time.Time `bson:"captured_at"`
 }
 
 // Product, Exercise, Therapy models to match proto
@@ -81,7 +94,7 @@ type ProductCategory struct {
 
 type ProductPrice struct {
 	ProductID string  `bson:"product_id"`
-	Price     float32 `bson:"price"`
+	Price     float64 `bson:"price"`
 	Currency  string  `bson:"currency"`
 }
 

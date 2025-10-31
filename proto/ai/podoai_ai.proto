@@ -34,14 +34,14 @@ message AnalyzeScanResponse {
 }
 
 message BiomechanicalMetrics {
-  float foot_score = 1;
-  float gait_score = 2;
-  float left_pronation_angle = 3;
-  float right_pronation_angle = 4;
-  float left_arch_height_index = 5;
-  float right_arch_height_index = 6;
-  float left_hallux_valgus_angle = 7;
-  float right_hallux_valgus_angle = 8;
+  double foot_score = 1;
+  double gait_score = 2;
+  double left_pronation_angle = 3;
+  double right_pronation_angle = 4;
+  double left_arch_height_index = 5;
+  double right_arch_height_index = 6;
+  double left_hallux_valgus_angle = 7;
+  double right_hallux_valgus_angle = 8;
 }
 
 // Request to generate LLM report
